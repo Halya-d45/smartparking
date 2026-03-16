@@ -1,0 +1,261 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Booking Confirmation</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+font-family:'Inter',sans-serif;
+background:#020617;
+}
+</style>
+
+</head>
+
+<body class="flex justify-center min-h-screen text-white">
+
+<div class="w-full max-w-5xl flex flex-col md:flex-row bg-[#0b0f19] shadow-2xl">
+
+<!-- LEFT SIDE (Booking Summary) -->
+
+<div class="flex-1 p-6 md:p-10">
+
+<div class="flex items-center mb-6">
+
+<button onclick="goBack()" class="mr-4 hover:text-slate-400">
+←
+</button>
+
+<h1 class="text-xl font-bold">
+Booking Confirmation
+</h1>
+
+</div>
+
+<h2 class="text-lg font-semibold mb-4">
+Booking Summary
+</h2>
+
+<div class="bg-[#121927] border border-slate-700 rounded-xl p-4 flex gap-4 mb-6">
+
+<img id="placeImage"
+src="https://images.unsplash.com/photo-1502672260266-1c1de2d9200b"
+class="w-28 h-28 rounded-lg object-cover">
+
+<div>
+
+<p id="placeLocation" class="text-xs text-slate-400 mb-1">
+Location
+</p>
+
+<h3 id="placeName" class="font-bold text-lg">
+Parking Space
+</h3>
+
+<p id="bookingDates" class="text-sm text-slate-400">
+Date
+</p>
+
+</div>
+
+</div>
+
+<div class="space-y-3 mb-6">
+
+<div class="flex justify-between">
+<span class="text-slate-400">Check-in</span>
+<span id="checkin">--</span>
+</div>
+
+<div class="flex justify-between">
+<span class="text-slate-400">Check-out</span>
+<span id="checkout">--</span>
+</div>
+
+</div>
+
+<div class="bg-[#121927] border border-slate-700 p-4 rounded-xl flex justify-between">
+
+<span class="font-semibold">
+Total Cost
+</span>
+
+<span id="totalCost" class="text-blue-500 font-bold text-lg">
+$0
+</span>
+
+</div>
+
+</div>
+
+
+<!-- RIGHT SIDE (Payment) -->
+
+<div class="flex-1 bg-[#020617] p-6 md:p-10">
+
+<h2 class="text-lg font-semibold mb-6">
+Payment Method
+</h2>
+
+<div class="space-y-4">
+
+<label class="flex items-center justify-between bg-[#121927] p-4 rounded-xl border border-slate-700 cursor-pointer">
+
+<div class="flex items-center gap-3">
+
+<input type="radio" name="payment" value="applepay" checked>
+
+<span>Apple Pay</span>
+
+</div>
+
+</label>
+
+
+<label class="flex items-center justify-between bg-[#121927] p-4 rounded-xl border border-slate-700 cursor-pointer">
+
+<div class="flex items-center gap-3">
+
+<input type="radio" name="payment" value="card">
+
+<span>Credit Card</span>
+
+</div>
+
+</label>
+
+</div>
+
+
+<button
+id="payBtn"
+onclick="confirmBooking()"
+class="w-full mt-8 bg-blue-600 hover:bg-blue-700 py-3 rounded-xl font-semibold transition">
+
+Confirm & Pay
+
+</button>
+
+<p class="text-xs text-slate-500 mt-4 text-center">
+By confirming you agree to the Terms of Service
+</p>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+/* Example booking data (later comes from backend or previous page) */
+
+const booking = {
+
+place:"City Center Parking",
+location:"San Francisco, CA",
+checkin:"14:00 Oct 24",
+checkout:"11:00 Oct 26",
+price:450,
+image:"https://images.unsplash.com/photo-1502672260266-1c1de2d9200b"
+
+};
+
+
+/* Load booking details */
+
+document.getElementById("placeName").textContent=booking.place;
+document.getElementById("placeLocation").textContent=booking.location;
+document.getElementById("checkin").textContent=booking.checkin;
+document.getElementById("checkout").textContent=booking.checkout;
+document.getElementById("totalCost").textContent="$"+booking.price;
+document.getElementById("bookingDates").textContent=booking.checkin+" - "+booking.checkout;
+document.getElementById("placeImage").src=booking.image;
+
+
+/* Back button */
+
+function goBack(){
+
+window.history.back();
+
+}
+
+
+/* Confirm booking */
+
+async function confirmBooking(){
+
+const btn=document.getElementById("payBtn");
+
+btn.innerText="Processing...";
+btn.disabled=true;
+
+const paymentMethod=document.querySelector('input[name="payment"]:checked').value;
+
+const bookingData={
+place:booking.place,
+price:booking.price,
+paymentMethod:paymentMethod
+};
+
+
+/* Example backend request */
+
+try{
+
+const response=await fetch("/api/bookParking",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify(bookingData)
+
+});
+
+
+if(response.ok){
+
+alert("Booking Successful!");
+
+window.location.href="bookings.html";
+
+}
+
+else{
+
+alert("Payment failed");
+
+}
+
+}
+
+catch(error){
+
+alert("Server error");
+
+}
+
+btn.innerText="Confirm & Pay";
+btn.disabled=false;
+
+}
+
+</script>
+
+
+</body>
+</html>
+```

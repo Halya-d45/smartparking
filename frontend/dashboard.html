@@ -1,0 +1,408 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Smart Parking Dashboard</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+background:#0d0f15;
+color:white;
+}
+
+/* HEADER */
+
+header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:15px 25px;
+background:#081628;
+}
+
+.logo{
+font-size:20px;
+font-weight:bold;
+}
+
+nav{
+display:flex;
+gap:20px;
+}
+
+nav a{
+text-decoration:none;
+color:#ccc;
+font-size:14px;
+}
+
+nav a:hover{
+color:white;
+}
+
+/* SEARCH */
+
+.search{
+display:flex;
+gap:10px;
+}
+
+.search input{
+padding:6px 10px;
+border-radius:6px;
+border:none;
+}
+
+.search button{
+background:#2d63ff;
+border:none;
+padding:6px 12px;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* MAIN */
+
+.container{
+display:flex;
+height:calc(100vh - 60px);
+}
+
+/* MAP */
+
+.map{
+flex:2;
+}
+
+#map{
+height:100%;
+}
+
+/* PARKING LIST */
+
+.parking-list{
+flex:1;
+background:#071423;
+overflow-y:auto;
+padding:15px;
+}
+
+.parking-list h2{
+margin-bottom:15px;
+}
+
+/* CARD */
+
+.card{
+background:#0f1f35;
+padding:10px;
+border-radius:10px;
+margin-bottom:12px;
+display:flex;
+gap:10px;
+}
+
+.card img{
+width:80px;
+height:70px;
+border-radius:8px;
+object-fit:cover;
+}
+
+.card-info{
+flex:1;
+}
+
+.card-info h4{
+font-size:14px;
+}
+
+.card-info p{
+font-size:12px;
+color:#9aa3b2;
+}
+
+.buttons{
+margin-top:5px;
+display:flex;
+gap:5px;
+}
+
+.buttons button{
+padding:4px 8px;
+border:none;
+border-radius:5px;
+font-size:11px;
+cursor:pointer;
+}
+
+.save{
+background:#22c55e;
+color:white;
+}
+
+.book{
+background:#2d63ff;
+color:white;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+.container{
+flex-direction:column;
+}
+
+.map{
+height:50vh;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">SmartPark</div>
+
+<nav>
+
+<a href="dashboard.html">Explore</a>
+<a href="saved.html">Saved</a>
+<a href="bookings.html">Bookings</a>
+<a href="profile.html">Profile</a>
+
+</nav>
+
+<div class="search">
+
+<input type="text" id="searchInput" placeholder="Search location">
+
+<button onclick="searchPlace()">Search</button>
+
+</div>
+
+</header>
+
+
+<div class="container">
+
+<div class="map">
+<div id="map"></div>
+</div>
+
+<div class="parking-list">
+
+<h2>Parking Near You</h2>
+
+<div id="parkingResults">
+Search a location to see parking
+</div>
+
+</div>
+
+</div>
+
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+/* MAP */
+
+var map = L.map('map').setView([16.3067,80.4365],13);
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{ attribution:'© OpenStreetMap' }
+).addTo(map);
+
+let markers = [];
+
+
+/* SEARCH PLACE */
+
+async function searchPlace(){
+
+let place=document.getElementById("searchInput").value;
+
+let res = await fetch(
+`https://nominatim.openstreetmap.org/search?format=json&q=${place}`
+);
+
+let data = await res.json();
+
+if(data.length==0){
+
+alert("Location not found");
+return;
+
+}
+
+let lat=data[0].lat;
+let lon=data[0].lon;
+
+map.setView([lat,lon],15);
+
+findParking(lat,lon);
+
+}
+
+
+/* FIND PARKING */
+
+async function findParking(lat,lon){
+
+markers.forEach(m=>map.removeLayer(m));
+markers=[];
+
+let query=`
+[out:json];
+node["amenity"="parking"](around:500,${lat},${lon});
+out;
+`;
+
+let response = await fetch(
+"https://overpass-api.de/api/interpreter",
+{
+method:"POST",
+body:query
+});
+
+let data = await response.json();
+
+let results=document.getElementById("parkingResults");
+
+results.innerHTML="";
+
+if(data.elements.length===0){
+
+results.innerHTML="No parking found";
+
+return;
+
+}
+
+data.elements.forEach((p,i)=>{
+
+let marker=L.marker([p.lat,p.lon]).addTo(map);
+
+markers.push(marker);
+
+let name="Parking Area "+(i+1);
+
+let image="https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=400";
+
+let price="$4/hr";
+
+let card = `
+<div class="card">
+
+<img src="${image}">
+
+<div class="card-info">
+
+<h4>${name}</h4>
+
+<p>Lat: ${p.lat}</p>
+
+<p>Lon: ${p.lon}</p>
+
+<div class="buttons">
+
+<button class="save"
+onclick="saveParking('${name}','Lat ${p.lat}','${price}','${image}')">
+Save
+</button>
+
+<button class="book"
+onclick="bookParking('${name}','Lat ${p.lat}','${price}','${image}')">
+Book
+</button>
+
+</div>
+
+</div>
+
+</div>
+`;
+
+results.innerHTML+=card;
+
+});
+
+}
+
+
+/* SAVE PARKING */
+
+function saveParking(name,address,price,image){
+
+let saved=JSON.parse(localStorage.getItem("savedParking"))||[];
+
+if(saved.some(p=>p.name===name)){
+
+alert("Already saved");
+return;
+
+}
+
+saved.push({name,address,price,image});
+
+localStorage.setItem("savedParking",JSON.stringify(saved));
+
+alert("Parking saved!");
+
+}
+
+
+/* BOOK PARKING */
+
+function bookParking(name,address,price,image){
+
+let bookings=JSON.parse(localStorage.getItem("bookings"))||[];
+
+bookings.push({
+
+place:name,
+address:address,
+date:"Today",
+time:"1 hour",
+status:"Confirmed"
+
+});
+
+localStorage.setItem("bookings",JSON.stringify(bookings));
+
+window.location.href="booking.html";
+
+}
+
+</script>
+
+</body>
+
+</html>

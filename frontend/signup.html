@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartPark - Create Account</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+<style>
+
+:root{
+--bg-main:#13161f;
+--bg-input:#181b26;
+--border-color:#272c3d;
+--primary-blue:#1d5ce5;
+--primary-blue-hover:#1648b8;
+--text-white:#ffffff;
+--text-gray:#8a91a6;
+--text-dark-gray:#4d5366;
+font-family:'Inter',sans-serif;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+background:#0d0f15;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+color:white;
+}
+
+.app-container{
+width:100%;
+max-width:414px;
+height:896px;
+background:var(--bg-main);
+display:flex;
+flex-direction:column;
+overflow:hidden;
+box-shadow:0 20px 40px rgba(0,0,0,0.5);
+position:relative;
+}
+
+.header{
+display:flex;
+align-items:center;
+padding:24px;
+}
+
+.back-btn{
+font-size:24px;
+cursor:pointer;
+}
+
+.header h1{
+flex:1;
+text-align:center;
+font-size:16px;
+}
+
+.content{
+padding:24px;
+flex:1;
+overflow:auto;
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:10px;
+margin-bottom:20px;
+}
+
+.brand-logo{
+width:36px;
+height:36px;
+background:var(--primary-blue);
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:8px;
+font-weight:700;
+}
+
+.brand-text{
+font-size:18px;
+font-weight:600;
+color:var(--primary-blue);
+}
+
+.title-section h2{
+font-size:26px;
+margin-bottom:6px;
+}
+
+.title-section p{
+color:var(--text-gray);
+margin-bottom:30px;
+font-size:14px;
+}
+
+.form-group{
+margin-bottom:18px;
+}
+
+.form-group label{
+display:block;
+margin-bottom:6px;
+font-size:13px;
+}
+
+.input-wrapper{
+position:relative;
+}
+
+.input-wrapper i{
+position:absolute;
+left:12px;
+top:50%;
+transform:translateY(-50%);
+color:var(--text-gray);
+font-size:20px;
+}
+
+.eye-icon{
+right:12px;
+left:auto;
+cursor:pointer;
+}
+
+.input-wrapper input{
+width:100%;
+background:var(--bg-input);
+border:1px solid var(--border-color);
+padding:14px 40px;
+border-radius:10px;
+color:white;
+outline:none;
+font-size:14px;
+}
+
+.input-wrapper input:focus{
+border-color:var(--primary-blue);
+box-shadow:0 0 0 2px rgba(29,92,229,0.2);
+}
+
+.error{
+font-size:12px;
+color:#ff6b6b;
+margin-top:4px;
+display:none;
+}
+
+.checkbox-group{
+display:flex;
+gap:10px;
+margin:18px 0;
+font-size:13px;
+color:var(--text-gray);
+}
+
+.checkbox-group input{
+margin-top:3px;
+}
+
+.primary-btn{
+width:100%;
+padding:15px;
+border:none;
+border-radius:10px;
+background:var(--primary-blue);
+color:white;
+font-size:15px;
+font-weight:600;
+cursor:pointer;
+transition:0.2s;
+}
+
+.primary-btn:hover{
+background:var(--primary-blue-hover);
+}
+
+.divider{
+text-align:center;
+margin:28px 0;
+font-size:12px;
+color:var(--text-dark-gray);
+position:relative;
+}
+
+.divider:before,
+.divider:after{
+content:"";
+position:absolute;
+top:50%;
+width:40%;
+height:1px;
+background:var(--border-color);
+}
+
+.divider:before{left:0;}
+.divider:after{right:0;}
+
+.social-login{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+}
+
+.social-btn{
+padding:13px;
+border-radius:10px;
+background:var(--bg-input);
+border:1px solid var(--border-color);
+color:white;
+cursor:pointer;
+display:flex;
+justify-content:center;
+align-items:center;
+gap:6px;
+}
+
+.login-link{
+margin-top:25px;
+text-align:center;
+color:var(--text-gray);
+font-size:14px;
+}
+
+.login-link a{
+color:var(--primary-blue);
+text-decoration:none;
+font-weight:600;
+}
+
+.map-bg{
+position:absolute;
+bottom:0;
+width:100%;
+height:240px;
+background:url("https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80");
+background-size:cover;
+opacity:.15;
+mask-image:linear-gradient(to top,black,transparent);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app-container">
+
+<header class="header">
+<i class='bx bx-arrow-back back-btn' onclick="history.back()"></i>
+<h1>Create Account</h1>
+</header>
+
+<main class="content">
+
+<div class="brand">
+<div class="brand-logo">P</div>
+<div class="brand-text">SmartPark</div>
+</div>
+
+<div class="title-section">
+<h2>Join SmartPark</h2>
+<p>Find and book parking spaces in seconds.</p>
+</div>
+
+<form id="signupForm">
+
+<div class="form-group">
+<label for="name">Full Name</label>
+<div class="input-wrapper">
+<i class='bx bxs-user'></i>
+<input id="name" type="text" placeholder="John Doe" required>
+</div>
+<div class="error" id="nameError">Please enter your name</div>
+</div>
+
+<div class="form-group">
+<label for="email">Email</label>
+<div class="input-wrapper">
+<i class='bx bx-envelope'></i>
+<input id="email" type="email" placeholder="name@example.com" required>
+</div>
+<div class="error" id="emailError">Enter a valid email</div>
+</div>
+
+<div class="form-group">
+<label for="password">Password</label>
+<div class="input-wrapper">
+<i class='bx bx-lock-alt'></i>
+<input id="password" type="password" required>
+<i class='bx bx-show eye-icon' onclick="togglePassword()"></i>
+</div>
+<div class="error" id="passError">Password must be 6+ characters</div>
+</div>
+
+<div class="form-group">
+<label for="confirm">Confirm Password</label>
+<div class="input-wrapper">
+<i class='bx bx-history'></i>
+<input id="confirm" type="password" required>
+</div>
+<div class="error" id="confirmError">Passwords do not match</div>
+</div>
+
+<div class="checkbox-group">
+<input type="checkbox" id="terms" required>
+<label for="terms">
+I agree to the Terms of Service and Privacy Policy
+</label>
+</div>
+
+<button class="primary-btn" type="submit">Create Account</button>
+
+</form>
+
+<div class="divider">OR SIGN UP WITH</div>
+
+<div class="social-login">
+<button class="social-btn">Google</button>
+<button class="social-btn"><i class='bx bxl-apple'></i> Apple</button>
+</div>
+
+<div class="login-link">
+Already have an account? <a href="login.html">Log in</a>
+</div>
+
+</main>
+
+<div class="map-bg"></div>
+
+</div>
+
+<script>
+
+const form = document.getElementById("signupForm");
+
+form.addEventListener("submit",function(e){
+
+e.preventDefault();
+
+let name=document.getElementById("name").value.trim();
+let email=document.getElementById("email").value.trim();
+let password=document.getElementById("password").value;
+let confirm=document.getElementById("confirm").value;
+
+let valid=true;
+
+if(name===""){
+document.getElementById("nameError").style.display="block";
+valid=false;
+}else{
+document.getElementById("nameError").style.display="none";
+}
+
+if(!email.includes("@")){
+document.getElementById("emailError").style.display="block";
+valid=false;
+}else{
+document.getElementById("emailError").style.display="none";
+}
+
+if(password.length<6){
+document.getElementById("passError").style.display="block";
+valid=false;
+}else{
+document.getElementById("passError").style.display="none";
+}
+
+if(password!==confirm){
+document.getElementById("confirmError").style.display="block";
+valid=false;
+}else{
+document.getElementById("confirmError").style.display="none";
+}
+
+if(valid){
+
+alert("Account Created Successfully!");
+
+/* later connect backend here */
+
+window.location.href="login.html";
+
+}
+
+});
+
+function togglePassword(){
+
+const pass=document.getElementById("password");
+
+if(pass.type==="password"){
+pass.type="text";
+}else{
+pass.type="password";
+}
+
+}
+
+</script>
+
+</body>
+</html>

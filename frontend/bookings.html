@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Bookings</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+body{
+background:#0d0f15;
+color:white;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+/* HEADER */
+
+.header{
+text-align:center;
+padding:18px;
+font-size:20px;
+font-weight:600;
+background:#081628;
+position:sticky;
+top:0;
+}
+
+/* CONTENT */
+
+.content{
+flex:1;
+padding:20px;
+max-width:900px;
+margin:auto;
+width:100%;
+}
+
+/* BOOKING CARD */
+
+.booking{
+background:#0f1f35;
+padding:16px;
+border-radius:14px;
+margin-bottom:15px;
+transition:0.2s;
+}
+
+.booking:hover{
+transform:scale(1.02);
+}
+
+.booking h3{
+font-size:16px;
+margin-bottom:6px;
+}
+
+.booking p{
+font-size:13px;
+color:#9aa3b2;
+margin-bottom:3px;
+}
+
+.status{
+margin-top:8px;
+font-size:12px;
+font-weight:600;
+}
+
+/* STATUS COLORS */
+
+.confirmed{
+color:#2d63ff;
+}
+
+.completed{
+color:#22c55e;
+}
+
+.upcoming{
+color:#facc15;
+}
+
+/* EMPTY STATE */
+
+.empty{
+text-align:center;
+margin-top:80px;
+color:#8f98a7;
+}
+
+/* NAV BAR */
+
+.nav{
+position:fixed;
+bottom:0;
+width:100%;
+height:70px;
+background:#101726;
+display:flex;
+justify-content:space-around;
+align-items:center;
+}
+
+.nav-item{
+display:flex;
+flex-direction:column;
+align-items:center;
+font-size:12px;
+color:#8f98a7;
+cursor:pointer;
+}
+
+.nav-item i{
+font-size:22px;
+margin-bottom:4px;
+}
+
+.nav-item.active{
+color:#2d63ff;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+My Bookings
+</div>
+
+<div class="content" id="bookingList">
+
+<div class="empty">
+No bookings yet
+</div>
+
+</div>
+
+
+<!-- NAVIGATION -->
+
+<div class="nav">
+
+<div class="nav-item" onclick="location.href='dashboard.html'">
+<i class='bx bxs-map'></i>
+Explore
+</div>
+
+<div class="nav-item" onclick="location.href='saved.html'">
+<i class='bx bx-bookmark'></i>
+Saved
+</div>
+
+<div class="nav-item active">
+<i class='bx bx-calendar'></i>
+Bookings
+</div>
+
+<div class="nav-item" onclick="location.href='profile.html'">
+<i class='bx bx-user'></i>
+Profile
+</div>
+
+</div>
+
+
+<script>
+
+/* Load bookings from storage (later backend) */
+
+let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+
+const bookingList = document.getElementById("bookingList");
+
+function renderBookings(){
+
+bookingList.innerHTML = "";
+
+if(bookings.length === 0){
+
+bookingList.innerHTML = `<div class="empty">No bookings yet</div>`;
+return;
+
+}
+
+bookings.forEach(b => {
+
+let statusClass = "";
+
+if(b.status === "Confirmed") statusClass = "confirmed";
+if(b.status === "Completed") statusClass = "completed";
+if(b.status === "Upcoming") statusClass = "upcoming";
+
+const card = `
+<div class="booking">
+
+<h3>${b.place}</h3>
+
+<p>${b.address}</p>
+
+<p>${b.date} • ${b.time}</p>
+
+<div class="status ${statusClass}">
+${b.status}
+</div>
+
+</div>
+`;
+
+bookingList.innerHTML += card;
+
+});
+
+}
+
+/* First load */
+
+renderBookings();
+
+</script>
+
+</body>
+
+</html>
+

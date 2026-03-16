@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Parking Slot Booking</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+font-family:'Inter',sans-serif;
+}
+
+.slot{
+cursor:pointer;
+transition:0.2s;
+}
+
+.slot:hover{
+transform:scale(1.05);
+}
+
+.selected{
+background:#2563eb !important;
+color:white !important;
+border:none !important;
+}
+
+</style>
+
+</head>
+
+
+<body class="bg-[#0d0f15] text-white min-h-screen flex justify-center">
+
+<div class="w-full max-w-5xl px-6 py-6">
+
+<!-- HEADER -->
+
+<header class="flex justify-between items-center mb-6">
+
+<button onclick="history.back()" class="text-blue-400">
+← Back
+</button>
+
+<h1 class="text-xl font-semibold">Parking Slot Selection</h1>
+
+<div></div>
+
+</header>
+
+
+<!-- GRID + DETAILS -->
+
+<div class="grid md:grid-cols-2 gap-8">
+
+<!-- SLOT GRID -->
+
+<div>
+
+<h2 class="text-lg font-semibold mb-4">Available Slots</h2>
+
+<div class="grid grid-cols-4 gap-4">
+
+<div class="slot bg-green-900 border border-green-600 p-6 text-center rounded-lg font-bold"
+onclick="selectSlot('A1',this)">A1</div>
+
+<div class="bg-red-900 border border-red-600 p-6 text-center rounded-lg font-bold">A2</div>
+
+<div class="slot bg-green-900 border border-green-600 p-6 text-center rounded-lg font-bold"
+onclick="selectSlot('A3',this)">A3</div>
+
+<div class="bg-red-900 border border-red-600 p-6 text-center rounded-lg font-bold">A4</div>
+
+<div class="bg-red-900 border border-red-600 p-6 text-center rounded-lg font-bold">B1</div>
+
+<div class="slot bg-green-900 border border-green-600 p-6 text-center rounded-lg font-bold"
+onclick="selectSlot('B2',this)">B2</div>
+
+<div class="slot bg-green-900 border border-green-600 p-6 text-center rounded-lg font-bold"
+onclick="selectSlot('B3',this)">B3</div>
+
+<div class="bg-red-900 border border-red-600 p-6 text-center rounded-lg font-bold">B4</div>
+
+</div>
+
+</div>
+
+
+<!-- SESSION CARD -->
+
+<div class="bg-[#171f2e] rounded-xl p-6">
+
+<h2 class="text-lg font-semibold mb-4">Booking Details</h2>
+
+<p class="text-gray-400 text-sm">Selected Slot</p>
+
+<h3 id="slotName" class="text-2xl font-bold mb-4">None</h3>
+
+
+<label class="text-sm text-gray-400">
+Enter Parking Duration (hours)
+</label>
+
+<input
+type="number"
+id="hours"
+min="1"
+placeholder="Example: 2"
+class="w-full mt-2 p-3 rounded-lg bg-[#0f141e] border border-gray-600"
+oninput="calculatePrice()"
+/>
+
+
+<div class="mt-6">
+
+<p class="text-sm text-gray-400">Rate</p>
+
+<p>$4.5 per hour</p>
+
+</div>
+
+
+<div class="mt-4 text-xl font-bold">
+
+Total Price: $<span id="price">0</span>
+
+</div>
+
+
+<button
+onclick="confirmBooking()"
+class="w-full mt-6 bg-blue-600 hover:bg-blue-700 p-3 rounded-lg font-semibold">
+
+Confirm Booking
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let selectedSlot=null
+let rate=4.5
+
+
+function selectSlot(name,element){
+
+document.querySelectorAll('.slot').forEach(s=>s.classList.remove("selected"))
+
+element.classList.add("selected")
+
+selectedSlot=name
+
+document.getElementById("slotName").innerText=name
+
+}
+
+
+function calculatePrice(){
+
+let hours=document.getElementById("hours").value
+
+if(hours){
+
+let total=(hours*rate).toFixed(2)
+
+document.getElementById("price").innerText=total
+
+}
+
+}
+
+
+function confirmBooking(){
+
+let hours=document.getElementById("hours").value
+
+if(!selectedSlot || !hours){
+
+alert("Select slot and enter duration")
+
+return
+
+}
+
+let bookings=JSON.parse(localStorage.getItem("bookings"))||[]
+
+let price=(hours*rate).toFixed(2)
+
+bookings.push({
+
+place:"Grand Central Parking",
+
+slot:selectedSlot,
+
+duration:hours+" hours",
+
+price:"$"+price,
+
+date:new Date().toLocaleDateString(),
+
+status:"Confirmed"
+
+})
+
+localStorage.setItem("bookings",JSON.stringify(bookings))
+
+alert("Booking Successful")
+
+window.location.href="bookings.html"
+
+}
+
+</script>
+
+</body>
+
+</html>
+

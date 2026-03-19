@@ -1,272 +1,238 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profile</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - SmartPark Premium</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Global Styles & Fonts -->
+    <link rel="stylesheet" href="css/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
-<style>
+    <style>
+        body {
+            background: var(--bg-deep);
+            padding-bottom: 80px; /* Space for nav */
+        }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Inter',sans-serif;
-}
+        .profile-header-bg {
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary), var(--bg-deep));
+            position: relative;
+        }
 
-body{
-background:#0d0f15;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-}
+        .profile-content {
+            max-width: 600px;
+            margin: -60px auto 0;
+            padding: 0 20px;
+            position: relative;
+            z-index: 5;
+        }
 
-.app{
-width:414px;
-height:896px;
-background:#071423;
-color:white;
-border-radius:20px;
-overflow:hidden;
-position:relative;
-}
+        .profile-main-card {
+            text-align: center;
+            padding-top: 60px;
+        }
 
-/* HEADER */
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid var(--bg-main);
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            object-fit: cover;
+            box-shadow: var(--shadow-lg);
+        }
 
-.header{
-text-align:center;
-padding:20px;
-font-size:18px;
-font-weight:600;
-background:#081628;
-}
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 24px 0;
+        }
 
-/* PROFILE SECTION */
+        .stat-item {
+            padding: 16px;
+            text-align: center;
+        }
 
-.profile{
-display:flex;
-flex-direction:column;
-align-items:center;
-padding:30px 20px;
-}
+        .stat-item h3 {
+            font-size: 20px;
+            color: var(--primary);
+        }
 
-.avatar{
-width:90px;
-height:90px;
-border-radius:50%;
-background:url("https://i.pravatar.cc/150") center/cover;
-margin-bottom:12px;
-border:3px solid #2d63ff;
-}
+        .stat-item span {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-.name{
-font-size:20px;
-font-weight:600;
-}
+        .menu-section {
+            margin-top: 24px;
+        }
 
-.email{
-font-size:13px;
-color:#9aa3b2;
-margin-top:4px;
-}
+        .menu-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
 
-/* STATS */
+        .menu-link:hover {
+            border-color: var(--primary);
+            background: rgba(45, 99, 255, 0.05);
+        }
 
-.stats{
-display:flex;
-justify-content:space-around;
-margin:20px;
-background:#0f1f35;
-padding:16px;
-border-radius:14px;
-}
+        .menu-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
 
-.stat{
-text-align:center;
-}
+        .menu-info i {
+            font-size: 22px;
+            color: var(--primary);
+        }
 
-.stat h3{
-font-size:18px;
-}
+        .logout-btn {
+            color: var(--error);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
 
-.stat span{
-font-size:12px;
-color:#8da2c1;
-}
+        .logout-btn i {
+            color: var(--error);
+        }
 
-/* MENU */
-
-.menu{
-padding:10px 20px;
-}
-
-.menu-item{
-background:#0f1f35;
-padding:14px;
-border-radius:12px;
-margin-bottom:12px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-cursor:pointer;
-}
-
-.menu-left{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.menu-left i{
-font-size:18px;
-color:#2d63ff;
-}
-
-/* LOGOUT */
-
-.logout{
-background:#1f2f48;
-color:#ff5c5c;
-}
-
-/* BOTTOM NAV */
-
-.nav{
-position:absolute;
-bottom:0;
-width:100%;
-height:70px;
-background:#101726;
-display:flex;
-justify-content:space-around;
-align-items:center;
-}
-
-.nav-item{
-display:flex;
-flex-direction:column;
-align-items:center;
-font-size:12px;
-color:#8f98a7;
-cursor:pointer;
-}
-
-.nav-item i{
-font-size:22px;
-margin-bottom:4px;
-}
-
-.nav-item.active{
-color:#2d63ff;
-}
-
-</style>
-
+        /* Nav overrides for active state */
+        .nav-item.active {
+            color: var(--primary);
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="app">
+    <header class="navbar">
+        <div class="logo">
+            <div class="logo-icon"><i class='bx bxs-parking'></i></div>
+            SmartPark
+        </div>
+        <div style="font-weight: 600;">My Profile</div>
+        <div style="width: 40px;"></div> <!-- Spacer -->
+    </header>
 
-<div class="header">Profile</div>
+    <div class="profile-header-bg"></div>
 
-<!-- PROFILE INFO -->
+    <main class="profile-content">
+        <div class="card profile-main-card">
+            <img src="https://i.pravatar.cc/150?u=parking" class="profile-avatar">
+            
+            <div class="mb-4">
+                <h2 style="font-size: 24px;">John Doe</h2>
+                <p style="color: var(--text-dim);">Premium Member since 2024</p>
+            </div>
 
-<div class="profile">
+            <div class="stats-grid">
+                <div class="card stat-item">
+                    <h3>12</h3>
+                    <span>Bookings</span>
+                </div>
+                <div class="card stat-item">
+                    <h3>5</h3>
+                    <span>Saved</span>
+                </div>
+                <div class="card stat-item">
+                    <h3>4.8</h3>
+                    <span>Rating</span>
+                </div>
+            </div>
 
-<div class="avatar"></div>
+            <div class="menu-section">
+                <a href="bookings.html" class="card menu-link">
+                    <div class="menu-info">
+                        <i class='bx bx-calendar'></i>
+                        <div style="text-align: left;">
+                            <div style="font-weight: 600;">Booking History</div>
+                            <div style="font-size: 12px; color: var(--text-dim);">View and manage your past bookings</div>
+                        </div>
+                    </div>
+                    <i class='bx bx-chevron-right'></i>
+                </a>
 
-<div class="name">John Doe</div>
-<div class="email">john@email.com</div>
+                <a href="saved.html" class="card menu-link">
+                    <div class="menu-info">
+                        <i class='bx bx-bookmark'></i>
+                        <div style="text-align: left;">
+                            <div style="font-weight: 600;">Saved Parking</div>
+                            <div style="font-size: 12px; color: var(--text-dim);">Access your favorite parking spots</div>
+                        </div>
+                    </div>
+                    <i class='bx bx-chevron-right'></i>
+                </a>
 
-</div>
+                <a href="#" class="card menu-link">
+                    <div class="menu-info">
+                        <i class='bx bx-credit-card'></i>
+                        <div style="text-align: left;">
+                            <div style="font-weight: 600;">Payment Methods</div>
+                            <div style="font-size: 12px; color: var(--text-dim);">Manage cards and digital wallets</div>
+                        </div>
+                    </div>
+                    <i class='bx bx-chevron-right'></i>
+                </a>
 
-<!-- USER STATS -->
+                <a href="#" class="card menu-link">
+                    <div class="menu-info">
+                        <i class='bx bx-cog'></i>
+                        <div style="text-align: left;">
+                            <div style="font-weight: 600;">Settings</div>
+                            <div style="font-size: 12px; color: var(--text-dim);">Preferences and security</div>
+                        </div>
+                    </div>
+                    <i class='bx bx-chevron-right'></i>
+                </a>
 
-<div class="stats">
+                <a href="login.html" class="card menu-link logout-btn">
+                    <div class="menu-info">
+                        <i class='bx bx-log-out'></i>
+                        <div style="text-align: left;">
+                            <div style="font-weight: 600;">Logout</div>
+                            <div style="font-size: 12px; opacity: 0.7;">Sign out of your account</div>
+                        </div>
+                    </div>
+                    <i class='bx bx-log-out'></i>
+                </a>
+            </div>
+        </div>
+    </main>
 
-<div class="stat">
-<h3>12</h3>
-<span>Bookings</span>
-</div>
-
-<div class="stat">
-<h3>5</h3>
-<span>Saved</span>
-</div>
-
-<div class="stat">
-<h3>4.8</h3>
-<span>Rating</span>
-</div>
-
-</div>
-
-<!-- MENU -->
-
-<div class="menu">
-
-<div class="menu-item" onclick="location.href='bookings.html'">
-<div class="menu-left">
-<i class='bx bx-calendar'></i> My Bookings
-</div>
-<i class='bx bx-chevron-right'></i>
-</div>
-
-<div class="menu-item" onclick="location.href='saved.html'">
-<div class="menu-left">
-<i class='bx bx-bookmark'></i> Saved Locations
-</div>
-<i class='bx bx-chevron-right'></i>
-</div>
-
-<div class="menu-item">
-<div class="menu-left">
-<i class='bx bx-cog'></i> Settings
-</div>
-<i class='bx bx-chevron-right'></i>
-</div>
-
-<div class="menu-item logout">
-<div class="menu-left">
-<i class='bx bx-log-out'></i> Logout
-</div>
-</div>
-
-</div>
-
-<!-- BOTTOM NAV -->
-
-<div class="nav">
-
-<div class="nav-item" onclick="location.href='dashboard.html'">
-<i class='bx bxs-map'></i>
-Explore
-</div>
-
-<div class="nav-item" onclick="location.href='saved.html'">
-<i class='bx bx-bookmark'></i>
-Saved
-</div>
-
-<div class="nav-item" onclick="location.href='bookings.html'">
-<i class='bx bx-calendar'></i>
-Bookings
-</div>
-
-<div class="nav-item active">
-<i class='bx bx-user'></i>
-Profile
-</div>
-
-</div>
-
-</div>
+    <!-- Nav Bar -->
+    <div class="navbar" style="position: fixed; bottom: 0; top: auto; width: 100%; border-top: 1px solid var(--border-color); border-bottom: none; padding: 10px 0;">
+        <div style="display: flex; width: 100%; justify-content: space-around; align-items: center;">
+            <a href="dashboard.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-dim);">
+                <i class='bx bx-map-alt' style="font-size: 24px;"></i>
+                <span style="font-size: 10px; font-weight: 600;">Explore</span>
+            </a>
+            <a href="saved.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-dim);">
+                <i class='bx bx-bookmark' style="font-size: 24px;"></i>
+                <span style="font-size: 10px; font-weight: 600;">Saved</span>
+            </a>
+            <a href="bookings.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-dim);">
+                <i class='bx bx-calendar' style="font-size: 24px;"></i>
+                <span style="font-size: 10px; font-weight: 600;">Bookings</span>
+            </a>
+            <a href="profile.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--primary);">
+                <i class='bx bxs-user-circle' style="font-size: 24px;"></i>
+                <span style="font-size: 10px; font-weight: 600;">Profile</span>
+            </a>
+        </div>
+    </div>
 
 </body>
 </html>

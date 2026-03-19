@@ -1,260 +1,255 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Booking - SmartPark Premium</title>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Global Styles & Fonts -->
+    <link rel="stylesheet" href="css/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
-<title>Booking Confirmation</title>
+    <style>
+        body {
+            background: var(--bg-deep);
+            padding-bottom: 40px;
+        }
 
-<script src="https://cdn.tailwindcss.com"></script>
+        .confirm-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        .confirm-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
 
-<style>
-body{
-font-family:'Inter',sans-serif;
-background:#020617;
-}
-</style>
+        .summary-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 24px;
+        }
 
+        .summary-header i {
+            font-size: 32px;
+            color: var(--primary);
+        }
+
+        .receipt-card {
+            padding: 30px;
+        }
+
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .receipt-label {
+            color: var(--text-dim);
+            font-size: 14px;
+        }
+
+        .receipt-value {
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .payment-method-card {
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-width: 2px;
+        }
+
+        .payment-method-card.active {
+            border-color: var(--primary);
+            background: rgba(45, 99, 255, 0.05);
+        }
+
+        .payment-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .payment-info i {
+            font-size: 24px;
+            color: var(--text-dim);
+        }
+
+        .payment-method-card.active i {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .confirm-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
-<body class="flex justify-center min-h-screen text-white">
-
-<div class="w-full max-w-5xl flex flex-col md:flex-row bg-[#0b0f19] shadow-2xl">
-
-<!-- LEFT SIDE (Booking Summary) -->
-
-<div class="flex-1 p-6 md:p-10">
-
-<div class="flex items-center mb-6">
-
-<button onclick="goBack()" class="mr-4 hover:text-slate-400">
-←
-</button>
-
-<h1 class="text-xl font-bold">
-Booking Confirmation
-</h1>
-
-</div>
-
-<h2 class="text-lg font-semibold mb-4">
-Booking Summary
-</h2>
-
-<div class="bg-[#121927] border border-slate-700 rounded-xl p-4 flex gap-4 mb-6">
-
-<img id="placeImage"
-src="https://images.unsplash.com/photo-1502672260266-1c1de2d9200b"
-class="w-28 h-28 rounded-lg object-cover">
-
-<div>
-
-<p id="placeLocation" class="text-xs text-slate-400 mb-1">
-Location
-</p>
-
-<h3 id="placeName" class="font-bold text-lg">
-Parking Space
-</h3>
-
-<p id="bookingDates" class="text-sm text-slate-400">
-Date
-</p>
-
-</div>
-
-</div>
-
-<div class="space-y-3 mb-6">
-
-<div class="flex justify-between">
-<span class="text-slate-400">Check-in</span>
-<span id="checkin">--</span>
-</div>
-
-<div class="flex justify-between">
-<span class="text-slate-400">Check-out</span>
-<span id="checkout">--</span>
-</div>
-
-</div>
-
-<div class="bg-[#121927] border border-slate-700 p-4 rounded-xl flex justify-between">
-
-<span class="font-semibold">
-Total Cost
-</span>
-
-<span id="totalCost" class="text-blue-500 font-bold text-lg">
-$0
-</span>
-
-</div>
-
-</div>
-
-
-<!-- RIGHT SIDE (Payment) -->
-
-<div class="flex-1 bg-[#020617] p-6 md:p-10">
-
-<h2 class="text-lg font-semibold mb-6">
-Payment Method
-</h2>
-
-<div class="space-y-4">
-
-<label class="flex items-center justify-between bg-[#121927] p-4 rounded-xl border border-slate-700 cursor-pointer">
-
-<div class="flex items-center gap-3">
-
-<input type="radio" name="payment" value="applepay" checked>
-
-<span>Apple Pay</span>
-
-</div>
-
-</label>
-
-
-<label class="flex items-center justify-between bg-[#121927] p-4 rounded-xl border border-slate-700 cursor-pointer">
-
-<div class="flex items-center gap-3">
-
-<input type="radio" name="payment" value="card">
-
-<span>Credit Card</span>
-
-</div>
-
-</label>
-
-</div>
-
-
-<button
-id="payBtn"
-onclick="confirmBooking()"
-class="w-full mt-8 bg-blue-600 hover:bg-blue-700 py-3 rounded-xl font-semibold transition">
-
-Confirm & Pay
-
-</button>
-
-<p class="text-xs text-slate-500 mt-4 text-center">
-By confirming you agree to the Terms of Service
-</p>
-
-</div>
-
-</div>
-
-
-
-<script>
-
-/* Example booking data (later comes from backend or previous page) */
-
-const booking = {
-
-place:"City Center Parking",
-location:"San Francisco, CA",
-checkin:"14:00 Oct 24",
-checkout:"11:00 Oct 26",
-price:450,
-image:"https://images.unsplash.com/photo-1502672260266-1c1de2d9200b"
-
-};
-
-
-/* Load booking details */
-
-document.getElementById("placeName").textContent=booking.place;
-document.getElementById("placeLocation").textContent=booking.location;
-document.getElementById("checkin").textContent=booking.checkin;
-document.getElementById("checkout").textContent=booking.checkout;
-document.getElementById("totalCost").textContent="$"+booking.price;
-document.getElementById("bookingDates").textContent=booking.checkin+" - "+booking.checkout;
-document.getElementById("placeImage").src=booking.image;
-
-
-/* Back button */
-
-function goBack(){
-
-window.history.back();
-
-}
-
-
-/* Confirm booking */
-
-async function confirmBooking(){
-
-const btn=document.getElementById("payBtn");
-
-btn.innerText="Processing...";
-btn.disabled=true;
-
-const paymentMethod=document.querySelector('input[name="payment"]:checked').value;
-
-const bookingData={
-place:booking.place,
-price:booking.price,
-paymentMethod:paymentMethod
-};
-
-
-/* Example backend request */
-
-try{
-
-const response=await fetch("/api/bookParking",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify(bookingData)
-
-});
-
-
-if(response.ok){
-
-alert("Booking Successful!");
-
-window.location.href="bookings.html";
-
-}
-
-else{
-
-alert("Payment failed");
-
-}
-
-}
-
-catch(error){
-
-alert("Server error");
-
-}
-
-btn.innerText="Confirm & Pay";
-btn.disabled=false;
-
-}
-
-</script>
-
+<body>
+
+    <header class="navbar">
+        <div class="logo">
+            <i class='bx bx-left-arrow-alt' style="cursor: pointer; font-size: 24px;" onclick="history.back()"></i>
+            SmartPark
+        </div>
+        <div style="font-weight: 600;">Final Confirmation</div>
+        <div style="width: 40px;"></div>
+    </header>
+
+    <main class="confirm-container">
+        <div class="confirm-grid">
+            <!-- Left: Bill Summary -->
+            <div>
+                <div class="summary-header">
+                    <i class='bx bxs-check-shield'></i>
+                    <div>
+                        <h2 style="margin: 0;">Secure Checkout</h2>
+                        <p style="color: var(--text-dim); font-size: 13px; margin: 0;">Your data is encrypted and secure</p>
+                    </div>
+                </div>
+
+                <div class="card receipt-card">
+                    <h3 class="mb-4">Booking Details</h3>
+                    
+                    <div class="receipt-item">
+                        <span class="receipt-label">Parking Location</span>
+                        <span class="receipt-value" id="res-place">---</span>
+                    </div>
+                    <div class="receipt-item">
+                        <span class="receipt-label">Selected Slot</span>
+                        <span class="receipt-value" id="res-slot">---</span>
+                    </div>
+                    <div class="receipt-item">
+                        <span class="receipt-label">Duration</span>
+                        <span class="receipt-value" id="res-duration">---</span>
+                    </div>
+                    <div class="receipt-item">
+                        <span class="receipt-label">Booking Date</span>
+                        <span class="receipt-value" id="res-date">Today</span>
+                    </div>
+
+                    <hr style="border: none; border-top: 1px solid var(--border-color); margin: 20px 0;">
+
+                    <div class="receipt-item" style="margin-bottom: 0;">
+                        <span style="font-weight: 700;">Grand Total</span>
+                        <span style="font-size: 24px; font-weight: 700; color: var(--accent);">$<span id="res-total">0.00</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Payment Methods -->
+            <div>
+                <h3 class="mb-4">Select Payment Method</h3>
+                
+                <div class="card payment-method-card active" onclick="selectPayment(this)">
+                    <div class="payment-info">
+                        <i class='bx bxl-apple'></i>
+                        <div>
+                            <div style="font-weight: 600;">Apple Pay</div>
+                            <div style="font-size: 11px; color: var(--text-dim);">Fast and secure payment</div>
+                        </div>
+                    </div>
+                    <i class='bx bxs-check-circle' style="color: var(--primary);"></i>
+                </div>
+
+                <div class="card payment-method-card" onclick="selectPayment(this)">
+                    <div class="payment-info">
+                        <i class='bx bxl-google-cloud'></i>
+                        <div>
+                            <div style="font-weight: 600;">Google Pay</div>
+                            <div style="font-size: 11px; color: var(--text-dim);">Quick checkout with Google</div>
+                        </div>
+                    </div>
+                    <i class='bx bx-circle' style="color: var(--border-color);"></i>
+                </div>
+
+                <div class="card payment-method-card" onclick="selectPayment(this)">
+                    <div class="payment-info">
+                        <i class='bx bx-credit-card-front'></i>
+                        <div>
+                            <div style="font-weight: 600;">Credit / Debit Card</div>
+                            <div style="font-size: 11px; color: var(--text-dim);">Visa, Mastercard, Amex</div>
+                        </div>
+                    </div>
+                    <i class='bx bx-circle' style="color: var(--border-color);"></i>
+                </div>
+
+                <div class="mt-8">
+                    <button class="btn btn-primary w-100" style="padding: 18px; font-size: 16px;" onclick="processPayment()">
+                        Confirm & Pay Securely
+                    </button>
+                    <p style="text-align: center; color: var(--text-dim); font-size: 12px; margin-top: 15px;">
+                        By clicking confirm, you agree to our <a href="#" style="color: var(--primary);">Terms of Service</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Load data from localStorage
+        const duration = localStorage.getItem("booking_duration") || "1";
+        const slot = localStorage.getItem("selected_slot") || "A-01";
+        const place = localStorage.getItem("booking_place") || "Skyline Parking";
+        const total = localStorage.getItem("total_amount") || "6.50";
+
+        document.getElementById("res-place").innerText = place;
+        document.getElementById("res-slot").innerText = slot;
+        document.getElementById("res-duration").innerText = duration + " hours";
+        document.getElementById("res-total").innerText = total;
+
+        function selectPayment(element) {
+            // Clear previous
+            document.querySelectorAll('.payment-method-card').forEach(el => {
+                el.classList.remove('active');
+                el.querySelector('.bxs-check-circle, .bx-circle').className = 'bx bx-circle';
+                el.querySelector('.bx-circle').style.color = 'var(--border-color)';
+            });
+
+            // Set active
+            element.classList.add('active');
+            const icon = element.querySelector('.bx-circle');
+            icon.className = 'bx bxs-check-circle';
+            icon.style.color = 'var(--primary)';
+        }
+
+        function processPayment() {
+            const btn = document.querySelector('.btn-primary');
+            btn.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Processing...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                // Save to bookings list
+                let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+                bookings.unshift({
+                    place: place,
+                    address: "450 Downtown Avenue",
+                    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                    time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                    status: "Confirmed",
+                    slot: slot,
+                    price: "$" + total
+                });
+                localStorage.setItem("bookings", JSON.stringify(bookings));
+
+                // Redirect to success
+                alert("Booking Confirmed Successfully!");
+                window.location.href = "bookings.html";
+            }, 2000);
+        }
+    </script>
 
 </body>
 </html>

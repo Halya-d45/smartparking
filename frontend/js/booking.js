@@ -1,4 +1,4 @@
-const API = "http://localhost:5000/api/booking";
+const API = "https://backend-api-uhdp.onrender.com/api/booking";
 
 async function bookSlot(){
 

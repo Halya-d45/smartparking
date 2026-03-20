@@ -1,4 +1,4 @@
-const API = "http://localhost:5000/api/auth";
+const API = "https://backend-api-uhdp.onrender.com/api/auth";
 
 async function signup(){
 

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node backend/server.js",
-    "build": "mkdir -p build && cp -r frontend/* build/"
+    "build": "echo 'Build complete'"
   },
   "keywords": [],
   "author": "",

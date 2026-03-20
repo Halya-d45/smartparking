@@ -21,11 +21,11 @@ app.use("/api/parking", parkingRoutes);
 app.use("/api/booking", bookingRoutes);
 
 /* SERVE FRONTEND */
-app.use(express.static(path.join(__dirname,"../build")));
+app.use(express.static(path.join(__dirname,"../frontend")));
 
 /* OPEN HOME PAGE */
 app.get("/",(req,res)=>{
-res.sendFile(path.join(__dirname,"../build/login.html"));
+res.sendFile(path.join(__dirname,"../frontend/login.html"));
 });
 
 const PORT = process.env.PORT || 5000;

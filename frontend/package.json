@@ -1,0 +1,8 @@
+{
+  "name": "smartparking-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p build && cp *.html build/ && cp -r css build/ && cp -r js build/"
+  }
+}

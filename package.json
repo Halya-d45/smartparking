@@ -5,7 +5,8 @@
   "main": "backend/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node backend/server.js"
+    "start": "node backend/server.js",
+    "build": "mkdir -p build && cp -r frontend/css build/ && cp -r frontend/js build/ && cp frontend/*.html build/"
   },
   "keywords": [],
   "author": "",

@@ -5,18 +5,19 @@
 :root {
     /* PRIMARY PALETTE - ELECTRIC FUTURISM */
     --accent-blue: #3b82f6;        /* Bright Electric Blue */
-    --accent-blue-glow: #3b82f644;
-    --accent-cyan: #06b6d4;        /* Cyan Highlight */
+    --accent-blue-glow: rgba(59, 130, 246, 0.25);
+    --accent-cyan: #22d3ee;        /* Cyan Highlight */
     
     /* NEUTRALS - DEEP ONYX & SLATE */
     --bg-base: #020617;           /* Deepest Blue-Black */
     --bg-surface: #0f172a;        /* Card Surface */
+    --bg-card: rgba(15, 23, 42, 0.7); /* Translucent Card */
     --bg-muted: #1e293b;          /* Input/Muted Surface */
     
     /* BORDER & LINE */
     --line-soft: rgba(255, 255, 255, 0.05);
     --line-border: rgba(255, 255, 255, 0.1);
-    --line-active: #3b82f6aa;
+    --line-active: rgba(59, 130, 246, 0.4);
     
     /* TEXT */
     --text-primary: #f8fafc;
@@ -30,10 +31,10 @@
     
     /* EFFECTS */
     --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 24px;
-    --blur-glass: blur(12px);
-    --shadow-main: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    --radius-md: 14px;
+    --radius-lg: 28px;
+    --blur-glass: blur(16px);
+    --shadow-main: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
     --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -47,14 +48,15 @@
 
 html {
     scroll-behavior: smooth;
+    background-color: var(--bg-base);
 }
 
 body {
     background-color: var(--bg-base);
     color: var(--text-primary);
     overflow-x: hidden;
-    line-height: 1.5;
-    transition: background 0.5s ease;
+    line-height: 1.6;
+    min-height: 100vh;
 }
 
 /* GRADIENTS */
@@ -66,15 +68,17 @@ body {
 }
 
 .gradient-bg {
-    background: radial-gradient(circle at top right, var(--accent-blue-glow), transparent 40%),
-                radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.1), transparent 40%);
+    background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15), transparent 40%),
+                radial-gradient(circle at bottom left, rgba(34, 211, 238, 0.1), transparent 40%);
+    background-attachment: fixed;
 }
 
 /* GLASS CARD */
 .glass-card {
-    background: rgba(15, 23, 42, 0.6);
+    background: var(--bg-card);
     backdrop-filter: var(--blur-glass);
-    border: 1px solid var(--line-soft);
+    -webkit-backdrop-filter: var(--blur-glass);
+    border: 1px solid var(--line-border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-main);
     transition: var(--transition-base);
@@ -83,6 +87,40 @@ body {
 .glass-card:hover {
     border-color: var(--line-active);
     transform: translateY(-4px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+}
+
+/* STAT CARDS */
+.stat-card {
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--accent-blue);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.stat-details h2 {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.stat-details p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: 4px;
 }
 
 /* BUTTONS */
@@ -90,7 +128,7 @@ body {
     background: var(--accent-blue);
     color: white;
     font-weight: 600;
-    padding: 12px 28px;
+    padding: 14px 28px;
     border-radius: 50px;
     border: none;
     cursor: pointer;
@@ -99,22 +137,28 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    box-shadow: 0 8px 16px -4px var(--accent-blue-glow);
+    box-shadow: 0 10px 20px -5px var(--accent-blue-glow);
     text-decoration: none;
+    font-size: 15px;
 }
 
 .btn-premium:hover {
     background: #2563eb;
-    box-shadow: 0 12px 24px -6px var(--accent-blue-glow);
+    box-shadow: 0 15px 30px -8px var(--accent-blue-glow);
     transform: translateY(-2px);
+}
+
+.btn-sm {
+    padding: 10px 20px;
+    font-size: 13px;
 }
 
 /* INPUTS */
 .premium-input {
-    background: var(--bg-muted);
-    border: 1px solid var(--line-soft);
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid var(--line-border);
     border-radius: var(--radius-md);
-    padding: 14px 20px;
+    padding: 16px 20px;
     color: var(--text-primary);
     width: 100%;
     outline: none;
@@ -123,75 +167,54 @@ body {
 
 .premium-input:focus {
     border-color: var(--accent-blue);
-    background: #1e293b;
+    background: rgba(30, 41, 59, 0.8);
     box-shadow: 0 0 0 4px var(--accent-blue-glow);
 }
 
-/* ANIMATIONS */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade {
-    animation: fadeIn 0.6s ease-out forwards;
-}
-
-/* SAAS UPGRADE STYLES */
-
-.save-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 18px;
-    padding: 0;
-    transition: all 0.3s ease;
-}
-
-.save-btn.active {
-    color: #ff4757;
-    transform: scale(1.1);
-}
-
-.save-btn:hover {
-    color: #ff4757;
-}
-
-.item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.w-100 { width: 100%; }
-.mt-2 { margin-top: 8px; }
-.mt-4 { margin-top: 16px; }
-
-/* Navbar SaaS Active State */
+/* NAVIGATION */
 .navbar {
     z-index: 1000;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 60px;
-    height: 70px;
-    margin: 0;
-    border-radius: 0;
+    padding: 0 60px;
+    height: 80px;
+    background: rgba(2, 6, 23, 0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--line-soft);
+    position: sticky;
+    top: 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-blue);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
 }
 
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 32px;
 }
 
 .nav-links a {
     text-decoration: none;
     color: var(--text-secondary);
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     transition: var(--transition-base);
 }
 
@@ -200,37 +223,71 @@ body {
 }
 
 .nav-links a.active {
-    position: relative;
     color: var(--accent-blue);
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* SEARCH SYSTEM */
+.search-container {
+    padding: 40px 0;
+}
+
+.search-bar {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    gap: 15px;
+}
+
+/* PARKING ITEMS */
+.parking-item {
+    padding: 24px;
+}
+
+.parking-info h4 {
+    font-size: 18px;
     font-weight: 700;
+    margin-bottom: 8px;
 }
 
-.nav-links a.active::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--accent-blue);
-    box-shadow: 0 0 10px var(--accent-blue);
+.parking-info p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 16px;
 }
 
-.fade-out {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+.parking-meta {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid var(--line-soft);
+    margin-bottom: 20px;
 }
 
-.loader {
-    text-align: center;
+.save-btn {
+    background: transparent;
+    border: none;
     color: var(--text-muted);
-    padding: 20px;
+    cursor: pointer;
+    font-size: 20px;
+    transition: var(--transition-base);
 }
 
-.empty-state {
-    color: var(--text-muted);
-    font-size: 13px;
-    text-align: center;
-    margin-top: 40px;
+.save-btn.active {
+    color: #ff4757;
+    transform: scale(1.1);
 }
+
+/* UTILITIES */
+.w-100 { width: 100%; }
+.mt-4 { margin-top: 16px; }
+.mb-4 { margin-bottom: 16px; }

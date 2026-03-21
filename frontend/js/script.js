@@ -17,7 +17,7 @@ async function searchPlace() {
         if (data && data.length > 0) {
             let lat = data[0].lat;
             let lon = data[0].lon;
-            map.setView([lat, lon], 15);
+            map.setView([lat, lon], 14);
             findParking(lat, lon);
         } else {
             alert("Place not found");
@@ -29,12 +29,17 @@ async function searchPlace() {
 
 async function findParking(lat, lon) {
     const listContainer = document.getElementById("parkingList");
-    listContainer.innerHTML = '<div class="loader">Scanning for slots...</div>';
+    listContainer.innerHTML = '<div class="loader">Scanning 5km radius for slots...</div>';
 
+    // Advanced Overpass Query: Node, Way, Relation + 5km radius
     let query = `
         [out:json];
-        node["amenity"="parking"](around:2000,${lat},${lon});
-        out;
+        (
+          node["amenity"="parking"](around:5000,${lat},${lon});
+          way["amenity"="parking"](around:5000,${lat},${lon});
+          relation["amenity"="parking"](around:5000,${lat},${lon});
+        );
+        out center;
     `;
 
     try {
@@ -55,7 +60,7 @@ async function findParking(lat, lon) {
         renderParking(syncedData);
     } catch (err) {
         console.error(err);
-        listContainer.innerHTML = '<p class="error">Failed to fetch parking data.</p>';
+        listContainer.innerHTML = '<p class="error">Failed to fetch parking data. Please try again.</p>';
     }
 }
 
@@ -69,7 +74,7 @@ function renderParking(parkingLots) {
     });
 
     if (parkingLots.length === 0) {
-        listContainer.innerHTML = '<p class="empty-state">No parking slots found in this area.</p>';
+        listContainer.innerHTML = '<p class="empty-state">No parking slots found in this area. Try a different city or location.</p>';
         return;
     }
 
@@ -79,7 +84,7 @@ function renderParking(parkingLots) {
         item.className = "parking-item glass-card mb-4 animate-fade";
         item.innerHTML = `
             <div class="parking-info">
-                <h4>${p.name}</h4>
+                <h4>${p.name || 'Unnamed Parking'}</h4>
                 <p><i class="fas fa-map-marker-alt"></i> ${p.location}</p>
                 <div class="parking-meta">
                     <span class="slots-count">${p.availableSlots}/${p.totalSlots} available</span>
@@ -103,7 +108,7 @@ function renderParking(parkingLots) {
             .addTo(map)
             .bindPopup(`
                 <div class="map-popup">
-                    <h4>${p.name}</h4>
+                    <h4>${p.name || 'Unnamed Parking'}</h4>
                     <p>${p.availableSlots} slots available</p>
                     <p><strong>$${p.pricePerHour}/hr</strong></p>
                     <button class="btn-premium btn-sm" onclick="showDetails('${p.overpassId}')">Book Now</button>
@@ -115,3 +120,8 @@ function renderParking(parkingLots) {
 function showDetails(id) {
     window.location.href = `parking-details.html?id=${id}`;
 }
+
+// Support for Enter key in search
+document.getElementById("placeSearch")?.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") searchPlace();
+});

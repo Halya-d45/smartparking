@@ -5,18 +5,22 @@ exports.syncWithOverpass = async (req, res) => {
     try {
         const synced = [];
         for (const p of elements) {
+            const lat = p.lat || (p.center && p.center.lat);
+            const lon = p.lon || (p.center && p.center.lon);
+
+            if (!lat || !lon) continue;
+
             let lot = await Parking.findOne({ overpassId: p.id.toString() });
             if (!lot) {
-                // Initialize with random simulation data
                 lot = new Parking({
                     overpassId: p.id.toString(),
-                    name: p.tags.name || "Unnamed Parking",
-                    location: p.tags['addr:street'] || "Unknown Street",
-                    latitude: p.lat,
-                    longitude: p.lon,
-                    totalSlots: Math.floor(Math.random() * 20) + 10,
-                    availableSlots: Math.floor(Math.random() * 10) + 1,
-                    pricePerHour: (Math.random() * 5 + 2).toFixed(2),
+                    name: (p.tags && p.tags.name) || "Unnamed Parking",
+                    location: (p.tags && (p.tags['addr:street'] || p.tags['addr:city'])) || "Public Parking Area",
+                    latitude: lat,
+                    longitude: lon,
+                    totalSlots: Math.floor(Math.random() * 20) + 15,
+                    availableSlots: Math.floor(Math.random() * 10) + 5,
+                    pricePerHour: (Math.random() * 4 + 2).toFixed(2),
                     image: `https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&q=80&w=400`
                 });
                 await lot.save();

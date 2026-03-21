@@ -42,14 +42,21 @@ exports.getSaved = async (req, res) => {
 exports.getStats = async (req, res) => {
     try {
         const userId = req.user.id;
+        const mongoose = require("mongoose");
+        
+        // Count bookings (stored as string in our schema)
         const activeBookings = await Booking.countDocuments({ 
-            userId: userId.toString() 
+            userId: userId.toString()
         });
-        const savedPlaces = await SavedParking.countDocuments({ userId });
+
+        // Count saved places (stored as ObjectId)
+        const savedPlaces = await SavedParking.countDocuments({ 
+            userId: new mongoose.Types.ObjectId(userId)
+        });
 
         res.json({
-            activeBookings,
-            savedPlaces
+            activeBookings: activeBookings || 0,
+            savedPlaces: savedPlaces || 0
         });
     } catch (err) {
         res.status(500).json({ error: "Failed to fetch stats" });

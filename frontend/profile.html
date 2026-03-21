@@ -115,15 +115,33 @@
     async function loadStats() {
         try {
             const token = localStorage.getItem("token");
-            if (!token) return;
+            let localSavedCount = JSON.parse(localStorage.getItem("guest_saved") || "[]").length;
+            
+            if (!token) {
+                document.getElementById("savedPlacesCount").innerText = localSavedCount;
+                return;
+            }
+
             const res = await fetch(`${CONFIG.API_BASE}/saved/stats`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const stats = await res.json();
-            document.getElementById("activeBookingsCount").innerText = stats.activeBookings || 0;
-            document.getElementById("savedPlacesCount").innerText = stats.savedPlaces || 0;
+            
+            // Combine API and local for "Real" feel
+            const apiSaved = stats.savedPlaces || 0;
+            const apiBookings = stats.activeBookings || 0;
+            
+            // For saved places, we take the larger of the two or combine if needed
+            // But usually, local count is more immediate
+            document.getElementById("activeBookingsCount").innerText = apiBookings;
+            document.getElementById("savedPlacesCount").innerText = Math.max(apiSaved, localSavedCount);
+            
+            console.log("Stats loaded:", { apiBookings, apiSaved, localSavedCount });
         } catch (err) {
             console.error("Stats Error:", err);
+            // Fallback to local only on error
+            let localSavedCount = JSON.parse(localStorage.getItem("guest_saved") || "[]").length;
+            document.getElementById("savedPlacesCount").innerText = localSavedCount;
         }
     }
 </script>

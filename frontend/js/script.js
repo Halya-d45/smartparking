@@ -6,12 +6,12 @@ L.tileLayer(CONFIG.MAP_STYLE, {
     attribution: '&copy; OpenStreetMap &copy; CARTO'
 }).addTo(map);
 
-// Global state for saved items
+// Global state
 let currentSavedIds = new Set();
+let lastFetchedParking = []; // Global cache for current results
 
 async function initDashboard() {
     await loadSavedIds();
-    // loadStats is called in the HTML script
 }
 
 async function loadSavedIds() {
@@ -60,7 +60,7 @@ async function findParking(lat, lon, city) {
         let data = await response.json();
 
         if (!data.elements || data.elements.length === 0) {
-            listContainer.innerHTML = '<p class="empty-state">No parking slots found. Try another area.</p>';
+            listContainer.innerHTML = '<p class="empty-state">No parking slots found.</p>';
             return;
         }
 
@@ -69,9 +69,9 @@ async function findParking(lat, lon, city) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ elements: data.elements, city: city })
         });
-        let syncedData = await syncRes.json();
+        lastFetchedParking = await syncRes.json();
 
-        renderParking(syncedData);
+        renderParking(lastFetchedParking);
     } catch (err) {
         console.error(err);
         listContainer.innerHTML = '<p class="error">Failed to fetch parking data.</p>';
@@ -100,7 +100,7 @@ function renderParking(parkingLots) {
             <div class="parking-info">
                 <div class="item-header">
                     <h4>${p.name || 'Unnamed Parking'}</h4>
-                    <button class="save-btn ${isSaved ? 'active' : ''}" onclick="toggleSave('${p.overpassId}', '${p.name}', '${p.location}', ${p.latitude}, ${p.longitude}, this)">
+                    <button class="save-btn ${isSaved ? 'active' : ''}" data-id="${p.overpassId}" onclick="handleSaveClick(this)">
                         <i class="${isSaved ? 'fas' : 'far'} fa-heart"></i>
                     </button>
                 </div>
@@ -132,6 +132,14 @@ function renderParking(parkingLots) {
     });
 }
 
+async function handleSaveClick(btn) {
+    const id = btn.getAttribute("data-id");
+    const parking = lastFetchedParking.find(p => p.overpassId === id);
+    if (!parking) return;
+
+    await toggleSave(id, parking.name, parking.location, parking.latitude, parking.longitude, btn);
+}
+
 async function toggleSave(id, name, location, lat, lon, btn) {
     const token = localStorage.getItem("token");
     if (!token) return (window.location.href = "login.html");
@@ -143,7 +151,13 @@ async function toggleSave(id, name, location, lat, lon, btn) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ parkingId: id, name, location, latitude: lat, longitude: lon })
+            body: JSON.stringify({ 
+                parkingId: id, 
+                name: name || 'Unnamed Parking', 
+                location: location, 
+                latitude: lat, 
+                longitude: lon 
+            })
         });
         const data = await res.json();
         
@@ -157,7 +171,6 @@ async function toggleSave(id, name, location, lat, lon, btn) {
             currentSavedIds.delete(id);
         }
         
-        // Update dashboard stats if function exists
         if (typeof loadStats === "function") loadStats();
         
     } catch (err) {
@@ -173,5 +186,4 @@ document.getElementById("placeSearch")?.addEventListener("keypress", (e) => {
     if (e.key === "Enter") searchPlace();
 });
 
-// Initialize
 initDashboard();

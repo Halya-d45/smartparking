@@ -18,7 +18,7 @@ async function searchPlace() {
             let lat = data[0].lat;
             let lon = data[0].lon;
             map.setView([lat, lon], 14);
-            findParking(lat, lon);
+            findParking(lat, lon, place);
         } else {
             alert("Place not found");
         }
@@ -27,28 +27,22 @@ async function searchPlace() {
     }
 }
 
-async function findParking(lat, lon) {
+async function findParking(lat, lon, city) {
     const listContainer = document.getElementById("parkingList");
     listContainer.innerHTML = '<div class="loader">Scanning 5km radius for slots...</div>';
 
-    // Advanced Overpass Query: Node, Way, Relation + 5km radius
-    let query = `
-        [out:json][timeout:30];
-        (
-          node["amenity"="parking"](around:5000,${lat},${lon});
-          way["amenity"="parking"](around:5000,${lat},${lon});
-          relation["amenity"="parking"](around:5000,${lat},${lon});
-          node["parking"](around:5000,${lat},${lon});
-        );
-        out center;
-    `;
+    // Advanced Overpass Query
+    let query = `[out:json][timeout:30];(node["amenity"="parking"](around:5000,${lat},${lon});way["amenity"="parking"](around:5000,${lat},${lon});relation["amenity"="parking"](around:5000,${lat},${lon});node["parking"](around:5000,${lat},${lon}););out center;`;
 
     try {
-        let response = await fetch("https://overpass-api.de/api/interpreter", {
-            method: "POST",
-            body: query
-        });
+        // Use GET or correctly encoded POST for Overpass
+        let response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
         let data = await response.json();
+
+        if (!data.elements || data.elements.length === 0) {
+            listContainer.innerHTML = '<p class="empty-state">No parking slots found. Try another area.</p>';
+            return;
+        }
 
         // Sync with our Backend
         let syncRes = await fetch(`${CONFIG.API_BASE}/parking/sync`, {
@@ -56,7 +50,7 @@ async function findParking(lat, lon) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 elements: data.elements,
-                city: place // Pass the searched city name
+                city: city 
             })
         });
         let syncedData = await syncRes.json();

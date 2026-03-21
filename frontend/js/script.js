@@ -53,7 +53,10 @@ async function findParking(lat, lon) {
         let syncRes = await fetch(`${CONFIG.API_BASE}/parking/sync`, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ elements: data.elements })
+            body: JSON.stringify({ 
+                elements: data.elements,
+                city: place // Pass the searched city name
+            })
         });
         let syncedData = await syncRes.json();
 

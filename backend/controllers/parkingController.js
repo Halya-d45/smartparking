@@ -1,8 +1,8 @@
 const Parking = require("../models/Parking");
 
 exports.syncWithOverpass = async (req, res) => {
-    const { elements } = req.body; // Array of objects from Overpass
     try {
+        const { elements, city } = req.body; 
         const synced = [];
         for (const p of elements) {
             const lat = p.lat || (p.center && p.center.lat);
@@ -11,11 +11,17 @@ exports.syncWithOverpass = async (req, res) => {
             if (!lat || !lon) continue;
 
             const tags = p.tags || {};
-            const fallbackName = tags['addr:street'] || tags['addr:suburb'] || tags['addr:city'] || "Public Parking";
+            
+            // Extensive address extraction
+            const street = tags['addr:street'] || tags['addr:place'] || tags['addr:full'];
+            const area = tags['addr:suburb'] || tags['addr:neighbourhood'] || tags['addr:hamlet'] || city || "Unknown Area";
+            
+            const fallbackName = street ? `Parking at ${street}` : `Parking near ${area}`;
             const finalName = tags.name || fallbackName;
-            const finalLocation = tags['addr:street'] || tags['addr:city'] || "Available Area";
+            const finalLocation = street ? `${street}, ${area}` : `Area: ${area}`;
 
             let lot = await Parking.findOne({ overpassId: p.id.toString() });
+            
             if (!lot) {
                 lot = new Parking({
                     overpassId: p.id.toString(),
@@ -29,11 +35,13 @@ exports.syncWithOverpass = async (req, res) => {
                     image: `https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&q=80&w=400`
                 });
                 await lot.save();
-            } else if (lot.name === "Unnamed Parking") {
-                // Retroactively fix unnamed spots
-                lot.name = finalName;
-                lot.location = finalLocation;
-                await lot.save();
+            } else {
+                // Proactively update name/location if they are currently generic
+                if (lot.name === "Public Parking" || lot.name === "Unnamed Parking" || lot.location === "Available Area" || lot.location === "Public Parking Area") {
+                    lot.name = finalName;
+                    lot.location = finalLocation;
+                    await lot.save();
+                }
             }
             synced.push(lot);
         }

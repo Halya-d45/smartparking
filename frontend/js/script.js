@@ -33,11 +33,12 @@ async function findParking(lat, lon) {
 
     // Advanced Overpass Query: Node, Way, Relation + 5km radius
     let query = `
-        [out:json];
+        [out:json][timeout:30];
         (
           node["amenity"="parking"](around:5000,${lat},${lon});
           way["amenity"="parking"](around:5000,${lat},${lon});
           relation["amenity"="parking"](around:5000,${lat},${lon});
+          node["parking"](around:5000,${lat},${lon});
         );
         out center;
     `;

@@ -165,7 +165,6 @@ async function toggleSave(id, name, location, lat, lon, btn) {
         });
 
         if (res.status === 401) {
-            alert("Your session has expired. Please login again.");
             localStorage.removeItem("token");
             window.location.href = "login.html";
             return;
@@ -177,14 +176,10 @@ async function toggleSave(id, name, location, lat, lon, btn) {
             btn.classList.add("active");
             btn.querySelector("i").className = "fas fa-heart";
             currentSavedIds.add(id);
-            console.log("Saved successfully");
         } else if (data.saved === false) {
             btn.classList.remove("active");
             btn.querySelector("i").className = "far fa-heart";
             currentSavedIds.delete(id);
-            console.log("Removed from saved");
-        } else {
-            alert(data.error || "Failed to save parking slot.");
         }
         
         if (typeof loadStats === "function") loadStats();

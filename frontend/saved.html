@@ -62,66 +62,89 @@
         const container = document.getElementById("savedContainer");
         const token = localStorage.getItem("token");
         
-        try {
-            const res = await fetch(`${CONFIG.API_BASE}/saved`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await res.json();
-            
-            if (data.length === 0) {
-                container.innerHTML = `
-                    <div class="glass-card empty-state-container w-100" style="grid-column: 1/-1; padding: 60px; text-align: center;">
-                        <i class="fas fa-bookmark" style="font-size: 48px; color: var(--text-muted); margin-bottom: 20px;"></i>
-                        <h3>No Saved Places Yet</h3>
-                        <p>Search for parking on the Map and click the heart icon to save it here.</p>
-                        <button class="btn-premium mt-4" onclick="window.location.href='dashboard.html'">Go to Map</button>
-                    </div>
-                `;
-                return;
+        let apiData = [];
+        let guestData = JSON.parse(localStorage.getItem("guest_saved") || "[]");
+
+        if (token) {
+            try {
+                const res = await fetch(`${CONFIG.API_BASE}/saved`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) apiData = await res.json();
+            } catch (err) {
+                console.warn("API load failed, using local:", err);
             }
-            
-            container.innerHTML = "";
-            data.forEach(p => {
-                const card = document.createElement("div");
-                card.className = "glass-card parking-item animate-fade";
-                card.innerHTML = `
-                    <div class="parking-info">
-                        <div class="item-header">
-                            <h4>${p.name}</h4>
-                            <button class="save-btn active" onclick="removeSaved('${p.parkingId}', this)">
-                                <i class="fas fa-heart"></i>
-                            </button>
-                        </div>
-                        <p><i class="fas fa-map-marker-alt"></i> ${p.location}</p>
-                        <div class="parking-meta">
-                            <span class="slots-count">Lat: ${p.latitude.toFixed(4)}, Lon: ${p.longitude.toFixed(4)}</span>
-                        </div>
-                        <button class="btn-premium btn-sm w-100 mt-2" onclick="window.location.href='parking-details.html?id=${p.parkingId}'">Book Now</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        } catch (err) {
-            container.innerHTML = "<p>Error loading saved places.</p>";
         }
+
+        // Merge unique
+        const combined = [...guestData];
+        apiData.forEach(p => {
+            if (!combined.find(c => c.parkingId === p.parkingId)) {
+                combined.push(p);
+            }
+        });
+        
+        if (combined.length === 0) {
+            container.innerHTML = `
+                <div class="glass-card empty-state-container w-100" style="grid-column: 1/-1; padding: 60px; text-align: center;">
+                    <i class="fas fa-bookmark" style="font-size: 48px; color: var(--text-muted); margin-bottom: 20px;"></i>
+                    <h3>No Saved Places Yet</h3>
+                    <p>Search for parking on the Map and click the heart icon to save it here.</p>
+                    <button class="btn-premium mt-4" onclick="window.location.href='dashboard.html'">Go to Map</button>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = "";
+        combined.forEach(p => {
+            const card = document.createElement("div");
+            card.className = "glass-card parking-item animate-fade";
+            card.innerHTML = `
+                <div class="parking-info">
+                    <div class="item-header">
+                        <h4>${p.name}</h4>
+                        <button class="save-btn active" onclick="removeSaved('${p.parkingId}', this)">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                    <p><i class="fas fa-map-marker-alt"></i> ${p.location}</p>
+                    <div class="parking-meta">
+                        <span class="slots-count">Lat: ${p.latitude.toFixed(4)}, Lon: ${p.longitude.toFixed(4)}</span>
+                    </div>
+                    <button class="btn-premium btn-sm w-100 mt-2" onclick="window.location.href='parking-details.html?id=${p.parkingId}'">Book Now</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
     }
 
     async function removeSaved(id, btn) {
         const token = localStorage.getItem("token");
-        try {
-            await fetch(`${CONFIG.API_BASE}/saved/toggle`, {
-                method: "POST",
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ parkingId: id })
-            });
-            btn.closest(".parking-item").classList.add("fade-out");
-            setTimeout(loadSaved, 300);
-        } catch (err) {
-            console.error(err);
+        
+        // Local removal
+        let localSaved = JSON.parse(localStorage.getItem("guest_saved") || "[]");
+        localSaved = localSaved.filter(s => s.parkingId !== id);
+        localStorage.setItem("guest_saved", JSON.stringify(localSaved));
+
+        // API removal
+        if (token) {
+            try {
+                await fetch(`${CONFIG.API_BASE}/saved/toggle`, {
+                    method: "POST",
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ parkingId: id })
+                });
+            } catch (err) {
+                console.warn("API removal failed, but removed locally.");
+            }
         }
+        
+        btn.closest(".parking-item").classList.add("fade-out");
+        setTimeout(loadSaved, 300);
     }
 
     loadSaved();

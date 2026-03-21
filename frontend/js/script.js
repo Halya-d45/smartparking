@@ -142,52 +142,54 @@ async function handleSaveClick(btn) {
 
 async function toggleSave(id, name, location, lat, lon, btn) {
     const token = localStorage.getItem("token");
-    if (!token) {
-        alert("Please login to save parking slots!");
-        window.location.href = "login.html";
-        return;
+    
+    // Optimistic UI Update
+    const isSaving = !currentSavedIds.has(id);
+    
+    if (isSaving) {
+        currentSavedIds.add(id);
+        btn.classList.add("active");
+        btn.querySelector("i").className = "fas fa-heart";
+    } else {
+        currentSavedIds.delete(id);
+        btn.classList.remove("active");
+        btn.querySelector("i").className = "far fa-heart";
     }
-
-    try {
-        const res = await fetch(`${CONFIG.API_BASE}/saved/toggle`, {
-            method: "POST",
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ 
-                parkingId: id, 
-                name: (name || 'Unnamed Parking').trim(), 
-                location: (location || 'Unknown Location').trim(), 
-                latitude: parseFloat(lat), 
-                longitude: parseFloat(lon) 
-            })
-        });
-
-        if (res.status === 401) {
-            localStorage.removeItem("token");
-            window.location.href = "login.html";
-            return;
+    
+    // Local Persistence (Guest Mode)
+    let localSaved = JSON.parse(localStorage.getItem("guest_saved") || "[]");
+    if (isSaving) {
+        if (!localSaved.find(s => s.parkingId === id)) {
+            localSaved.push({ parkingId: id, name, location, latitude: lat, longitude: lon });
         }
-
-        const data = await res.json();
-        
-        if (data.saved) {
-            btn.classList.add("active");
-            btn.querySelector("i").className = "fas fa-heart";
-            currentSavedIds.add(id);
-        } else if (data.saved === false) {
-            btn.classList.remove("active");
-            btn.querySelector("i").className = "far fa-heart";
-            currentSavedIds.delete(id);
-        }
-        
-        if (typeof loadStats === "function") loadStats();
-        
-    } catch (err) {
-        console.error("Toggle Save Error:", err);
-        alert("Network error. Please check your connection.");
+    } else {
+        localSaved = localSaved.filter(s => s.parkingId !== id);
     }
+    localStorage.setItem("guest_saved", JSON.stringify(localSaved));
+
+    // Silent Server Sync
+    if (token) {
+        try {
+            await fetch(`${CONFIG.API_BASE}/saved/toggle`, {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ 
+                    parkingId: id, 
+                    name: (name || 'Unnamed Parking').trim(), 
+                    location: (location || 'Unknown Location').trim(), 
+                    latitude: parseFloat(lat), 
+                    longitude: parseFloat(lon) 
+                })
+            });
+        } catch (err) {
+            console.warn("Sync failed, but saved locally:", err);
+        }
+    }
+    
+    if (typeof loadStats === "function") loadStats();
 }
 
 function showDetails(id) {

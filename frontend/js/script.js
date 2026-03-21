@@ -142,7 +142,11 @@ async function handleSaveClick(btn) {
 
 async function toggleSave(id, name, location, lat, lon, btn) {
     const token = localStorage.getItem("token");
-    if (!token) return (window.location.href = "login.html");
+    if (!token) {
+        alert("Please login to save parking slots!");
+        window.location.href = "login.html";
+        return;
+    }
 
     try {
         const res = await fetch(`${CONFIG.API_BASE}/saved/toggle`, {
@@ -153,28 +157,41 @@ async function toggleSave(id, name, location, lat, lon, btn) {
             },
             body: JSON.stringify({ 
                 parkingId: id, 
-                name: name || 'Unnamed Parking', 
-                location: location, 
-                latitude: lat, 
-                longitude: lon 
+                name: (name || 'Unnamed Parking').trim(), 
+                location: (location || 'Unknown Location').trim(), 
+                latitude: parseFloat(lat), 
+                longitude: parseFloat(lon) 
             })
         });
+
+        if (res.status === 401) {
+            alert("Your session has expired. Please login again.");
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+            return;
+        }
+
         const data = await res.json();
         
         if (data.saved) {
             btn.classList.add("active");
             btn.querySelector("i").className = "fas fa-heart";
             currentSavedIds.add(id);
-        } else {
+            console.log("Saved successfully");
+        } else if (data.saved === false) {
             btn.classList.remove("active");
             btn.querySelector("i").className = "far fa-heart";
             currentSavedIds.delete(id);
+            console.log("Removed from saved");
+        } else {
+            alert(data.error || "Failed to save parking slot.");
         }
         
         if (typeof loadStats === "function") loadStats();
         
     } catch (err) {
         console.error("Toggle Save Error:", err);
+        alert("Network error. Please check your connection.");
     }
 }
 

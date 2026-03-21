@@ -54,7 +54,7 @@
             <div class="glass-card stat-card">
                 <i class="fas fa-bookmark color-cyan"></i>
                 <div class="stat-info">
-                    <h3>12</h3>
+                    <h3 id="savedPlacesCount">0</h3>
                     <p>Saved Places</p>
                 </div>
             </div>
@@ -189,11 +189,15 @@
 
     async function loadStats() {
         try {
-            const res = await fetch(`${CONFIG.API_BASE}/booking?userId=${user.id}`);
-            const bookings = await res.json();
-            document.getElementById("activeBookingsCount").innerText = bookings.length;
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${CONFIG.API_BASE}/saved/stats`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const stats = await res.json();
+            document.getElementById("activeBookingsCount").innerText = stats.activeBookings || 0;
+            document.getElementById("savedPlacesCount").innerText = stats.savedPlaces || 0;
         } catch (err) {
-            console.error(err);
+            console.error("Stats Error:", err);
         }
     }
 </script>

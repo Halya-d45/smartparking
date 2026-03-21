@@ -5,26 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookings | Smart Parking</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/design-system.css">
     <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bookings-page gradient-bg">
 
 <nav class="navbar glass-card">
-    <div class="logo">
+    <div class="logo" onclick="window.location.href='dashboard.html'" style="cursor:pointer">
         <div class="logo-icon"><i class="fas fa-parking"></i></div>
         <span class="gradient-text">Smart Parking</span>
     </div>
     <div class="nav-links">
         <a href="dashboard.html">Map View</a>
         <a href="bookings.html" class="active">My Bookings</a>
+        <a href="saved.html">Saved Slots</a>
+        <a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a>
         <button class="btn-premium btn-sm" onclick="logout()">Logout</button>
     </div>
 </nav>
 
 <div class="app-container content-section animate-fade">
     <header class="section-header">
-        <h1>My Bookings</h1>
+        <h1>My <span class="gradient-text">Bookings</span></h1>
         <p>Manage your active and past parking sessions</p>
     </header>
 
@@ -33,7 +36,7 @@
             <thead>
                 <tr>
                     <th>Parking Lot</th>
-                    <th>Slot</th>
+                    <th>Slot No.</th>
                     <th>Date</th>
                     <th>Duration</th>
                     <th>Status</th>
@@ -44,10 +47,11 @@
                 <!-- Data dynamic -->
             </tbody>
         </table>
-        <div id="emptyState" class="empty-state" style="display: none;">
+        <div id="emptyState" class="empty-state-full" style="display: none;">
             <i class="fas fa-calendar-times"></i>
-            <p>You haven't made any bookings yet.</p>
-            <a href="dashboard.html" class="btn-premium btn-sm mt-4">Find Parking</a>
+            <h3>No Bookings Found</h3>
+            <p>You haven't made any bookings yet. Find a spot and book it!</p>
+            <a href="dashboard.html" class="btn-premium mt-4">Find Parking</a>
         </div>
     </div>
 </div>
@@ -79,8 +83,8 @@
 }
 .status-confirmed { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 
-.empty-state { text-align: center; padding: 60px; color: var(--text-muted); }
-.empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+.empty-state-full { text-align: center; padding: 60px; color: var(--text-muted); }
+.empty-state-full i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
 </style>
 
 <script src="js/config.js"></script>
@@ -92,7 +96,10 @@
         if(!user) return;
 
         try {
-            const res = await fetch(`${CONFIG.API_BASE}/booking?userId=${user.id}`);
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${CONFIG.API_BASE}/booking?userId=${user.id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             const bookings = await res.json();
 
             const table = document.getElementById("bookingsTable");
@@ -100,17 +107,18 @@
 
             if(bookings.length === 0) {
                 empty.style.display = "block";
+                table.parentElement.style.display = "none";
                 return;
             }
 
             table.innerHTML = bookings.map(b => `
                 <tr>
-                    <td><strong>Lot ID: ${b.parkingId}</strong></td>
-                    <td><span class="badge badge-primary">${b.slot}</span></td>
+                    <td><strong>${b.parkingId}</strong></td>
+                    <td><span class="badge-custom">${b.slot}</span></td>
                     <td>${new Date(b.date).toLocaleDateString()}</td>
                     <td>${b.duration} Hours</td>
                     <td><span class="status-badge status-confirmed">Confirmed</span></td>
-                    <td><button class="btn btn-outline btn-sm">View Receipt</button></td>
+                    <td><button class="btn-premium btn-sm" onclick="alert('Receipt coming soon!')">Receipt</button></td>
                 </tr>
             `).join('');
 

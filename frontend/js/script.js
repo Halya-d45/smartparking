@@ -6,6 +6,28 @@ L.tileLayer(CONFIG.MAP_STYLE, {
     attribution: '&copy; OpenStreetMap &copy; CARTO'
 }).addTo(map);
 
+// Global state for saved items
+let currentSavedIds = new Set();
+
+async function initDashboard() {
+    await loadSavedIds();
+    // loadStats is called in the HTML script
+}
+
+async function loadSavedIds() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+        const res = await fetch(`${CONFIG.API_BASE}/saved`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const saved = await res.json();
+        currentSavedIds = new Set(saved.map(s => s.parkingId));
+    } catch (err) {
+        console.error("Load Saved Error:", err);
+    }
+}
+
 async function searchPlace() {
     let place = document.getElementById("placeSearch").value;
     if (!place) return;
@@ -29,13 +51,11 @@ async function searchPlace() {
 
 async function findParking(lat, lon, city) {
     const listContainer = document.getElementById("parkingList");
-    listContainer.innerHTML = '<div class="loader">Scanning 5km radius for slots...</div>';
+    listContainer.innerHTML = '<div class="loader">Scanning for slots...</div>';
 
-    // Advanced Overpass Query
     let query = `[out:json][timeout:30];(node["amenity"="parking"](around:5000,${lat},${lon});way["amenity"="parking"](around:5000,${lat},${lon});relation["amenity"="parking"](around:5000,${lat},${lon});node["parking"](around:5000,${lat},${lon}););out center;`;
 
     try {
-        // Use GET or correctly encoded POST for Overpass
         let response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
         let data = await response.json();
 
@@ -44,21 +64,17 @@ async function findParking(lat, lon, city) {
             return;
         }
 
-        // Sync with our Backend
         let syncRes = await fetch(`${CONFIG.API_BASE}/parking/sync`, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                elements: data.elements,
-                city: city 
-            })
+            body: JSON.stringify({ elements: data.elements, city: city })
         });
         let syncedData = await syncRes.json();
 
         renderParking(syncedData);
     } catch (err) {
         console.error(err);
-        listContainer.innerHTML = '<p class="error">Failed to fetch parking data. Please try again.</p>';
+        listContainer.innerHTML = '<p class="error">Failed to fetch parking data.</p>';
     }
 }
 
@@ -66,39 +82,41 @@ function renderParking(parkingLots) {
     const listContainer = document.getElementById("parkingList");
     listContainer.innerHTML = "";
     
-    // Clear existing markers
     map.eachLayer((layer) => {
         if (layer instanceof L.Marker) map.removeLayer(layer);
     });
 
     if (parkingLots.length === 0) {
-        listContainer.innerHTML = '<p class="empty-state">No parking slots found in this area. Try a different city or location.</p>';
+        listContainer.innerHTML = '<p class="empty-state">No parking slots found.</p>';
         return;
     }
 
     parkingLots.forEach(p => {
-        // Add to Sidebar
+        const isSaved = currentSavedIds.has(p.overpassId);
+
         const item = document.createElement("div");
         item.className = "parking-item glass-card mb-4 animate-fade";
         item.innerHTML = `
             <div class="parking-info">
-                <h4>${p.name || 'Unnamed Parking'}</h4>
+                <div class="item-header">
+                    <h4>${p.name || 'Unnamed Parking'}</h4>
+                    <button class="save-btn ${isSaved ? 'active' : ''}" onclick="toggleSave('${p.overpassId}', '${p.name}', '${p.location}', ${p.latitude}, ${p.longitude}, this)">
+                        <i class="${isSaved ? 'fas' : 'far'} fa-heart"></i>
+                    </button>
+                </div>
                 <p><i class="fas fa-map-marker-alt"></i> ${p.location}</p>
                 <div class="parking-meta">
                     <span class="slots-count">${p.availableSlots}/${p.totalSlots} available</span>
                     <span class="price">$${p.pricePerHour}/hr</span>
                 </div>
-                <button class="btn-premium btn-sm" onclick="showDetails('${p.overpassId}')">Select Slot</button>
+                <button class="btn-premium btn-sm w-100 mt-2" onclick="showDetails('${p.overpassId}')">Select Slot</button>
             </div>
         `;
         listContainer.appendChild(item);
 
-        // Add Marker to Map
         const markerIcon = L.divIcon({
             className: 'custom-marker',
-            html: `<div class="marker-pin ${p.availableSlots > 0 ? 'available' : 'full'}">
-                    <i class="fas fa-parking"></i>
-                   </div>`,
+            html: `<div class="marker-pin ${p.availableSlots > 0 ? 'available' : 'full'}"><i class="fas fa-parking"></i></div>`,
             iconSize: [30, 30]
         });
 
@@ -108,18 +126,52 @@ function renderParking(parkingLots) {
                 <div class="map-popup">
                     <h4>${p.name || 'Unnamed Parking'}</h4>
                     <p>${p.availableSlots} slots available</p>
-                    <p><strong>$${p.pricePerHour}/hr</strong></p>
                     <button class="btn-premium btn-sm" onclick="showDetails('${p.overpassId}')">Book Now</button>
                 </div>
             `);
     });
 }
 
+async function toggleSave(id, name, location, lat, lon, btn) {
+    const token = localStorage.getItem("token");
+    if (!token) return (window.location.href = "login.html");
+
+    try {
+        const res = await fetch(`${CONFIG.API_BASE}/saved/toggle`, {
+            method: "POST",
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ parkingId: id, name, location, latitude: lat, longitude: lon })
+        });
+        const data = await res.json();
+        
+        if (data.saved) {
+            btn.classList.add("active");
+            btn.querySelector("i").className = "fas fa-heart";
+            currentSavedIds.add(id);
+        } else {
+            btn.classList.remove("active");
+            btn.querySelector("i").className = "far fa-heart";
+            currentSavedIds.delete(id);
+        }
+        
+        // Update dashboard stats if function exists
+        if (typeof loadStats === "function") loadStats();
+        
+    } catch (err) {
+        console.error("Toggle Save Error:", err);
+    }
+}
+
 function showDetails(id) {
     window.location.href = `parking-details.html?id=${id}`;
 }
 
-// Support for Enter key in search
 document.getElementById("placeSearch")?.addEventListener("keypress", (e) => {
     if (e.key === "Enter") searchPlace();
 });
+
+// Initialize
+initDashboard();

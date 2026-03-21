@@ -8,6 +8,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const parkingRoutes = require("./routes/parkingRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
+const savedRoutes = require("./routes/savedRoutes");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/parking", parkingRoutes);
 app.use("/api/booking", bookingRoutes);
+app.use("/api/saved", savedRoutes);
 
 /* SERVE FRONTEND */
 app.use(express.static(path.join(__dirname,"../frontend")));

@@ -5,41 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile | Smart Parking</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/design-system.css">
     <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="gradient-bg">
-    <nav class="navbar glass-card">
-        <div class="logo">
-            <div class="logo-icon"><i class="fas fa-parking"></i></div>
-            <span class="gradient-text">Smart Parking</span>
-        </div>
-        <div class="nav-links">
-            <a href="dashboard.html">Map View</a>
-            <a href="bookings.html">My Bookings</a>
-            <button class="btn-premium btn-sm" onclick="logout()">Logout</button>
-        </div>
-    </nav>
-    <div class="app-container mt-4 animate-fade">
-        <div class="glass-card p-4" style="max-width: 600px; margin: 40px auto; padding: 40px;">
-            <h2 class="gradient-text mb-4">My Profile</h2>
-            <div class="profile-info">
-                <p><strong>Name:</strong> <span id="pName"></span></p>
-                <p><strong>Email:</strong> <span id="pEmail"></span></p>
-                <p><strong>Account Type:</strong> <span class="badge badge-primary" id="pRole"></span></p>
-            </div>
-            <hr class="my-4" style="opacity: 0.1; margin: 20px 0;">
-            <button class="btn btn-outline" onclick="alert('Profile editing coming soon!')">Edit Profile</button>
-        </div>
+
+<nav class="navbar glass-card">
+    <div class="logo" onclick="window.location.href='dashboard.html'" style="cursor:pointer">
+        <div class="logo-icon"><i class="fas fa-parking"></i></div>
+        <span class="gradient-text">Smart Parking</span>
     </div>
-    <script>
-        const user = JSON.parse(localStorage.getItem("user"));
-        if(user) {
-            document.getElementById("pName").innerText = user.name;
-            document.getElementById("pEmail").innerText = user.email;
-            document.getElementById("pRole").innerText = user.role || "User";
-        }
-    </script>
-    <script src="js/config.js"></script>
-    <script src="js/auth.js"></script>
+    <div class="nav-links">
+        <a href="dashboard.html">Map View</a>
+        <a href="bookings.html">My Bookings</a>
+        <a href="saved.html">Saved Slots</a>
+        <a href="profile.html" class="active"><i class="fas fa-user-circle"></i> Profile</a>
+        <button class="btn-premium btn-sm" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<div class="app-container mt-4 animate-fade">
+    <div class="glass-card" style="max-width: 600px; margin: 60px auto; padding: 40px;">
+        <div class="profile-header text-center" style="text-align: center; margin-bottom: 30px;">
+            <div class="profile-avatar" style="font-size: 64px; color: var(--accent-blue); margin-bottom: 15px;">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h2 class="gradient-text">Account Settings</h2>
+            <p style="color: var(--text-muted)">Manage your personal information</p>
+        </div>
+
+        <div class="profile-details">
+            <div class="detail-item" style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--line-soft);">
+                <span style="display: block; font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Full Name</span>
+                <span id="pName" style="font-size: 16px; font-weight: 600;">-</span>
+            </div>
+            <div class="detail-item" style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--line-soft);">
+                <span style="display: block; font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Email Address</span>
+                <span id="pEmail" style="font-size: 16px; font-weight: 600;">-</span>
+            </div>
+            <div class="detail-item" style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--line-soft);">
+                <span style="display: block; font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Account ID</span>
+                <span id="pRole" style="font-size: 14px; font-weight: 500; font-family: monospace;">-</span>
+            </div>
+        </div>
+
+        <button class="btn-premium w-100 mt-4" onclick="alert('Profile editing is coming in the next update!')">
+            <i class="fas fa-edit"></i> Edit Profile
+        </button>
+    </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    if(user) {
+        document.getElementById("pName").innerText = user.name;
+        document.getElementById("pEmail").innerText = user.email;
+        document.getElementById("pRole").innerText = user.id;
+    } else {
+        window.location.href = "login.html";
+    }
+</script>
 </body>
 </html>

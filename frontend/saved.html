@@ -3,191 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saved Parking - SmartPark Premium</title>
-
-    <!-- Global Styles & Fonts -->
+    <title>Saved Slots | Smart Parking</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
-    <style>
-        body {
-            background: var(--bg-deep);
-            padding-bottom: 80px;
-        }
-
-        .saved-container {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 24px 20px;
-        }
-
-        .saved-card {
-            margin-bottom: 16px;
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .saved-img {
-            width: 100px;
-            height: 80px;
-            border-radius: var(--radius-md);
-            object-fit: cover;
-        }
-
-        .saved-details {
-            flex: 1;
-        }
-
-        .saved-details h3 {
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-
-        .saved-details p {
-            font-size: 13px;
-            color: var(--text-dim);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .price-tag {
-            font-weight: 700;
-            color: var(--accent);
-            font-size: 14px;
-        }
-
-        .action-btns {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .remove-btn {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--error);
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: center;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-            display: flex;
-        }
-
-        .remove-btn:hover {
-            background: var(--error);
-            color: white;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-            color: var(--text-muted);
-        }
-    </style>
+    <link rel="stylesheet" href="css/design-system.css">
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+<body class="dashboard-page gradient-bg">
 
-<body>
+<nav class="navbar glass-card">
+    <div class="logo" onclick="window.location.href='dashboard.html'" style="cursor:pointer">
+        <div class="logo-icon"><i class="fas fa-parking"></i></div>
+        <span class="gradient-text">Smart Parking</span>
+    </div>
+    <div class="nav-links">
+        <a href="dashboard.html">Map View</a>
+        <a href="bookings.html">My Bookings</a>
+        <a href="saved.html" class="active">Saved Slots</a>
+        <a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a>
+        <button class="btn-premium btn-sm" onclick="logout()">Logout</button>
+    </div>
+</nav>
 
-    <header class="navbar">
-        <div class="logo">
-            <div class="logo-icon"><i class='bx bxs-bookmark-star'></i></div>
-            SmartPark
+<div class="app-container">
+    <header class="dashboard-header animate-fade">
+        <div class="welcome-text">
+            <h1>Your <span class="gradient-text">Saved Places</span></h1>
+            <p>Quick access to your most used parking spots.</p>
         </div>
-        <div style="font-weight: 600;">Saved Spots</div>
-        <div style="width: 40px;"></div>
     </header>
 
-    <main class="saved-container">
-        <div id="savedList">
-            <div class="empty-state">
-                <i class='bx bx-bookmark-plus' style="font-size: 64px; margin-bottom: 20px; opacity: 0.5;"></i>
-                <h3>No saved locations</h3>
-                <p>Save interesting parking spots to access them quickly later.</p>
-                <a href="dashboard.html" class="btn btn-primary mt-4">Browse Map</a>
-            </div>
-        </div>
+    <main class="saved-grid animate-fade" id="savedContainer">
+        <div class="loader">Loading your favorites...</div>
     </main>
+</div>
 
-    <!-- Bottom Nav -->
-    <div class="navbar" style="position: fixed; bottom: 0; top: auto; width: 100%; border-top: 1px solid var(--border-color); border-bottom: none; padding: 10px 0;">
-        <div style="display: flex; width: 100%; justify-content: space-around; align-items: center;">
-            <a href="dashboard.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-dim);">
-                <i class='bx bx-map-alt' style="font-size: 24px;"></i>
-                <span style="font-size: 10px; font-weight: 600;">Explore</span>
-            </a>
-            <a href="saved.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--primary);">
-                <i class='bx bxs-bookmark' style="font-size: 24px;"></i>
-                <span style="font-size: 10px; font-weight: 600;">Saved</span>
-            </a>
-            <a href="bookings.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-dim);">
-                <i class='bx bx-calendar' style="font-size: 24px;"></i>
-                <span style="font-size: 10px; font-weight: 600;">Bookings</span>
-            </a>
-            <a href="profile.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-dim);">
-                <i class='bx bx-user-circle' style="font-size: 24px;"></i>
-                <span style="font-size: 10px; font-weight: 600;">Profile</span>
-            </a>
-        </div>
-    </div>
+<style>
+.saved-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+.navbar {
+    margin: 0;
+    border-radius: 0;
+    padding: 12px 60px;
+}
+.dashboard-header {
+    margin: 40px 0;
+}
+</style>
 
-    <script>
-        let saved = JSON.parse(localStorage.getItem("savedParking")) || [];
-        const savedList = document.getElementById("savedList");
-
-        function renderSaved() {
-            if (saved.length === 0) return;
-
-            savedList.innerHTML = "";
-            saved.forEach((place, index) => {
-                const card = `
-                    <div class="card saved-card" style="animation: slideIn 0.4s ease-out ${index * 0.1}s both;">
-                        <img src="${place.image}" class="saved-img">
-                        <div class="saved-details">
-                            <h3>${place.name}</h3>
-                            <p><i class='bx bx-map'></i> ${place.address}</p>
-                            <div class="price-tag mt-2">${place.price}</div>
-                        </div>
-                        <div class="action-btns">
-                            <button class="remove-btn" onclick="removeSaved(${index})">
-                                <i class='bx bx-trash'></i>
-                            </button>
-                            <button class="btn btn-primary" style="padding: 6px 12px; font-size: 11px;" onclick="location.href='dashboard.html'">
-                                Book
-                            </button>
-                        </div>
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    async function loadSaved() {
+        const container = document.getElementById("savedContainer");
+        const token = localStorage.getItem("token");
+        
+        try {
+            const res = await fetch(`${CONFIG.API_BASE}/saved`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <div class="glass-card empty-state-container w-100" style="grid-column: 1/-1; padding: 60px; text-align: center;">
+                        <i class="fas fa-bookmark" style="font-size: 48px; color: var(--text-muted); margin-bottom: 20px;"></i>
+                        <h3>No Saved Places Yet</h3>
+                        <p>Search for parking on the Map and click the heart icon to save it here.</p>
+                        <button class="btn-premium mt-4" onclick="window.location.href='dashboard.html'">Go to Map</button>
                     </div>
                 `;
-                savedList.innerHTML += card;
-            });
-        }
-
-        function removeSaved(index) {
-            saved.splice(index, 1);
-            localStorage.setItem("savedParking", JSON.stringify(saved));
-            if (saved.length === 0) {
-                location.reload();
-            } else {
-                renderSaved();
+                return;
             }
+            
+            container.innerHTML = "";
+            data.forEach(p => {
+                const card = document.createElement("div");
+                card.className = "glass-card parking-item animate-fade";
+                card.innerHTML = `
+                    <div class="parking-info">
+                        <div class="item-header">
+                            <h4>${p.name}</h4>
+                            <button class="save-btn active" onclick="removeSaved('${p.parkingId}', this)">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                        <p><i class="fas fa-map-marker-alt"></i> ${p.location}</p>
+                        <div class="parking-meta">
+                            <span class="slots-count">Lat: ${p.latitude.toFixed(4)}, Lon: ${p.longitude.toFixed(4)}</span>
+                        </div>
+                        <button class="btn-premium btn-sm w-100 mt-2" onclick="window.location.href='parking-details.html?id=${p.parkingId}'">Book Now</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        } catch (err) {
+            container.innerHTML = "<p>Error loading saved places.</p>";
         }
+    }
 
-        renderSaved();
-    </script>
-
-    <style>
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+    async function removeSaved(id, btn) {
+        const token = localStorage.getItem("token");
+        try {
+            await fetch(`${CONFIG.API_BASE}/saved/toggle`, {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ parkingId: id })
+            });
+            btn.closest(".parking-item").classList.add("fade-out");
+            setTimeout(loadSaved, 300);
+        } catch (err) {
+            console.error(err);
         }
-    </style>
+    }
+
+    loadSaved();
+</script>
 </body>
 </html>
-

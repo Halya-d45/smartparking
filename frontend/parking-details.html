@@ -5,52 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Slot | Smart Parking</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/design-system.css">
     <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="details-page gradient-bg">
 
 <nav class="navbar glass-card">
-    <div class="logo">
+    <div class="logo" onclick="window.location.href='dashboard.html'" style="cursor:pointer">
         <div class="logo-icon"><i class="fas fa-parking"></i></div>
         <span class="gradient-text">Smart Parking</span>
     </div>
     <div class="nav-links">
         <a href="dashboard.html">Map View</a>
         <a href="bookings.html">My Bookings</a>
+        <a href="saved.html">Saved Slots</a>
+        <a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a>
         <button class="btn-premium btn-sm" onclick="logout()">Logout</button>
     </div>
 </nav>
 
 <div class="app-container">
-    <div class="back-nav mt-4">
-        <a href="dashboard.html"><i class="fas fa-chevron-left"></i> Back to Map</a>
+    <div class="back-nav mt-4" style="margin-top: 30px;">
+        <a href="dashboard.html" style="color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+            <i class="fas fa-chevron-left"></i> Back to Map
+        </a>
     </div>
 
     <main class="details-grid animate-fade">
         <div class="lot-info-section">
-            <div class="glass-card info-card">
-                <img id="lotImage" src="" alt="Parking Lot" class="lot-hero-img">
-                <div class="info-content">
-                    <h1 id="lotName">Loading Lot...</h1>
-                    <p id="lotLocation"><i class="fas fa-map-marker-alt"></i> Loading...</p>
-                    <div class="tags">
-                        <span class="badge badge-success">CCTV Protected</span>
-                        <span class="badge badge-primary">EV Charging</span>
+            <div class="glass-card info-card" style="padding: 0; overflow: hidden;">
+                <img id="lotImage" src="https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&q=80&w=800" alt="Parking Lot" class="lot-hero-img" style="width: 100%; height: 220px; object-fit: cover;">
+                <div class="info-content" style="padding: 24px;">
+                    <h1 id="lotName" style="font-size: 24px; margin-bottom: 8px;">Loading Lot...</h1>
+                    <p id="lotLocation" style="color: var(--text-secondary); margin-bottom: 16px;"><i class="fas fa-map-marker-alt"></i> Loading...</p>
+                    <div class="tags" style="display: flex; gap: 10px;">
+                        <span class="badge-custom">CCTV Protected</span>
+                        <span class="badge-custom">24/7 Access</span>
                     </div>
                 </div>
             </div>
 
-            <div class="glass-card price-card mt-4">
-                <div class="price-header">
-                    <span>Rate</span>
-                    <h2 id="lotPrice">$0.00/hr</h2>
+            <div class="glass-card price-card mt-4" style="padding: 24px;">
+                <div class="price-header" style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px;">
+                    <span style="color: var(--text-muted); font-size: 14px;">Hourly Rate</span>
+                    <h2 id="lotPrice" class="gradient-text" style="font-size: 28px;">$0.00/hr</h2>
                 </div>
-                <div class="form-group mt-4">
-                    <label>Select Duration</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-clock"></i>
-                        <select id="duration" class="premium-input">
+                <div class="form-group">
+                    <label style="display: block; font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Booking Duration</label>
+                    <div class="input-wrapper" style="position: relative;">
+                        <i class="fas fa-clock" style="position: absolute; left: 15px; top: 18px; color: var(--accent-blue);"></i>
+                        <select id="duration" class="premium-input" style="padding-left: 45px;">
                             <option value="1">1 Hour</option>
                             <option value="2">2 Hours</option>
                             <option value="4">4 Hours</option>
@@ -63,20 +68,20 @@
         </div>
 
         <div class="slot-selection-section">
-            <div class="glass-card slot-card">
-                <div class="card-header">
-                    <h3>Select Your Slot</h3>
-                    <div class="legend">
-                        <span class="leg-item"><span class="box av"></span> Free</span>
-                        <span class="leg-item"><span class="box bk"></span> Booked</span>
-                        <span class="leg-item"><span class="box sl"></span> Selected</span>
+            <div class="glass-card slot-card" style="padding: 30px; height: 100%;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h3>Available Slots</h3>
+                    <div class="legend" style="display: flex; gap: 15px; font-size: 11px;">
+                        <span class="leg-item" style="display: flex; align-items: center; gap: 6px;"><span class="box av" style="width: 12px; height: 12px; border: 1px solid var(--accent-blue); border-radius: 3px;"></span> Free</span>
+                        <span class="leg-item" style="display: flex; align-items: center; gap: 6px;"><span class="box bk" style="width: 12px; height: 12px; background: var(--bg-muted); border-radius: 3px;"></span> Booked</span>
+                        <span class="leg-item" style="display: flex; align-items: center; gap: 6px;"><span class="box sl" style="width: 12px; height: 12px; background: var(--accent-blue); border-radius: 3px;"></span> Selected</span>
                     </div>
                 </div>
-                <div id="slotGrid" class="slot-grid">
+                <div id="slotGrid" class="slot-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 15px; background: rgba(0,0,0,0.1); padding: 20px; border-radius: 16px;">
                     <!-- Slots dynamic -->
                 </div>
-                <button id="confirmBtn" class="btn-premium w-full mt-4" disabled onclick="confirmBooking()">
-                    Confirm Selection
+                <button id="confirmBtn" class="btn-premium w-100 mt-4" disabled onclick="confirmBooking()" style="height: 50px;">
+                    Complete Booking
                 </button>
             </div>
         </div>
@@ -89,65 +94,44 @@
     grid-template-columns: 400px 1fr;
     gap: 30px;
     margin-top: 20px;
+    height: calc(100vh - 200px);
 }
-.back-nav a {
-    color: var(--text-secondary);
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.info-card { padding: 0; overflow: hidden; }
-.lot-hero-img { width: 100%; height: 200px; object-fit: cover; }
-.info-content { padding: 24px; }
-.info-content h1 { font-size: 24px; margin-bottom: 8px; }
-.info-content p { color: var(--text-secondary); margin-bottom: 16px; }
-
-.price-header { display: flex; justify-content: space-between; align-items: baseline; }
-.price-header span { color: var(--text-muted); font-size: 14px; }
-
-.slot-card { padding: 30px; }
-.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-.legend { display: flex; gap: 15px; font-size: 12px; }
-.leg-item { display: flex; align-items: center; gap: 6px; }
-.box { width: 12px; height: 12px; border-radius: 3px; }
-.box.av { border: 1px solid var(--accent-blue); }
-.box.bk { background: var(--bg-muted); }
-.box.sl { background: var(--accent-blue); }
-
-.slot-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 15px;
-    background: rgba(0,0,0,0.2);
-    padding: 20px;
-    border-radius: var(--radius-md);
+.badge-custom {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent-blue);
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 600;
 }
 .slot {
-    height: 80px;
-    border: 2px solid var(--line-border);
-    border-radius: 8px;
+    height: 70px;
+    border: 2px solid var(--line-soft);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
     cursor: pointer;
-    transition: var(--transition);
+    transition: var(--transition-base);
 }
 .slot.available:hover {
     border-color: var(--accent-blue);
     background: var(--accent-blue-glow);
+    transform: translateY(-2px);
 }
 .slot.selected {
     background: var(--accent-blue);
     border-color: var(--accent-cyan);
     color: white;
+    box-shadow: 0 0 15px var(--accent-blue-glow);
 }
 .slot.booked {
     background: var(--bg-muted);
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
     color: var(--text-muted);
+    border: none;
 }
 </style>
 

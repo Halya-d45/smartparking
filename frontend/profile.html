@@ -3,236 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile - SmartPark Premium</title>
-
-    <!-- Global Styles & Fonts -->
+    <title>Profile | Smart Parking</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
-    <style>
-        body {
-            background: var(--bg-deep);
-            padding-bottom: 80px; /* Space for nav */
-        }
-
-        .profile-header-bg {
-            height: 200px;
-            background: linear-gradient(135deg, var(--primary), var(--bg-deep));
-            position: relative;
-        }
-
-        .profile-content {
-            max-width: 600px;
-            margin: -60px auto 0;
-            padding: 0 20px;
-            position: relative;
-            z-index: 5;
-        }
-
-        .profile-main-card {
-            text-align: center;
-            padding-top: 60px;
-        }
-
-        .profile-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 5px solid var(--bg-main);
-            position: absolute;
-            top: -60px;
-            left: 50%;
-            transform: translateX(-50%);
-            object-fit: cover;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin: 24px 0;
-        }
-
-        .stat-item {
-            padding: 16px;
-            text-align: center;
-        }
-
-        .stat-item h3 {
-            font-size: 20px;
-            color: var(--primary);
-        }
-
-        .stat-item span {
-            font-size: 11px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .menu-section {
-            margin-top: 24px;
-        }
-
-        .menu-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px;
-            margin-bottom: 12px;
-            color: var(--text-main);
-        }
-
-        .menu-link:hover {
-            border-color: var(--primary);
-            background: rgba(45, 99, 255, 0.05);
-        }
-
-        .menu-info {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .menu-info i {
-            font-size: 22px;
-            color: var(--primary);
-        }
-
-        .logout-btn {
-            color: var(--error);
-            border-color: rgba(239, 68, 68, 0.2);
-        }
-
-        .logout-btn i {
-            color: var(--error);
-        }
-
-        /* Nav overrides for active state */
-        .nav-item.active {
-            color: var(--primary);
-        }
-    </style>
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
 </head>
-
-<body>
-
-    <header class="navbar">
+<body class="gradient-bg">
+    <nav class="navbar glass-card">
         <div class="logo">
-            <div class="logo-icon"><i class='bx bxs-parking'></i></div>
-            SmartPark
+            <div class="logo-icon"><i class="fas fa-parking"></i></div>
+            <span class="gradient-text">Smart Parking</span>
         </div>
-        <div style="font-weight: 600;">My Profile</div>
-        <div style="width: 40px;"></div> <!-- Spacer -->
-    </header>
-
-    <div class="profile-header-bg"></div>
-
-    <main class="profile-content">
-        <div class="card profile-main-card">
-            <img src="https://i.pravatar.cc/150?u=parking" class="profile-avatar">
-            
-            <div class="mb-4">
-                <h2 style="font-size: 24px;">John Doe</h2>
-                <p style="color: var(--text-dim);">Premium Member since 2024</p>
-            </div>
-
-            <div class="stats-grid">
-                <div class="card stat-item">
-                    <h3>12</h3>
-                    <span>Bookings</span>
-                </div>
-                <div class="card stat-item">
-                    <h3>5</h3>
-                    <span>Saved</span>
-                </div>
-                <div class="card stat-item">
-                    <h3>4.8</h3>
-                    <span>Rating</span>
-                </div>
-            </div>
-
-            <div class="menu-section">
-                <a href="bookings.html" class="card menu-link">
-                    <div class="menu-info">
-                        <i class='bx bx-calendar'></i>
-                        <div style="text-align: left;">
-                            <div style="font-weight: 600;">Booking History</div>
-                            <div style="font-size: 12px; color: var(--text-dim);">View and manage your past bookings</div>
-                        </div>
-                    </div>
-                    <i class='bx bx-chevron-right'></i>
-                </a>
-
-                <a href="saved.html" class="card menu-link">
-                    <div class="menu-info">
-                        <i class='bx bx-bookmark'></i>
-                        <div style="text-align: left;">
-                            <div style="font-weight: 600;">Saved Parking</div>
-                            <div style="font-size: 12px; color: var(--text-dim);">Access your favorite parking spots</div>
-                        </div>
-                    </div>
-                    <i class='bx bx-chevron-right'></i>
-                </a>
-
-                <a href="#" class="card menu-link">
-                    <div class="menu-info">
-                        <i class='bx bx-credit-card'></i>
-                        <div style="text-align: left;">
-                            <div style="font-weight: 600;">Payment Methods</div>
-                            <div style="font-size: 12px; color: var(--text-dim);">Manage cards and digital wallets</div>
-                        </div>
-                    </div>
-                    <i class='bx bx-chevron-right'></i>
-                </a>
-
-                <a href="#" class="card menu-link">
-                    <div class="menu-info">
-                        <i class='bx bx-cog'></i>
-                        <div style="text-align: left;">
-                            <div style="font-weight: 600;">Settings</div>
-                            <div style="font-size: 12px; color: var(--text-dim);">Preferences and security</div>
-                        </div>
-                    </div>
-                    <i class='bx bx-chevron-right'></i>
-                </a>
-
-                <a href="login.html" class="card menu-link logout-btn">
-                    <div class="menu-info">
-                        <i class='bx bx-log-out'></i>
-                        <div style="text-align: left;">
-                            <div style="font-weight: 600;">Logout</div>
-                            <div style="font-size: 12px; opacity: 0.7;">Sign out of your account</div>
-                        </div>
-                    </div>
-                    <i class='bx bx-log-out'></i>
-                </a>
-            </div>
+        <div class="nav-links">
+            <a href="dashboard.html">Map View</a>
+            <a href="bookings.html">My Bookings</a>
+            <button class="btn-premium btn-sm" onclick="logout()">Logout</button>
         </div>
-    </main>
-
-    <!-- Nav Bar -->
-    <div class="navbar" style="position: fixed; bottom: 0; top: auto; width: 100%; border-top: 1px solid var(--border-color); border-bottom: none; padding: 10px 0;">
-        <div style="display: flex; width: 100%; justify-content: space-around; align-items: center;">
-            <a href="dashboard.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-dim);">
-                <i class='bx bx-map-alt' style="font-size: 24px;"></i>
-                <span style="font-size: 10px; font-weight: 600;">Explore</span>
-            </a>
-            <a href="saved.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-dim);">
-                <i class='bx bx-bookmark' style="font-size: 24px;"></i>
-                <span style="font-size: 10px; font-weight: 600;">Saved</span>
-            </a>
-            <a href="bookings.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-dim);">
-                <i class='bx bx-calendar' style="font-size: 24px;"></i>
-                <span style="font-size: 10px; font-weight: 600;">Bookings</span>
-            </a>
-            <a href="profile.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--primary);">
-                <i class='bx bxs-user-circle' style="font-size: 24px;"></i>
-                <span style="font-size: 10px; font-weight: 600;">Profile</span>
-            </a>
+    </nav>
+    <div class="app-container mt-4 animate-fade">
+        <div class="glass-card p-4" style="max-width: 600px; margin: 40px auto; padding: 40px;">
+            <h2 class="gradient-text mb-4">My Profile</h2>
+            <div class="profile-info">
+                <p><strong>Name:</strong> <span id="pName"></span></p>
+                <p><strong>Email:</strong> <span id="pEmail"></span></p>
+                <p><strong>Account Type:</strong> <span class="badge badge-primary" id="pRole"></span></p>
+            </div>
+            <hr class="my-4" style="opacity: 0.1; margin: 20px 0;">
+            <button class="btn btn-outline" onclick="alert('Profile editing coming soon!')">Edit Profile</button>
         </div>
     </div>
-
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        if(user) {
+            document.getElementById("pName").innerText = user.name;
+            document.getElementById("pEmail").innerText = user.email;
+            document.getElementById("pRole").innerText = user.role || "User";
+        }
+    </script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>

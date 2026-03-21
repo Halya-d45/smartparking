@@ -3,266 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spot Details - SmartPark Premium</title>
-
-    <!-- Global Styles & Fonts -->
+    <title>Select Slot | Smart Parking</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
-    <style>
-        body {
-            background: var(--bg-deep);
-            padding-bottom: 100px;
-        }
-
-        .hero-banner {
-            height: 300px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-banner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .hero-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom, transparent, var(--bg-deep));
-        }
-
-        .details-container {
-            max-width: 900px;
-            margin: -60px auto 0;
-            padding: 0 20px;
-            position: relative;
-            z-index: 10;
-        }
-
-        .main-info-card {
-            padding: 32px;
-            margin-bottom: 24px;
-        }
-
-        .spot-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 24px;
-        }
-
-        .spot-title h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .spot-location {
-            color: var(--text-dim);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-        }
-
-        .pricing-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin: 24px 0;
-        }
-
-        .price-box {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .price-box label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .price-box .value {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .amenities-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .amenity-tag {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            font-size: 13px;
-        }
-
-        .amenity-tag i {
-            color: var(--primary);
-            font-size: 18px;
-        }
-
-        .action-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(11, 16, 26, 0.8);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border-color);
-            padding: 20px;
-            z-index: 100;
-        }
-
-        .action-content {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-        }
-
-        input[type="number"] {
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 12px;
-            color: white;
-            width: 120px;
-            outline: none;
-        }
-
-        input[type="number"]:focus {
-            border-color: var(--primary);
-        }
-    </style>
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+<body class="details-page gradient-bg">
 
-<body>
+<nav class="navbar glass-card">
+    <div class="logo">
+        <div class="logo-icon"><i class="fas fa-parking"></i></div>
+        <span class="gradient-text">Smart Parking</span>
+    </div>
+    <div class="nav-links">
+        <a href="dashboard.html">Map View</a>
+        <a href="bookings.html">My Bookings</a>
+        <button class="btn-premium btn-sm" onclick="logout()">Logout</button>
+    </div>
+</nav>
 
-    <header class="navbar">
-        <div class="logo">
-            <i class='bx bx-left-arrow-alt' style="cursor: pointer; font-size: 24px;" onclick="history.back()"></i>
-            SmartPark
-        </div>
-        <div style="font-weight: 600;">Spot Details</div>
-        <div class="logo-icon" style="background: transparent; box-shadow: none;">
-            <i class='bx bx-share-alt'></i>
-        </div>
-    </header>
-
-    <div class="hero-banner">
-        <img src="https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=1200&q=80" alt="Parking Grid">
-        <div class="hero-overlay"></div>
+<div class="app-container">
+    <div class="back-nav mt-4">
+        <a href="dashboard.html"><i class="fas fa-chevron-left"></i> Back to Map</a>
     </div>
 
-    <main class="details-container">
-        <div class="card main-info-card">
-            <div class="spot-header">
-                <div class="spot-title">
-                    <span class="badge badge-success mb-2">Available Now</span>
-                    <h1>Skyline Premium Parking</h1>
-                    <div class="spot-location">
-                        <i class='bx bxs-map'></i>
-                        450 Downtown Avenue, Metropolitan City
+    <main class="details-grid animate-fade">
+        <div class="lot-info-section">
+            <div class="glass-card info-card">
+                <img id="lotImage" src="" alt="Parking Lot" class="lot-hero-img">
+                <div class="info-content">
+                    <h1 id="lotName">Loading Lot...</h1>
+                    <p id="lotLocation"><i class="fas fa-map-marker-alt"></i> Loading...</p>
+                    <div class="tags">
+                        <span class="badge badge-success">CCTV Protected</span>
+                        <span class="badge badge-primary">EV Charging</span>
                     </div>
                 </div>
-                <div class="favorite-btn">
-                    <button class="btn btn-secondary" style="padding: 12px; border-radius: 50%;">
-                        <i class='bx bx-heart' style="font-size: 20px;"></i>
-                    </button>
-                </div>
             </div>
 
-            <p style="color: var(--text-dim); line-height: 1.8; margin-bottom: 24px;">
-                Experience hassle-free parking in the heart of downtown. Our facility offers high-speed EV charging, 24/7 onsite security, and easy access to major business hubs and shopping centers.
-            </p>
-
-            <div class="pricing-section">
-                <div class="card price-box">
-                    <label>Hourly Rate</label>
-                    <div class="value">$6.50 /hr</div>
+            <div class="glass-card price-card mt-4">
+                <div class="price-header">
+                    <span>Rate</span>
+                    <h2 id="lotPrice">$0.00/hr</h2>
                 </div>
-                <div class="card price-box">
-                    <label>Availability</label>
-                    <div class="value">08 Slots Left</div>
+                <div class="form-group mt-4">
+                    <label>Select Duration</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-clock"></i>
+                        <select id="duration" class="premium-input">
+                            <option value="1">1 Hour</option>
+                            <option value="2">2 Hours</option>
+                            <option value="4">4 Hours</option>
+                            <option value="8">8 Hours</option>
+                            <option value="24">Full Day</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-
-            <h3 class="mb-4">Top Amenities</h3>
-            <div class="amenities-grid">
-                <div class="amenity-tag"><i class='bx bxs-ev-station'></i> EV Charging</div>
-                <div class="amenity-tag"><i class='bx bxs-shield-alt-2'></i> 24/7 Security</div>
-                <div class="amenity-tag"><i class='bx bxs-video'></i> CCTV Coverage</div>
-                <div class="amenity-tag"><i class='bx bxs-component'></i> Automated Entry</div>
             </div>
         </div>
 
-        <div class="card" style="padding: 24px;">
-            <h3 class="mb-4">Location Map</h3>
-            <div style="height: 200px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-color);">
-                <img src="https://images.unsplash.com/photo-1548345680-f5475ea5df84?auto=format&fit=crop&w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;">
+        <div class="slot-selection-section">
+            <div class="glass-card slot-card">
+                <div class="card-header">
+                    <h3>Select Your Slot</h3>
+                    <div class="legend">
+                        <span class="leg-item"><span class="box av"></span> Free</span>
+                        <span class="leg-item"><span class="box bk"></span> Booked</span>
+                        <span class="leg-item"><span class="box sl"></span> Selected</span>
+                    </div>
+                </div>
+                <div id="slotGrid" class="slot-grid">
+                    <!-- Slots dynamic -->
+                </div>
+                <button id="confirmBtn" class="btn-premium w-full mt-4" disabled onclick="confirmBooking()">
+                    Confirm Selection
+                </button>
             </div>
         </div>
     </main>
+</div>
 
-    <div class="action-bar">
-        <div class="action-content">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <label style="font-size: 13px; font-weight: 600; color: var(--text-dim);">Duration (hrs)</label>
-                <input type="number" id="hours" value="1" min="1" oninput="calculatePrice()">
-                <div style="margin-left: 10px;">
-                    <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase;">Total</div>
-                    <div style="font-size: 18px; font-weight: 700; color: var(--accent);">$<span id="price">6.50</span></div>
-                </div>
-            </div>
-            <button class="btn btn-primary" style="padding: 14px 40px;" onclick="goToSlot()">
-                Select Slot <i class='bx bx-right-arrow-alt'></i>
-            </button>
-        </div>
-    </div>
+<style>
+.details-grid {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+.back-nav a {
+    color: var(--text-secondary);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.info-card { padding: 0; overflow: hidden; }
+.lot-hero-img { width: 100%; height: 200px; object-fit: cover; }
+.info-content { padding: 24px; }
+.info-content h1 { font-size: 24px; margin-bottom: 8px; }
+.info-content p { color: var(--text-secondary); margin-bottom: 16px; }
 
-    <script>
-        const rate = 6.5;
+.price-header { display: flex; justify-content: space-between; align-items: baseline; }
+.price-header span { color: var(--text-muted); font-size: 14px; }
 
-        function calculatePrice() {
-            let hours = document.getElementById("hours").value;
-            if (hours && hours > 0) {
-                let total = (hours * rate).toFixed(2);
-                document.getElementById("price").innerText = total;
-            } else {
-                document.getElementById("price").innerText = "0.00";
-            }
-        }
+.slot-card { padding: 30px; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.legend { display: flex; gap: 15px; font-size: 12px; }
+.leg-item { display: flex; align-items: center; gap: 6px; }
+.box { width: 12px; height: 12px; border-radius: 3px; }
+.box.av { border: 1px solid var(--accent-blue); }
+.box.bk { background: var(--bg-muted); }
+.box.sl { background: var(--accent-blue); }
 
-        function goToSlot() {
-            let hours = document.getElementById("hours").value;
-            if (!hours || hours <= 0) {
-                alert("Please enter a valid parking duration");
-                return;
-            }
-            localStorage.setItem("booking_duration", hours);
-            localStorage.setItem("booking_rate", rate);
-            localStorage.setItem("booking_place", "Skyline Premium Parking");
-            window.location.href = "select-slot.html";
-        }
-    </script>
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 15px;
+    background: rgba(0,0,0,0.2);
+    padding: 20px;
+    border-radius: var(--radius-md);
+}
+.slot {
+    height: 80px;
+    border: 2px solid var(--line-border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.slot.available:hover {
+    border-color: var(--accent-blue);
+    background: var(--accent-blue-glow);
+}
+.slot.selected {
+    background: var(--accent-blue);
+    border-color: var(--accent-cyan);
+    color: white;
+}
+.slot.booked {
+    background: var(--bg-muted);
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: var(--text-muted);
+}
+</style>
 
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/booking.js"></script>
 </body>
 </html>
-

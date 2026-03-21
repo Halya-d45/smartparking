@@ -3,222 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartPark - Create Account</title>
-
-    <!-- Global Styles & Fonts -->
+    <title>Join Smart Parking</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: radial-gradient(circle at bottom left, #1e293b, #05080d);
-            padding: 20px;
-        }
-
-        .auth-container {
-            width: 100%;
-            max-width: 480px;
-            animation: fadeIn 0.8s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .brand-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .auth-card {
-            padding: 40px 32px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        @media (max-width: 480px) {
-            .form-grid { grid-template-columns: 1fr; }
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 24px 0;
-            color: var(--text-muted);
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-
-        .divider::before, .divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: var(--border-color);
-        }
-
-        .divider::before { margin-right: 16px; }
-        .divider::after { margin-left: 16px; }
-
-        .footer-text {
-            text-align: center;
-            margin-top: 32px;
-            color: var(--text-dim);
-            font-size: 14px;
-        }
-
-        .checkbox-container {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            margin: 20px 0;
-            font-size: 13px;
-            color: var(--text-dim);
-        }
-
-        .checkbox-container input {
-            margin-top: 3px;
-        }
-    </style>
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+<body class="gradient-bg">
 
-<body>
-
-<div class="auth-container">
-    <header class="brand-header">
-        <div class="logo-icon mb-4" style="margin: 0 auto 16px;">
-            <i class='bx bxs-parking'></i>
-        </div>
-        <h1>Join SmartPark</h1>
-        <p style="color: var(--text-dim); margin-top: 8px;">Create your account to start booking</p>
-    </header>
-
-    <main class="card auth-card">
-        <form id="signupForm">
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <div class="input-wrapper">
-                    <i class='bx bx-user'></i>
-                    <input id="name" type="text" placeholder="John Doe" required>
-                </div>
-                <div class="error" id="nameError" style="color: var(--error); font-size: 12px; display: none; margin-top: 4px;">
-                    Please enter your full name
-                </div>
+<div class="app-wrapper">
+    <div class="auth-visual-bg"></div>
+    
+    <div class="auth-container animate-fade">
+        <div class="glass-card auth-card">
+            <div class="logo-section">
+                <div class="logo-icon"><i class="fas fa-parking"></i></div>
+                <h1 class="gradient-text">Join Smart Parking</h1>
+                <p>Create your secure account</p>
             </div>
 
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <div class="input-wrapper">
-                    <i class='bx bx-envelope'></i>
-                    <input id="email" type="email" placeholder="name@company.com" required>
-                </div>
-                <div class="error" id="emailError" style="color: var(--error); font-size: 12px; display: none; margin-top: 4px;">
-                    Please enter a valid email address
-                </div>
-            </div>
-
-            <div class="form-grid">
+            <div class="form-section">
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label>Full Name</label>
                     <div class="input-wrapper">
-                        <i class='bx bx-lock-alt'></i>
-                        <input id="password" type="password" placeholder="••••••••" required>
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="name" class="premium-input" placeholder="John Doe">
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label for="confirm">Confirm Password</label>
+                    <label>Email Address</label>
                     <div class="input-wrapper">
-                        <i class='bx bx-check-shield'></i>
-                        <input id="confirm" type="password" placeholder="••••••••" required>
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" class="premium-input" placeholder="name@company.com">
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" class="premium-input" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <button class="btn-premium" style="width: 100%; margin-top: 10px;" onclick="signup()">
+                    <span>Create Account</span>
+                    <i class="fas fa-user-plus"></i>
+                </button>
             </div>
-            <div class="error" id="passError" style="color: var(--error); font-size: 12px; display: none; margin-top: -10px; margin-bottom: 10px;">
-                Passwords must match and be 6+ characters
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="login.html">Sign in here</a></p>
             </div>
-
-            <div class="checkbox-container">
-                <input type="checkbox" id="terms" required>
-                <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
-            </div>
-
-            <button class="btn btn-primary" type="submit" style="width: 100%;">
-                Create Account <i class='bx bx-user-plus'></i>
-            </button>
-        </form>
-
-        <div class="divider">OR REGISTER WITH</div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <button class="btn btn-secondary">
-                <i class='bx bxl-google'></i> Google
-            </button>
-            <button class="btn btn-secondary">
-                <i class='bx bxl-apple'></i> Apple
-            </button>
         </div>
-    </main>
-
-    <div class="footer-text">
-        Already have an account? <a href="login.html" style="font-weight: 700;">Sign In</a>
     </div>
 </div>
 
-<script>
-    const form = document.getElementById("signupForm");
+<style>
+/* Page Specific Styles */
+.app-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.auth-container {
+    width: 100%;
+    max-width: 440px;
+}
+.auth-card {
+    padding: 40px;
+}
+.logo-section {
+    text-align: center;
+    margin-bottom: 32px;
+}
+.logo-section h1 {
+    font-size: 28px;
+    margin: 12px 0 4px;
+}
+.logo-section p {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+.logo-icon {
+    width: 54px;
+    height: 54px;
+    background: var(--accent-blue);
+    border-radius: 14px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    box-shadow: 0 10px 20px -5px var(--accent-blue-glow);
+}
+.auth-footer {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+.auth-footer a {
+    color: var(--accent-blue);
+    font-weight: 600;
+}
+</style>
 
-    form.addEventListener("submit", function(e) {
-        e.preventDefault();
-        
-        let name = document.getElementById("name").value.trim();
-        let email = document.getElementById("email").value.trim();
-        let password = document.getElementById("password").value;
-        let confirm = document.getElementById("confirm").value;
-        let valid = true;
-
-        if (name === "") {
-            document.getElementById("nameError").style.display = "block";
-            valid = false;
-        } else {
-            document.getElementById("nameError").style.display = "none";
-        }
-
-        if (!email.includes("@")) {
-            document.getElementById("emailError").style.display = "block";
-            valid = false;
-        } else {
-            document.getElementById("emailError").style.display = "none";
-        }
-
-        if (password.length < 6 || password !== confirm) {
-            document.getElementById("passError").style.display = "block";
-            valid = false;
-        } else {
-            document.getElementById("passError").style.display = "none";
-        }
-
-        if (valid) {
-            const btn = form.querySelector('button');
-            btn.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Creating Account...";
-            btn.style.opacity = "0.7";
-            btn.style.pointerEvents = "none";
-
-            setTimeout(() => {
-                alert("Account Created Successfully!");
-                window.location.href = "login.html";
-            }, 1000);
-        }
-    });
-</script>
-
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
 </body>
-</html>
+</html>

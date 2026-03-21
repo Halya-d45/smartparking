@@ -1,56 +1,117 @@
-function bookSlot(slot)
-{
-alert("Slot " + slot + " booked successfully");
-}
+// Initialize Map
+var map = L.map('map').setView(CONFIG.DEFAULT_CENTER, CONFIG.DEFAULT_ZOOM);
 
-var map = L.map('map').setView([16.3067, 80.4365], 13);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
+// Premium Map Layer
+L.tileLayer(CONFIG.MAP_STYLE, {
+    attribution: '&copy; OpenStreetMap &copy; CARTO'
 }).addTo(map);
 
-async function searchPlace(){
+async function searchPlace() {
+    let place = document.getElementById("placeSearch").value;
+    if (!place) return;
 
-let place = document.getElementById("placeSearch").value;
+    try {
+        let response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${place}`);
+        let data = await response.json();
 
-let response = await fetch(
-`https://nominatim.openstreetmap.org/search?format=json&q=${place}`
-);
-
-let data = await response.json();
-
-let lat = data[0].lat;
-let lon = data[0].lon;
-
-map.setView([lat, lon], 15);
-
-findParking(lat, lon);
-
+        if (data && data.length > 0) {
+            let lat = data[0].lat;
+            let lon = data[0].lon;
+            map.setView([lat, lon], 15);
+            findParking(lat, lon);
+        } else {
+            alert("Place not found");
+        }
+    } catch (err) {
+        console.error(err);
+    }
 }
 
-async function findParking(lat, lon){
+async function findParking(lat, lon) {
+    const listContainer = document.getElementById("parkingList");
+    listContainer.innerHTML = '<div class="loader">Scanning for slots...</div>';
 
-let query = `
-[out:json];
-node["amenity"="parking"](around:500,${lat},${lon});
-out;
-`;
+    let query = `
+        [out:json];
+        node["amenity"="parking"](around:2000,${lat},${lon});
+        out;
+    `;
 
-let response = await fetch(
-"https://overpass-api.de/api/interpreter",
-{
-method:"POST",
-body:query
-});
+    try {
+        let response = await fetch("https://overpass-api.de/api/interpreter", {
+            method: "POST",
+            body: query
+        });
+        let data = await response.json();
 
-let data = await response.json();
+        // Sync with our Backend
+        let syncRes = await fetch(`${CONFIG.API_BASE}/parking/sync`, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ elements: data.elements })
+        });
+        let syncedData = await syncRes.json();
 
-data.elements.forEach(p => {
+        renderParking(syncedData);
+    } catch (err) {
+        console.error(err);
+        listContainer.innerHTML = '<p class="error">Failed to fetch parking data.</p>';
+    }
+}
 
-L.marker([p.lat, p.lon])
-.addTo(map)
-.bindPopup("Parking Available");
+function renderParking(parkingLots) {
+    const listContainer = document.getElementById("parkingList");
+    listContainer.innerHTML = "";
+    
+    // Clear existing markers
+    map.eachLayer((layer) => {
+        if (layer instanceof L.Marker) map.removeLayer(layer);
+    });
 
-});
+    if (parkingLots.length === 0) {
+        listContainer.innerHTML = '<p class="empty-state">No parking slots found in this area.</p>';
+        return;
+    }
 
+    parkingLots.forEach(p => {
+        // Add to Sidebar
+        const item = document.createElement("div");
+        item.className = "parking-item glass-card mb-4 animate-fade";
+        item.innerHTML = `
+            <div class="parking-info">
+                <h4>${p.name}</h4>
+                <p><i class="fas fa-map-marker-alt"></i> ${p.location}</p>
+                <div class="parking-meta">
+                    <span class="slots-count">${p.availableSlots}/${p.totalSlots} available</span>
+                    <span class="price">$${p.pricePerHour}/hr</span>
+                </div>
+                <button class="btn-premium btn-sm" onclick="showDetails('${p.overpassId}')">Select Slot</button>
+            </div>
+        `;
+        listContainer.appendChild(item);
+
+        // Add Marker to Map
+        const markerIcon = L.divIcon({
+            className: 'custom-marker',
+            html: `<div class="marker-pin ${p.availableSlots > 0 ? 'available' : 'full'}">
+                    <i class="fas fa-parking"></i>
+                   </div>`,
+            iconSize: [30, 30]
+        });
+
+        L.marker([p.latitude, p.longitude], { icon: markerIcon })
+            .addTo(map)
+            .bindPopup(`
+                <div class="map-popup">
+                    <h4>${p.name}</h4>
+                    <p>${p.availableSlots} slots available</p>
+                    <p><strong>$${p.pricePerHour}/hr</strong></p>
+                    <button class="btn-premium btn-sm" onclick="showDetails('${p.overpassId}')">Book Now</button>
+                </div>
+            `);
+    });
+}
+
+function showDetails(id) {
+    window.location.href = `parking-details.html?id=${id}`;
 }

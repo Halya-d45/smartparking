@@ -1,14 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const parkingController = require("../controllers/parkingController");
 
-const Parking = require("../models/Parking");
-
-router.get("/",async(req,res)=>{
-
-const parking = await Parking.find();
-
-res.json(parking);
-
-});
+router.get("/", parkingController.getAllParking);
+router.get("/:id", parkingController.getParkingById);
+router.post("/sync", parkingController.syncWithOverpass);
 
 module.exports = router;

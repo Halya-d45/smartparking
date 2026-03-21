@@ -3,173 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Bookings - SmartPark Premium</title>
-
-    <!-- Global Styles & Fonts -->
+    <title>My Bookings | Smart Parking</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
-    <style>
-        body {
-            background: var(--bg-deep);
-            padding-bottom: 80px;
-        }
-
-        .bookings-container {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 24px 20px;
-        }
-
-        .booking-card {
-            margin-bottom: 16px;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .booking-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(45, 99, 255, 0.1);
-            color: var(--primary);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
-        .booking-details {
-            flex: 1;
-        }
-
-        .booking-details h3 {
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-
-        .booking-details p {
-            font-size: 13px;
-            color: var(--text-dim);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .status-pill {
-            padding: 6px 12px;
-            border-radius: 50px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-confirmed { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-        .status-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-        .status-completed { background: rgba(138, 148, 166, 0.15); color: #cbd5e1; }
-
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-            color: var(--text-muted);
-        }
-
-        .empty-state i {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-    </style>
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+<body class="bookings-page gradient-bg">
 
-<body>
+<nav class="navbar glass-card">
+    <div class="logo">
+        <div class="logo-icon"><i class="fas fa-parking"></i></div>
+        <span class="gradient-text">Smart Parking</span>
+    </div>
+    <div class="nav-links">
+        <a href="dashboard.html">Map View</a>
+        <a href="bookings.html" class="active">My Bookings</a>
+        <button class="btn-premium btn-sm" onclick="logout()">Logout</button>
+    </div>
+</nav>
 
-    <header class="navbar">
-        <div class="logo">
-            <div class="logo-icon"><i class='bx bxs-calendar-check'></i></div>
-            SmartPark
-        </div>
-        <div style="font-weight: 600;">My Bookings</div>
-        <div style="width: 40px;"></div>
+<div class="app-container content-section animate-fade">
+    <header class="section-header">
+        <h1>My Bookings</h1>
+        <p>Manage your active and past parking sessions</p>
     </header>
 
-    <main class="bookings-container">
-        <div id="bookingList">
-            <!-- Rendered by JS -->
-            <div class="empty-state">
-                <i class='bx bx-calendar-x'></i>
-                <h3>No bookings yet</h3>
-                <p>Browse the map to find and book your perfect parking spot.</p>
-                <a href="dashboard.html" class="btn btn-primary mt-4">Explore Map</a>
-            </div>
-        </div>
-    </main>
-
-    <!-- Bottom Nav -->
-    <div class="navbar" style="position: fixed; bottom: 0; top: auto; width: 100%; border-top: 1px solid var(--border-color); border-bottom: none; padding: 10px 0;">
-        <div style="display: flex; width: 100%; justify-content: space-around; align-items: center;">
-            <a href="dashboard.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-dim);">
-                <i class='bx bx-map-alt' style="font-size: 24px;"></i>
-                <span style="font-size: 10px; font-weight: 600;">Explore</span>
-            </a>
-            <a href="saved.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-dim);">
-                <i class='bx bx-bookmark' style="font-size: 24px;"></i>
-                <span style="font-size: 10px; font-weight: 600;">Saved</span>
-            </a>
-            <a href="bookings.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--primary);">
-                <i class='bx bxs-calendar-check' style="font-size: 24px;"></i>
-                <span style="font-size: 10px; font-weight: 600;">Bookings</span>
-            </a>
-            <a href="profile.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-dim);">
-                <i class='bx bx-user-circle' style="font-size: 24px;"></i>
-                <span style="font-size: 10px; font-weight: 600;">Profile</span>
-            </a>
+    <div class="glass-card table-card">
+        <table class="premium-table">
+            <thead>
+                <tr>
+                    <th>Parking Lot</th>
+                    <th>Slot</th>
+                    <th>Date</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="bookingsTable">
+                <!-- Data dynamic -->
+            </tbody>
+        </table>
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <i class="fas fa-calendar-times"></i>
+            <p>You haven't made any bookings yet.</p>
+            <a href="dashboard.html" class="btn-premium btn-sm mt-4">Find Parking</a>
         </div>
     </div>
+</div>
 
-    <script>
-        let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-        const bookingList = document.getElementById("bookingList");
+<style>
+.content-section { margin-top: 40px; }
+.section-header { margin-bottom: 30px; }
+.section-header h1 { font-size: 32px; margin-bottom: 8px; }
 
-        function renderBookings() {
-            if (bookings.length === 0) return; // Keep default empty state
+.table-card { padding: 0; overflow: hidden; }
+.premium-table { width: 100%; border-collapse: collapse; }
+.premium-table th { 
+    text-align: left; 
+    padding: 20px; 
+    background: rgba(255,255,255,0.03); 
+    font-size: 13px; 
+    color: var(--text-muted); 
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.premium-table td { padding: 20px; border-bottom: 1px solid var(--line-soft); font-size: 14px; }
+.premium-table tr:last-child td { border: none; }
 
-            bookingList.innerHTML = "";
-            bookings.forEach((b, index) => {
-                let statusClass = "status-pending";
-                if (b.status === "Confirmed") statusClass = "status-confirmed";
-                if (b.status === "Completed") statusClass = "status-completed";
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.status-confirmed { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 
-                const card = `
-                    <div class="card booking-card" style="animation: slideIn 0.4s ease-out ${index * 0.1}s both;">
-                        <div class="booking-icon">
-                            <i class='bx bxs-parking'></i>
-                        </div>
-                        <div class="booking-details">
-                            <h3>${b.place}</h3>
-                            <p><i class='bx bx-map'></i> ${b.address}</p>
-                            <p><i class='bx bx-time-five'></i> ${b.date} • ${b.time}</p>
-                        </div>
-                        <div class="status-pill ${statusClass}">
-                            ${b.status}
-                        </div>
-                    </div>
-                `;
-                bookingList.innerHTML += card;
-            });
+.empty-state { text-align: center; padding: 60px; color: var(--text-muted); }
+.empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+</style>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    async function loadBookings() {
+        if(!user) return;
+
+        try {
+            const res = await fetch(`${CONFIG.API_BASE}/booking?userId=${user.id}`);
+            const bookings = await res.json();
+
+            const table = document.getElementById("bookingsTable");
+            const empty = document.getElementById("emptyState");
+
+            if(bookings.length === 0) {
+                empty.style.display = "block";
+                return;
+            }
+
+            table.innerHTML = bookings.map(b => `
+                <tr>
+                    <td><strong>Lot ID: ${b.parkingId}</strong></td>
+                    <td><span class="badge badge-primary">${b.slot}</span></td>
+                    <td>${new Date(b.date).toLocaleDateString()}</td>
+                    <td>${b.duration} Hours</td>
+                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                    <td><button class="btn btn-outline btn-sm">View Receipt</button></td>
+                </tr>
+            `).join('');
+
+        } catch (err) {
+            console.error(err);
         }
+    }
 
-        renderBookings();
-    </script>
-
-    <style>
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-    </style>
+    loadBookings();
+</script>
 </body>
 </html>
-

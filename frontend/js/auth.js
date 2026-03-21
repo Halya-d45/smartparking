@@ -1,55 +1,68 @@
-const API = "https://backend-api-uhdp.onrender.com/api/auth";
+const AUTH_API = `${CONFIG.API_BASE}/auth`;
 
-async function signup(){
+async function signup() {
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-const name = document.getElementById("name").value;
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
+    if (!name || !email || !password) {
+        alert("Please fill in all fields");
+        return;
+    }
 
-const res = await fetch(API+"/signup",{
+    try {
+        const res = await fetch(`${AUTH_API}/signup`, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+        });
 
-method:"POST",
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({name,email,password})
-
-});
-
-const data = await res.json();
-
-alert(data.message);
-
-window.location.href="login.html";
-
+        const data = await res.json();
+        if (res.ok) {
+            alert("Success: " + data.message);
+            window.location.href = "login.html";
+        } else {
+            alert("Error: " + data.error);
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Network error. Please try again.");
+    }
 }
 
+async function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-async function login(){
+    if (!email || !password) {
+        alert("Please enter both email and password");
+        return;
+    }
 
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
+    try {
+        const res = await fetch(`${AUTH_API}/login`, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
 
-const res = await fetch(API+"/login",{
+        const data = await res.json();
 
-method:"POST",
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({email,password})
-
-});
-
-const data = await res.json();
-
-if(data.user){
-
-localStorage.setItem("user",JSON.stringify(data.user));
-
-window.location.href="dashboard.html";
-
+        if (data.token) {
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+            window.location.href = "dashboard.html";
+        } else {
+            alert("Login Failed: " + (data.error || "Invalid credentials"));
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Network error. Please try again.");
+    }
 }
 
-else{
-
-alert(data.error);
-
-}
-
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
 }

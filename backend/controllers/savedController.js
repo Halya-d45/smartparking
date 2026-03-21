@@ -43,8 +43,7 @@ exports.getStats = async (req, res) => {
     try {
         const userId = req.user.id;
         const activeBookings = await Booking.countDocuments({ 
-            userId, 
-            status: "confirmed" // Assuming active means confirmed
+            userId: userId.toString() 
         });
         const savedPlaces = await SavedParking.countDocuments({ userId });
 

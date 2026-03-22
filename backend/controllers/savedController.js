@@ -43,15 +43,19 @@ exports.getStats = async (req, res) => {
     try {
         const userId = req.user.id;
         const mongoose = require("mongoose");
+        const uId = new mongoose.Types.ObjectId(userId);
         
-        // Count bookings (stored as string in our schema)
+        // Count bookings (Try both formats for safety during transition)
         const activeBookings = await Booking.countDocuments({ 
-            userId: userId.toString()
+            $or: [
+                { userId: userId.toString() },
+                { userId: uId }
+            ]
         });
 
-        // Count saved places (stored as ObjectId)
+        // Count saved places
         const savedPlaces = await SavedParking.countDocuments({ 
-            userId: new mongoose.Types.ObjectId(userId)
+            userId: uId
         });
 
         res.json({

@@ -2,8 +2,9 @@ const Booking = require("../models/Booking");
 const Parking = require("../models/Parking");
 
 exports.createBooking = async (req, res) => {
-    const { userId, parkingId, slot, duration } = req.body;
     try {
+        const { parkingId, slot, duration } = req.body;
+        const userId = req.user.id;
         const parking = await Parking.findOne({ overpassId: parkingId });
         if (!parking) return res.status(404).json({ error: "Parking lot not found" });
 

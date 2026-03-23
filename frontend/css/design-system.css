@@ -5,36 +5,38 @@
 :root {
     /* PRIMARY PALETTE - ELECTRIC FUTURISM */
     --accent-blue: #3b82f6;
-    --accent-blue-glow: rgba(59, 130, 246, 0.35);
+    --accent-blue-glow: rgba(59, 130, 246, 0.4);
     --accent-cyan: #22d3ee;
+    --accent-indigo: #6366f1;
     
     /* NEUTRALS - DEEP ONYX & SLATE */
-    --bg-base: #020617;
-    --bg-surface: #0f172a;
-    --bg-card: rgba(15, 23, 42, 0.75);
-    --bg-muted: #1e293b;
+    --bg-base: #010409;           /* Pure Onyx */
+    --bg-surface: #0d1117;        /* GitHub-style dark */
+    --bg-card: rgba(13, 17, 23, 0.85);
+    --bg-sidebar: #010409;
+    --bg-muted: #161b22;
     
     /* BORDER & LINE */
-    --line-soft: rgba(255, 255, 255, 0.08);
-    --line-border: rgba(255, 255, 255, 0.12);
-    --line-active: rgba(59, 130, 246, 0.5);
+    --line-soft: rgba(255, 255, 255, 0.05);
+    --line-border: rgba(255, 255, 255, 0.1);
+    --line-active: rgba(59, 130, 246, 0.6);
     
     /* TEXT */
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
+    --text-primary: #f0f6fc;
+    --text-secondary: #8b949e;
+    --text-muted: #484f58;
     
     /* SEMANTIC */
-    --success: #10b981;
-    --warning: #f59e0b;
-    --error: #ef4444;
+    --success: #238636;
+    --warning: #d29922;
+    --error: #f85149;
     
     /* EFFECTS */
-    --radius-sm: 10px;
-    --radius-md: 18px;
-    --radius-lg: 32px;
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
     --blur-glass: blur(20px);
-    --shadow-main: 0 25px 60px -15px rgba(0, 0, 0, 0.8);
+    --shadow-main: 0 10px 40px -10px rgba(0, 0, 0, 0.7);
     --transition-base: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 

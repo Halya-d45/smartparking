@@ -80,53 +80,63 @@ async function findParking(lat, lon, city) {
 
 function renderParking(parkingLots) {
     const listContainer = document.getElementById("parkingList");
+    const countLabel = document.getElementById("hubCount");
     listContainer.innerHTML = "";
     
+    if (countLabel) countLabel.innerText = `${parkingLots.length} Hubs Detected`;
+
     map.eachLayer((layer) => {
         if (layer instanceof L.Marker) map.removeLayer(layer);
     });
 
     if (parkingLots.length === 0) {
-        listContainer.innerHTML = '<p class="empty-state">No parking slots found.</p>';
+        listContainer.innerHTML = '<div class="empty-state-v2"><i class="fas fa-search-location"></i><p>No parking slots found.</p></div>';
         return;
     }
 
     parkingLots.forEach(p => {
         const isSaved = currentSavedIds.has(p.overpassId);
+        const availabilityPercent = Math.min(100, (p.availableSlots / p.totalSlots) * 100);
 
         const item = document.createElement("div");
-        item.className = "parking-item glass-card mb-4 animate-fade";
+        item.className = "parking-card-premium animate-fade";
         item.innerHTML = `
-            <div class="parking-info">
-                <div class="item-header">
-                    <h4>${p.name || 'Unnamed Parking'}</h4>
-                    <button class="save-btn ${isSaved ? 'active' : ''}" data-id="${p.overpassId}" onclick="handleSaveClick(this)">
-                        <i class="${isSaved ? 'fas' : 'far'} fa-heart"></i>
-                    </button>
-                </div>
-                <p><i class="fas fa-map-marker-alt"></i> ${p.location}</p>
-                <div class="parking-meta">
-                    <span class="slots-count">${p.availableSlots}/${p.totalSlots} available</span>
-                    <span class="price">$${p.pricePerHour}/hr</span>
-                </div>
-                <button class="btn-premium btn-sm w-100 mt-2" onclick="showDetails('${p.overpassId}')">Select Slot</button>
+            <div class="card-header">
+                <h4>${p.name || 'Unnamed Parking'}</h4>
+                <button class="save-btn ${isSaved ? 'active' : ''}" data-id="${p.overpassId}" onclick="handleSaveClick(this)">
+                    <i class="${isSaved ? 'fas' : 'far'} fa-heart"></i>
+                </button>
             </div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+                <i class="fas fa-map-marker-alt"></i> ${p.location}
+            </p>
+            <div class="availability-bar">
+                <div class="progress-fill" style="width: ${availabilityPercent}%"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                <span class="price-tag">$${p.pricePerHour}/hr</span>
+                <span style="font-size: 12px; color: ${p.availableSlots > 0 ? 'var(--success)' : 'var(--error)'}; font-weight: 700;">
+                    ${p.availableSlots} slots free
+                </span>
+            </div>
+            <button class="btn-premium btn-sm w-100 mt-4 btn-glow" onclick="showDetails('${p.overpassId}')">Select Hub</button>
         `;
         listContainer.appendChild(item);
 
         const markerIcon = L.divIcon({
             className: 'custom-marker',
             html: `<div class="marker-pin ${p.availableSlots > 0 ? 'available' : 'full'}"><i class="fas fa-parking"></i></div>`,
-            iconSize: [30, 30]
+            iconSize: [36, 36],
+            iconAnchor: [18, 36]
         });
 
         L.marker([p.latitude, p.longitude], { icon: markerIcon })
             .addTo(map)
             .bindPopup(`
-                <div class="map-popup">
-                    <h4>${p.name || 'Unnamed Parking'}</h4>
-                    <p>${p.availableSlots} slots available</p>
-                    <button class="btn-premium btn-sm" onclick="showDetails('${p.overpassId}')">Book Now</button>
+                <div class="map-popup glass-card" style="padding: 15px;">
+                    <h4 style="margin-bottom: 8px;">${p.name || 'Unnamed Parking'}</h4>
+                    <p style="font-size: 13px; margin-bottom: 12px;">${p.availableSlots} slots available</p>
+                    <button class="btn-premium btn-sm" onclick="showDetails('${p.overpassId}')">Book Hub</button>
                 </div>
             `);
     });

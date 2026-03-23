@@ -25,172 +25,61 @@
     </div>
 </nav>
 
-<div class="app-container">
-    <header class="dashboard-header animate-fade">
-        <div class="welcome-text">
-            <h1>Welcome back, <span id="userName">User</span></h1>
-            <p>Ready to find your perfect parking spot?</p>
+<div class="dashboard-shell">
+    <aside class="sidebar-nav glass-card">
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fas fa-parking"></i></div>
+            <span class="gradient-text">Smart Parking</span>
         </div>
-        <div class="search-box glass-card">
-            <i class="fas fa-search"></i>
-            <input type="text" id="placeSearch" placeholder="Search for a location...">
-            <button class="btn-premium" onclick="searchPlace()">Search</button>
+        <div class="user-profile-small">
+            <div class="avatar-mini"><i class="fas fa-user-shield"></i></div>
+            <div class="user-meta">
+                <span id="userNameHeader">Sahazad Khan</span>
+                <p>Enterprise Plan</p>
+            </div>
         </div>
-    </header>
+        <div class="side-links">
+            <a href="dashboard.html" class="active"><i class="fas fa-map-marked-alt"></i> Map Console</a>
+            <a href="bookings.html"><i class="fas fa-calendar-check"></i> My Sessions</a>
+            <a href="saved.html"><i class="fas fa-heart"></i> Saved Hubs</a>
+            <a href="profile.html"><i class="fas fa-cog"></i> Gear & Settings</a>
+        </div>
+        <button class="logout-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Exit Session</button>
+    </aside>
 
-    <main class="content-grid animate-fade">
-        <div class="map-section glass-card">
-            <div id="map"></div>
-        </div>
+    <main class="dashboard-main">
+        <header class="top-bar glass-card">
+            <div class="search-engine">
+                <i class="fas fa-search"></i>
+                <input type="text" id="placeSearch" placeholder="Find near location (e.g. London, Chennai)">
+                <button class="btn-premium btn-glow" onclick="searchPlace()">Locate Now</button>
+            </div>
+            <div class="header-stats">
+                <div class="mini-stat"><i class="fas fa-bolt color-blue"></i> <span id="activeBookingsCount">0</span> Active</div>
+                <div class="mini-stat"><i class="fas fa-bookmark color-cyan"></i> <span id="savedPlacesCount">0</span> Saved</div>
+            </div>
+        </header>
 
-        <aside class="quick-stats">
-            <div class="glass-card stat-card">
-                <i class="fas fa-calendar-check color-blue"></i>
-                <div class="stat-info">
-                    <h3 id="activeBookingsCount">0</h3>
-                    <p>Active Bookings</p>
+        <section class="main-workspace">
+            <div class="map-container glass-card shadow-premium">
+                <div id="map"></div>
+            </div>
+            
+            <div class="results-panel glass-card shadow-premium">
+                <div class="panel-header">
+                    <h3>Nearby Hubs</h3>
+                    <span class="hub-count" id="hubCount">Scanning...</span>
+                </div>
+                <div id="parkingList" class="parking-list-optimized">
+                    <div class="empty-state-v2">
+                        <i class="fas fa-search-location"></i>
+                        <p>Initiate a search to discover<br>premium parking slots.</p>
+                    </div>
                 </div>
             </div>
-            <div class="glass-card stat-card">
-                <i class="fas fa-bookmark color-cyan"></i>
-                <div class="stat-info">
-                    <h3 id="savedPlacesCount">0</h3>
-                    <p>Saved Places</p>
-                </div>
-            </div>
-            <div class="glass-card parking-list-card">
-                <h3>Nearby Parking</h3>
-                <div id="parkingList" class="parking-list">
-                    <p class="empty-state">Search an area to find slots...</p>
-                </div>
-            </div>
-        </aside>
+        </section>
     </main>
 </div>
-
-<style>
-/* Dashboard Specific Styles */
-.dashboard-page {
-    /* Prevent body scroll to enable app-like feel */
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-.navbar {
-    margin: 0;
-    border-radius: 0;
-    padding: 0 60px;
-    height: 80px;
-}
-
-.app-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 40px;
-    gap: 20px;
-    overflow: hidden; /* Important for inner scroll */
-}
-
-.dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.search-box {
-    display: flex;
-    align-items: center;
-    padding: 8px 8px 8px 20px;
-    width: 100%;
-    max-width: 500px;
-    border-radius: 50px;
-}
-
-.search-box input {
-    background: transparent;
-    border: none;
-    color: white;
-    padding: 10px;
-    width: 100%;
-    outline: none;
-}
-
-.content-grid {
-    display: flex;
-    gap: 24px;
-    flex: 1;
-    min-height: 0; /* Critical for flex child scroll */
-}
-
-.map-section {
-    flex: 1;
-    padding: 0;
-    overflow: hidden;
-    height: 100%;
-}
-
-#map {
-    width: 100%;
-    height: 100%;
-}
-
-.quick-stats {
-    width: 380px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    flex-shrink: 0;
-    height: 100%;
-}
-
-.stat-card {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 20px;
-    flex-shrink: 0;
-}
-
-.parking-list-card {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 24px;
-    overflow: hidden; /* Parent overflow hidden */
-}
-
-.parking-list-card h3 {
-    margin-bottom: 20px;
-    font-size: 18px;
-    flex-shrink: 0;
-}
-
-.parking-list {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 8px;
-}
-
-/* Custom internal scroll for the list */
-.parking-list::-webkit-scrollbar {
-    width: 6px;
-}
-.parking-list::-webkit-scrollbar-thumb {
-    background: var(--line-active);
-    border-radius: 10px;
-}
-
-.empty-state {
-    color: var(--text-muted);
-    font-size: 14px;
-    text-align: center;
-    margin-top: 60px;
-}
-</style>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="js/config.js"></script>
@@ -204,7 +93,8 @@
     if(!user || !token) {
         window.location.href = "login.html";
     } else {
-        document.getElementById("userName").innerText = user.name;
+        const nameLabel = document.getElementById("userNameHeader");
+        if(nameLabel) nameLabel.innerText = user.name;
         loadStats();
     }
 
@@ -215,12 +105,19 @@
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const stats = await res.json();
-            document.getElementById("activeBookingsCount").innerText = stats.activeBookings || 0;
-            document.getElementById("savedPlacesCount").innerText = stats.savedPlaces || 0;
+            
+            // Update the new mini-stats in top-bar
+            const bookingsEl = document.getElementById("activeBookingsCount");
+            const savedEl = document.getElementById("savedPlacesCount");
+            
+            if(bookingsEl) bookingsEl.innerText = stats.activeBookings || 0;
+            if(savedEl) savedEl.innerText = stats.savedPlaces || 0;
         } catch (err) {
             console.error("Stats Error:", err);
         }
     }
 </script>
+</body>
+</html>
 </body>
 </html>

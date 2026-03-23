@@ -25,60 +25,37 @@
     </div>
 </nav>
 
-<div class="dashboard-shell">
-    <aside class="sidebar-nav glass-card">
-        <div class="logo-area">
-            <div class="logo-icon"><i class="fas fa-parking"></i></div>
-            <span class="gradient-text">Smart Parking</span>
+<div class="dashboard-main-v2">
+    <header class="top-bar glass-card">
+        <div class="search-engine">
+            <i class="fas fa-search"></i>
+            <input type="text" id="placeSearch" placeholder="Find near location (e.g. London, Chennai)">
+            <button class="btn-premium btn-glow" onclick="searchPlace()">Locate Now</button>
         </div>
-        <div class="user-profile-small">
-            <div class="avatar-mini"><i class="fas fa-user-shield"></i></div>
-            <div class="user-meta">
-                <span id="userNameHeader">Sahazad Khan</span>
-                <p>Enterprise Plan</p>
-            </div>
+        <div class="header-stats">
+            <div class="mini-stat"><i class="fas fa-bolt color-blue"></i> <span id="activeBookingsCount">0</span> Active</div>
+            <div class="mini-stat"><i class="fas fa-bookmark color-cyan"></i> <span id="savedPlacesCount">0</span> Saved</div>
         </div>
-        <div class="side-links">
-            <a href="dashboard.html" class="active"><i class="fas fa-map-marked-alt"></i> Map Console</a>
-            <a href="bookings.html"><i class="fas fa-calendar-check"></i> My Sessions</a>
-            <a href="saved.html"><i class="fas fa-heart"></i> Saved Hubs</a>
-            <a href="profile.html"><i class="fas fa-cog"></i> Gear & Settings</a>
-        </div>
-        <button class="logout-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Exit Session</button>
-    </aside>
+    </header>
 
-    <main class="dashboard-main">
-        <header class="top-bar glass-card">
-            <div class="search-engine">
-                <i class="fas fa-search"></i>
-                <input type="text" id="placeSearch" placeholder="Find near location (e.g. London, Chennai)">
-                <button class="btn-premium btn-glow" onclick="searchPlace()">Locate Now</button>
+    <section class="main-workspace">
+        <div class="map-container glass-card shadow-premium">
+            <div id="map"></div>
+        </div>
+        
+        <div class="results-panel glass-card shadow-premium">
+            <div class="panel-header">
+                <h3>Nearby Hubs</h3>
+                <span class="hub-count" id="hubCount">Scanning...</span>
             </div>
-            <div class="header-stats">
-                <div class="mini-stat"><i class="fas fa-bolt color-blue"></i> <span id="activeBookingsCount">0</span> Active</div>
-                <div class="mini-stat"><i class="fas fa-bookmark color-cyan"></i> <span id="savedPlacesCount">0</span> Saved</div>
-            </div>
-        </header>
-
-        <section class="main-workspace">
-            <div class="map-container glass-card shadow-premium">
-                <div id="map"></div>
-            </div>
-            
-            <div class="results-panel glass-card shadow-premium">
-                <div class="panel-header">
-                    <h3>Nearby Hubs</h3>
-                    <span class="hub-count" id="hubCount">Scanning...</span>
-                </div>
-                <div id="parkingList" class="parking-list-optimized">
-                    <div class="empty-state-v2">
-                        <i class="fas fa-search-location"></i>
-                        <p>Initiate a search to discover<br>premium parking slots.</p>
-                    </div>
+            <div id="parkingList" class="parking-list-optimized">
+                <div class="empty-state-v2">
+                    <i class="fas fa-search-location"></i>
+                    <p>Initiate a search to discover<br>premium parking slots.</p>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

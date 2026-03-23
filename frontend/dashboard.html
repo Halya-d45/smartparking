@@ -71,34 +71,36 @@
 <style>
 /* Dashboard Specific Styles */
 .dashboard-page {
-    padding-bottom: 40px;
+    /* Prevent body scroll to enable app-like feel */
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
+
 .navbar {
     margin: 0;
     border-radius: 0;
-    padding: 12px 60px;
-    height: 70px;
+    padding: 0 60px;
+    height: 80px;
 }
-.nav-links {
+
+.app-container {
+    flex: 1;
     display: flex;
-    align-items: center;
-    gap: 24px;
+    flex-direction: column;
+    padding: 20px 40px;
+    gap: 20px;
+    overflow: hidden; /* Important for inner scroll */
 }
-.nav-links a {
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-}
-.nav-links a.active {
-    color: var(--accent-blue);
-    font-weight: 700;
-}
+
 .dashboard-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 40px 0;
+    flex-shrink: 0;
 }
+
 .search-box {
     display: flex;
     align-items: center;
@@ -107,6 +109,7 @@
     max-width: 500px;
     border-radius: 50px;
 }
+
 .search-box input {
     background: transparent;
     border: none;
@@ -115,59 +118,77 @@
     width: 100%;
     outline: none;
 }
-.search-box i {
-    color: var(--text-muted);
-}
+
 .content-grid {
-    display: grid;
-    grid-template-columns: 1fr 340px;
+    display: flex;
     gap: 24px;
-    height: calc(100vh - 250px);
-    min-height: 500px;
+    flex: 1;
+    min-height: 0; /* Critical for flex child scroll */
 }
+
 .map-section {
+    flex: 1;
     padding: 0;
     overflow: hidden;
     height: 100%;
 }
+
 #map {
     width: 100%;
     height: 100%;
 }
+
 .quick-stats {
+    width: 380px;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    flex-shrink: 0;
+    height: 100%;
 }
+
 .stat-card {
     display: flex;
     align-items: center;
     gap: 20px;
     padding: 20px;
+    flex-shrink: 0;
 }
-.stat-card i {
-    font-size: 28px;
-}
-.color-blue { color: var(--accent-blue); }
-.color-cyan { color: var(--accent-cyan); }
 
 .parking-list-card {
     flex: 1;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    overflow: hidden; /* Parent overflow hidden */
 }
+
 .parking-list-card h3 {
-    margin-bottom: 16px;
-    font-size: 16px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    flex-shrink: 0;
 }
+
+.parking-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* Custom internal scroll for the list */
+.parking-list::-webkit-scrollbar {
+    width: 6px;
+}
+.parking-list::-webkit-scrollbar-thumb {
+    background: var(--line-active);
+    border-radius: 10px;
+}
+
 .empty-state {
     color: var(--text-muted);
-    font-size: 13px;
+    font-size: 14px;
     text-align: center;
-    margin-top: 40px;
-}
-.btn-sm {
-    padding: 8px 16px;
-    font-size: 12px;
+    margin-top: 60px;
 }
 </style>
 

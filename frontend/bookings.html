@@ -87,6 +87,7 @@
 .empty-state-full i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
 </style>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/auth.js"></script>
 <script>
@@ -112,19 +113,82 @@
             }
 
             table.innerHTML = bookings.map(b => `
-                <tr>
-                    <td><strong>${b.parkingId}</strong></td>
-                    <td><span class="badge-custom">${b.slot}</span></td>
+                <tr class="animate-fade">
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="logo-icon" style="width: 32px; height: 32px; font-size: 14px;"><i class="fas fa-parking"></i></div>
+                            <strong>${b.parkingId}</strong>
+                        </div>
+                    </td>
+                    <td><span class="badge-custom" style="background: rgba(59, 130, 246, 0.1); padding: 4px 12px; border-radius: 6px; color: var(--accent-blue); font-weight: 700;">${b.slot}</span></td>
                     <td>${new Date(b.date).toLocaleDateString()}</td>
                     <td>${b.duration} Hours</td>
-                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
-                    <td><button class="btn-premium btn-sm" onclick="alert('Receipt coming soon!')">Receipt</button></td>
+                    <td><span class="status-badge status-confirmed"><i class="fas fa-check-circle"></i> Confirmed</span></td>
+                    <td>
+                        <button class="btn-premium btn-sm" onclick='generateReceipt(${JSON.stringify(b)})'>
+                            <i class="fas fa-file-download"></i> Receipt
+                        </button>
+                    </td>
                 </tr>
             `).join('');
 
         } catch (err) {
             console.error(err);
         }
+    }
+
+    async function generateReceipt(b) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Header
+        doc.setFillColor(15, 23, 42); // --bg-surface
+        doc.rect(0, 0, 210, 40, 'F');
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(24);
+        doc.text("SMART PARKING", 20, 25);
+        doc.setFontSize(10);
+        doc.text("OFFICIAL BOOKING RECEIPT", 140, 25);
+        
+        // Body
+        doc.setTextColor(15, 23, 42);
+        doc.setFontSize(12);
+        doc.text(`Booking ID: ${b._id}`, 20, 60);
+        doc.text(`User: ${user.name}`, 20, 70);
+        doc.text(`Date: ${new Date(b.date).toLocaleString()}`, 20, 80);
+        
+        doc.line(20, 90, 190, 90);
+        
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Parking Details", 20, 105);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(12);
+        
+        doc.text(`Parking Lot ID:`, 20, 120);
+        doc.text(`${b.parkingId}`, 100, 120);
+        
+        doc.text(`Slot Number:`, 20, 130);
+        doc.text(`${b.slot}`, 100, 130);
+        
+        doc.text(`Duration:`, 20, 140);
+        doc.text(`${b.duration} Hours`, 100, 140);
+        
+        doc.text(`Status:`, 20, 150);
+        doc.setTextColor(16, 185, 129); // --success
+        doc.text(`CONFIRMED`, 100, 150);
+        
+        doc.line(20, 165, 190, 165);
+        
+        doc.setTextColor(100, 100, 100);
+        doc.setFontSize(10);
+        doc.text("Thank you for choosing Smart Parking. Have a safe journey!", 20, 180);
+        
+        // Footer
+        doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 280);
+        
+        doc.save(`Receipt_Booking_${b.slot}.pdf`);
     }
 
     loadBookings();

@@ -4,20 +4,20 @@
 
 :root {
     /* PRIMARY PALETTE - ELECTRIC FUTURISM */
-    --accent-blue: #3b82f6;        /* Bright Electric Blue */
-    --accent-blue-glow: rgba(59, 130, 246, 0.25);
-    --accent-cyan: #22d3ee;        /* Cyan Highlight */
+    --accent-blue: #3b82f6;
+    --accent-blue-glow: rgba(59, 130, 246, 0.35);
+    --accent-cyan: #22d3ee;
     
     /* NEUTRALS - DEEP ONYX & SLATE */
-    --bg-base: #020617;           /* Deepest Blue-Black */
-    --bg-surface: #0f172a;        /* Card Surface */
-    --bg-card: rgba(15, 23, 42, 0.7); /* Translucent Card */
-    --bg-muted: #1e293b;          /* Input/Muted Surface */
+    --bg-base: #020617;
+    --bg-surface: #0f172a;
+    --bg-card: rgba(15, 23, 42, 0.75);
+    --bg-muted: #1e293b;
     
     /* BORDER & LINE */
-    --line-soft: rgba(255, 255, 255, 0.05);
-    --line-border: rgba(255, 255, 255, 0.1);
-    --line-active: rgba(59, 130, 246, 0.4);
+    --line-soft: rgba(255, 255, 255, 0.08);
+    --line-border: rgba(255, 255, 255, 0.12);
+    --line-active: rgba(59, 130, 246, 0.5);
     
     /* TEXT */
     --text-primary: #f8fafc;
@@ -30,12 +30,12 @@
     --error: #ef4444;
     
     /* EFFECTS */
-    --radius-sm: 8px;
-    --radius-md: 14px;
-    --radius-lg: 28px;
-    --blur-glass: blur(16px);
-    --shadow-main: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
-    --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --radius-sm: 10px;
+    --radius-md: 18px;
+    --radius-lg: 32px;
+    --blur-glass: blur(20px);
+    --shadow-main: 0 25px 60px -15px rgba(0, 0, 0, 0.8);
+    --transition-base: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* BASE STYLES */
@@ -69,7 +69,7 @@ body {
 
 .gradient-bg {
     background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15), transparent 40%),
-                radial-gradient(circle at bottom left, rgba(34, 211, 238, 0.1), transparent 40%);
+        radial-gradient(circle at bottom left, rgba(34, 211, 238, 0.1), transparent 40%);
     background-attachment: fixed;
 }
 
@@ -123,7 +123,7 @@ body {
     margin-top: 4px;
 }
 
-/* BUTTONS */
+/* BUTTON*/
 .btn-premium {
     background: var(--accent-blue);
     color: white;
@@ -228,8 +228,15 @@ body {
 
 /* ANIMATIONS */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .animate-fade {
@@ -288,6 +295,14 @@ body {
 }
 
 /* UTILITIES */
-.w-100 { width: 100%; }
-.mt-4 { margin-top: 16px; }
-.mb-4 { margin-bottom: 16px; }
+.w-100 {
+    width: 100%;
+}
+
+.mt-4 {
+    margin-top: 16px;
+}
+
+.mb-4 {
+    margin-bottom: 16px;
+}

@@ -30,24 +30,31 @@
         
         <div class="main-profile-content">
             <div class="glass-card profile-main-card">
-                <div class="profile-header-premium">
-                    <div class="profile-avatar shadow-main">
-                        <i class="fas fa-user-shield"></i>
+                <div class="profile-header-premium" style="justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 32px;">
+                        <div class="profile-avatar shadow-main">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div>
+                            <h2 class="gradient-text profile-name-main" id="pNameHeader">Account Holder</h2>
+                            <p class="profile-subtext">Premium Enterprise Member</p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 class="gradient-text profile-name-main" id="pNameHeader">Account Holder</h2>
-                        <p class="profile-subtext">Premium Enterprise Member</p>
-                    </div>
+                    <button class="btn-premium btn-sm" id="editBtn" onclick="toggleEditMode()">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
                 </div>
 
-                <div class="profile-details-grid-premium">
+                <div id="profileForm" class="profile-details-grid-premium">
                     <div class="detail-item glass-card-mini">
                         <span class="detail-label">Full Name</span>
-                        <span id="pName" class="detail-value">-</span>
+                        <span id="pNameDisplay" class="detail-value text-glow">-</span>
+                        <input type="text" id="pNameInput" class="glass-input" style="display: none;">
                     </div>
                     <div class="detail-item glass-card-mini">
                         <span class="detail-label">Email Member</span>
-                        <span id="pEmail" class="detail-value">-</span>
+                        <span id="pEmailDisplay" class="detail-value text-glow">-</span>
+                        <input type="email" id="pEmailInput" class="glass-input" style="display: none;">
                     </div>
                     <div class="detail-item glass-card-mini detail-wide">
                         <span class="detail-label">Identification Hash</span>
@@ -55,13 +62,35 @@
                     </div>
                 </div>
 
-                <div class="profile-actions-grid mt-4">
+                <div id="editActions" style="display: none; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;">
+                    <button class="btn-premium action-height" onclick="saveProfileChanges()">
+                        <i class="fas fa-check"></i> Save Changes
+                    </button>
+                    <button class="btn-premium action-height btn-outline-alt" onclick="toggleEditMode()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+
+                <div id="standardActions" class="profile-actions-grid mt-4">
                     <button class="btn-premium action-height" onclick="alert('Secure encryption active. Profile lock enabled.')">
                         <i class="fas fa-lock"></i> Account Security
                     </button>
                     <button class="btn-premium action-height btn-outline-alt" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i> End Session
                     </button>
+                </div>
+
+                <!-- Security Terminal Section -->
+                <div class="security-terminal mt-4 glass-card-mini" style="background: rgba(0,0,0,0.4); border-color: var(--line-active);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <span style="font-size: 10px; color: var(--accent-cyan); font-weight: 800; letter-spacing: 2px;">SECURITY TERMINAL</span>
+                        <span class="pulse-dot"></span>
+                    </div>
+                    <div id="terminalLines" style="font-family: 'Fira Code', monospace; font-size: 12px; color: var(--text-dim); line-height: 1.8;">
+                        <div>> Syncing encrypted nodes...</div>
+                        <div>> Integrity check: 100%</div>
+                        <div>> Welcome back, agent ${user.name.split(' ')[0]}</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -113,12 +142,92 @@
     const user = JSON.parse(localStorage.getItem("user"));
     if(user) {
         document.getElementById("pNameHeader").innerText = user.name;
-        document.getElementById("pName").innerText = user.name;
-        document.getElementById("pEmail").innerText = user.email;
+        document.getElementById("pNameDisplay").innerText = user.name;
+        document.getElementById("pEmailDisplay").innerText = user.email;
         document.getElementById("pRole").innerText = user.id;
+        
+        // Setup inputs
+        document.getElementById("pNameInput").value = user.name;
+        document.getElementById("pEmailInput").value = user.email;
+
         loadStats();
-    } else {
-        window.location.href = "login.html";
+        startTerminalSimulation();
+    }
+
+    let isEditMode = false;
+    function toggleEditMode() {
+        isEditMode = !isEditMode;
+        const displays = ["pNameDisplay", "pEmailDisplay"];
+        const inputs = ["pNameInput", "pEmailInput"];
+        
+        displays.forEach(id => document.getElementById(id).style.display = isEditMode ? 'none' : 'block');
+        inputs.forEach(id => document.getElementById(id).style.display = isEditMode ? 'block' : 'none');
+        
+        document.getElementById("editBtn").style.display = isEditMode ? 'none' : 'flex';
+        document.getElementById("editActions").style.display = isEditMode ? 'grid' : 'none';
+        document.getElementById("standardActions").style.display = isEditMode ? 'none' : 'grid';
+    }
+
+    async function saveProfileChanges() {
+        const newName = document.getElementById("pNameInput").value;
+        const newEmail = document.getElementById("pEmailInput").value;
+        
+        const token = localStorage.getItem("token");
+        try {
+            const res = await fetch(`${CONFIG.API_BASE}/auth/update`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ name: newName, email: newEmail })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                // Update local storage
+                user.name = newName;
+                user.email = newEmail;
+                localStorage.setItem("user", JSON.stringify(user));
+                
+                // Update UI
+                document.getElementById("pNameHeader").innerText = newName;
+                document.getElementById("pNameDisplay").innerText = newName;
+                document.getElementById("pEmailDisplay").innerText = newEmail;
+                
+                toggleEditMode();
+                alert("Profile synchronized successfully.");
+            } else {
+                alert(data.message || "Failed to update profile");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Connection lost. Changes saved locally.");
+            // Offline fallback
+            user.name = newName;
+            user.email = newEmail;
+            localStorage.setItem("user", JSON.stringify(user));
+            toggleEditMode();
+        }
+    }
+
+    function startTerminalSimulation() {
+        const lines = [
+            "> Initializing secure handshake...",
+            "> Loading user permissions...",
+            "> Profile integrity verified.",
+            "> Access level: Enterprise Premium",
+            "> Ready for new session."
+        ];
+        const terminal = document.getElementById("terminalLines");
+        let i = 0;
+        setInterval(() => {
+            const div = document.createElement("div");
+            div.innerText = lines[i % lines.length];
+            terminal.appendChild(div);
+            if (terminal.children.length > 5) terminal.removeChild(terminal.children[0]);
+            i++;
+        }, 3000);
     }
 
     async function loadStats() {

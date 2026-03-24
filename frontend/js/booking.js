@@ -88,10 +88,17 @@ async function confirmBooking() {
 
         const data = await res.json();
         if (res.ok) {
-            alert("Booking Confirmed!");
+            alert("Booking Confirmed! Access your hub details now.");
             window.location.href = "bookings.html";
         } else {
-            alert("Error: " + data.error);
+            if (data.error === "Token is not valid" || res.status === 401) {
+                alert("Your session has securely expired. Please log in again to continue.");
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                window.location.href = "login.html";
+            } else {
+                alert("Error: " + data.error);
+            }
         }
     } catch (err) {
         console.error(err);

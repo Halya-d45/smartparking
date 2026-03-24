@@ -340,6 +340,16 @@ body {
 
 .btn-glow:hover { box-shadow: 0 0 20px var(--accent-blue-glow); }
 
+@keyframes pulse-available {
+    0% { transform: rotate(-45deg) scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+    70% { transform: rotate(-45deg) scale(1.1); box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
+    100% { transform: rotate(-45deg) scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.marker-pin.available.pulse {
+    animation: pulse-available 2s infinite;
+}
+
 /* --- PROFILE HUB ARCHITECTURE --- */
 .profile-layout-optimized {
     display: grid; 
@@ -386,11 +396,31 @@ body {
 .stat-card-cyan { background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(15, 23, 42, 0.7)); }
 .stat-icon-cyan { color: var(--accent-cyan); background: rgba(34, 211, 238, 0.1); border-color: rgba(34, 211, 238, 0.3); }
 
-.border-dashed { border-style: dashed; border-color: var(--line-active); border-width: 2px; }
-.p-30 { padding: 30px; }
-.sidebar-help-text { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; font-weight: 500; }
-.sidebar-btn-group { display: flex; flex-direction: column; gap: 15px; }
-.btn-outline-soft { background: transparent; border: 1px solid var(--line-soft); }
+.recent-hub-chip {
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line-soft);
+    border-radius: 12px;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-base);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.recent-hub-chip:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--accent-blue);
+    transform: translateY(-2px);
+}
+
+.recent-hubs-container {
+    overflow: hidden;
+    position: relative;
+}
 
 /* --- REFINED MOBILE RESPONSIVENESS --- */
 @media (max-width: 992px) {

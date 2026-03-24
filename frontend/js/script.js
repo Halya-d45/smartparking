@@ -125,7 +125,7 @@ function renderParking(parkingLots) {
 
         const markerIcon = L.divIcon({
             className: 'custom-marker',
-            html: `<div class="marker-pin ${p.availableSlots > 0 ? 'available' : 'full'}"><i class="fas fa-parking"></i></div>`,
+            html: `<div class="marker-pin ${p.availableSlots > 0 ? 'available' : 'full'} ${p.availableSlots > 10 ? 'pulse' : ''}"><i class="fas fa-parking"></i></div>`,
             iconSize: [36, 36],
             iconAnchor: [18, 36]
         });
@@ -203,11 +203,45 @@ async function toggleSave(id, name, location, lat, lon, btn) {
 }
 
 function showDetails(id) {
+    const parking = lastFetchedParking.find(p => p.overpassId === id);
+    if (parking) recordVisit(id, parking.name || 'Unnamed Hub');
     window.location.href = `parking-details.html?id=${id}`;
 }
 
 document.getElementById("placeSearch")?.addEventListener("keypress", (e) => {
     if (e.key === "Enter") searchPlace();
 });
+
+function updateRecentHubs() {
+    const recent = JSON.parse(localStorage.getItem("recent_visits") || "[]").slice(0, 3);
+    const container = document.getElementById("recentHubs");
+    if (!container) return;
+
+    if (recent.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+
+    container.style.display = 'block';
+    container.innerHTML = `
+        <p style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; font-weight: 700;">Quick Access</p>
+        <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;">
+            ${recent.map(r => `
+                <div class="glass-card recent-hub-chip" onclick="showDetails('${r.id}')">
+                    <i class="fas fa-history"></i> ${r.name}
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// Update visit on detail page or select
+function recordVisit(id, name) {
+    let recent = JSON.parse(localStorage.getItem("recent_visits") || "[]");
+    recent = recent.filter(r => r.id !== id);
+    recent.unshift({ id, name });
+    localStorage.setItem("recent_visits", JSON.stringify(recent.slice(0, 5)));
+    updateRecentHubs();
+}
 
 initDashboard();

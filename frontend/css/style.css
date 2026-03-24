@@ -224,13 +224,34 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 30px;
-    background: rgba(8, 22, 40, 0.8);
-    backdrop-filter: blur(10px);
+    padding: 0 60px;
+    height: 80px;
+    background: rgba(8, 22, 40, 0.9);
+    backdrop-filter: blur(15px);
     border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     z-index: 1000;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.nav-links a {
+    color: var(--text-dim);
+    font-size: 15px;
+    font-weight: 600;
+    transition: var(--transition-base);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: var(--accent-cyan);
 }
 
 .logo {

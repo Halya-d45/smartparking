@@ -26,40 +26,40 @@
 </nav>
 
 <div class="app-container mt-4 animate-fade">
-    <div class="profile-layout" style="display: grid; grid-template-columns: 1fr 380px; gap: 40px; max-width: 1400px; margin: 40px auto; padding: 0 40px;">
+    <div class="profile-layout-optimized">
         
         <div class="main-profile-content">
-            <div class="glass-card" style="padding: 50px;">
-                <div class="profile-header" style="display: flex; align-items: center; gap: 32px; margin-bottom: 50px;">
-                    <div class="profile-avatar shadow-main" style="width: 100px; height: 100px; background: rgba(59, 130, 246, 0.15); border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 48px; color: var(--accent-blue); border: 2px solid var(--line-active);">
+            <div class="glass-card profile-main-card">
+                <div class="profile-header-premium">
+                    <div class="profile-avatar shadow-main">
                         <i class="fas fa-user-shield"></i>
                     </div>
                     <div>
-                        <h2 class="gradient-text" style="font-size: 34px; font-weight: 800; letter-spacing: -1px;" id="pNameHeader">Account Holder</h2>
-                        <p style="color: var(--text-muted); font-size: 16px; font-weight: 500;">Premium Enterprise Member</p>
+                        <h2 class="gradient-text profile-name-main" id="pNameHeader">Account Holder</h2>
+                        <p class="profile-subtext">Premium Enterprise Member</p>
                     </div>
                 </div>
 
-                <div class="profile-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                    <div class="detail-item glass-card" style="padding: 24px; background: rgba(255,255,255,0.01); border-radius: 20px;">
-                        <span style="display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px; font-weight: 700;">Full Name</span>
-                        <span id="pName" style="font-size: 18px; font-weight: 600;">-</span>
+                <div class="profile-details-grid-premium">
+                    <div class="detail-item glass-card-mini">
+                        <span class="detail-label">Full Name</span>
+                        <span id="pName" class="detail-value">-</span>
                     </div>
-                    <div class="detail-item glass-card" style="padding: 24px; background: rgba(255,255,255,0.01); border-radius: 20px;">
-                        <span style="display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px; font-weight: 700;">Email Member</span>
-                        <span id="pEmail" style="font-size: 18px; font-weight: 600;">-</span>
+                    <div class="detail-item glass-card-mini">
+                        <span class="detail-label">Email Member</span>
+                        <span id="pEmail" class="detail-value">-</span>
                     </div>
-                    <div class="detail-item glass-card" style="grid-column: 1 / -1; padding: 24px; background: rgba(255,255,255,0.01); border-radius: 20px;">
-                        <span style="display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px; font-weight: 700;">Identification Hash</span>
-                        <span id="pRole" style="font-size: 16px; font-weight: 500; font-family: 'Fira Code', monospace; color: var(--accent-cyan);">${user.id}</span>
+                    <div class="detail-item glass-card-mini detail-wide">
+                        <span class="detail-label">Identification Hash</span>
+                        <span id="pRole" class="detail-value hash-text">${user.id}</span>
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" class="mt-4">
-                    <button class="btn-premium" style="height: 60px;" onclick="alert('Secure encryption active. Profile lock enabled.')">
+                <div class="profile-actions-grid mt-4">
+                    <button class="btn-premium action-height" onclick="alert('Secure encryption active. Profile lock enabled.')">
                         <i class="fas fa-lock"></i> Account Security
                     </button>
-                    <button class="btn-premium" style="height: 60px; background: var(--bg-surface); border: 1px solid var(--line-active);" onclick="logout()">
+                    <button class="btn-premium action-height btn-outline-alt" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i> End Session
                     </button>
                 </div>
@@ -67,7 +67,7 @@
         </div>
 
         <aside class="profile-stats-sidebar animate-fade" style="animation-delay: 0.2s;">
-            <div class="glass-card stat-card mb-4" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(15, 23, 42, 0.7));">
+            <div class="glass-card stat-card mb-4 stat-card-blue">
                 <div class="stat-icon shadow-main"><i class="fas fa-bolt"></i></div>
                 <div class="stat-details">
                     <h2 id="activeBookingsCount">0</h2>
@@ -75,8 +75,8 @@
                 </div>
             </div>
             
-            <div class="glass-card stat-card mb-4" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(15, 23, 42, 0.7));">
-                <div class="stat-icon shadow-main" style="color: var(--accent-cyan); background: rgba(34, 211, 238, 0.1); border-color: rgba(34, 211, 238, 0.3);">
+            <div class="glass-card stat-card mb-4 stat-card-cyan">
+                <div class="stat-icon shadow-main stat-icon-cyan">
                     <i class="fas fa-heart"></i>
                 </div>
                 <div class="stat-details">
@@ -85,13 +85,13 @@
                 </div>
             </div>
 
-            <div class="glass-card mt-4" style="padding: 30px; text-align: center; border-style: dashed; border-color: var(--line-active);">
-                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px; font-weight: 500;">Access your full historical activity logs and session data here.</p>
-                <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div class="glass-card mt-4 p-30 text-center border-dashed">
+                <p class="sidebar-help-text">Access your full historical activity logs and session data here.</p>
+                <div class="sidebar-btn-group">
                     <button class="btn-premium btn-sm" onclick="window.location.href='bookings.html'">
                         <i class="fas fa-history"></i> Global Activity
                     </button>
-                    <button class="btn-premium btn-sm" style="background: transparent; border: 1px solid var(--line-soft);" onclick="window.location.href='saved.html'">
+                    <button class="btn-premium btn-sm btn-outline-soft" onclick="window.location.href='saved.html'">
                         <i class="fas fa-map-marked-alt"></i> Saved Locations
                     </button>
                 </div>

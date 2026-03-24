@@ -339,3 +339,80 @@ body {
 .animate-fade { animation: fadeIn 0.5s ease-out forwards; }
 
 .btn-glow:hover { box-shadow: 0 0 20px var(--accent-blue-glow); }
+
+/* --- PROFILE HUB ARCHITECTURE --- */
+.profile-layout-optimized {
+    display: grid; 
+    grid-template-columns: 1fr 380px; 
+    gap: 40px; 
+    max-width: 1400px; 
+    margin: 40px auto; 
+    padding: 0 40px;
+}
+
+.profile-main-card { padding: 50px; border-radius: 32px; }
+.profile-header-premium { display: flex; align-items: center; gap: 32px; margin-bottom: 50px; }
+
+.profile-avatar {
+    width: 100px; height: 100px; 
+    background: rgba(59, 130, 246, 0.15); 
+    border-radius: 24px; 
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 48px; color: var(--accent-blue); 
+    border: 2px solid var(--line-active);
+}
+
+.profile-name-main { font-size: 34px; font-weight: 800; letter-spacing: -1px; }
+.profile-subtext { color: var(--text-muted); font-size: 16px; font-weight: 500; }
+
+.profile-details-grid-premium { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.glass-card-mini { 
+    padding: 24px; 
+    background: rgba(255,255,255,0.01); 
+    border-radius: 20px; 
+    border: 1px solid var(--line-soft);
+    display: flex; flex-direction: column; gap: 8px;
+}
+.detail-label { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
+.detail-value { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+.detail-wide { grid-column: 1 / -1; }
+.hash-text { font-family: 'Fira Code', monospace; color: var(--accent-cyan); font-size: 14px; word-break: break-all; }
+
+.profile-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.action-height { height: 62px; }
+.btn-outline-alt { background: var(--bg-surface); border: 1px solid var(--line-active); }
+
+.stat-card-blue { background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(15, 23, 42, 0.7)); }
+.stat-card-cyan { background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(15, 23, 42, 0.7)); }
+.stat-icon-cyan { color: var(--accent-cyan); background: rgba(34, 211, 238, 0.1); border-color: rgba(34, 211, 238, 0.3); }
+
+.border-dashed { border-style: dashed; border-color: var(--line-active); border-width: 2px; }
+.p-30 { padding: 30px; }
+.sidebar-help-text { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; font-weight: 500; }
+.sidebar-btn-group { display: flex; flex-direction: column; gap: 15px; }
+.btn-outline-soft { background: transparent; border: 1px solid var(--line-soft); }
+
+/* --- REFINED MOBILE RESPONSIVENESS --- */
+@media (max-width: 992px) {
+    .dashboard-main-v2 { height: auto; overflow: visible; padding: 15px; }
+    .main-workspace { flex-direction: column; height: auto; }
+    .map-container { height: 350px; flex: none; order: 1; border-radius: 20px; }
+    .results-panel { width: 100%; height: auto; flex: none; order: 2; border-radius: 20px; }
+    
+    .profile-layout-optimized { grid-template-columns: 1fr; padding: 20px; margin: 20px auto; gap: 20px; }
+    .profile-main-card { padding: 30px 20px; }
+}
+
+@media (max-width: 768px) {
+    .top-bar { flex-direction: column; height: auto; padding: 25px 15px; gap: 25px; align-items: stretch; }
+    .search-engine { flex-direction: column; height: auto; padding: 12px; max-width: 100%; border-radius: 20px; gap: 10px; }
+    .search-engine input { padding: 12px; text-align: center; font-size: 16px; border-bottom: 1px solid var(--line-soft); }
+    .search-engine .btn-premium { width: 100%; height: 58px; border-radius: 16px; }
+    
+    .header-stats { width: 100%; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--line-soft); }
+    .mini-stat { font-size: 13px; }
+
+    .profile-header-premium { flex-direction: column; text-align: center; gap: 20px; }
+    .profile-details-grid-premium { grid-template-columns: 1fr; gap: 15px; }
+    .profile-actions-grid { grid-template-columns: 1fr; gap: 15px; }
+}

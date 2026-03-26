@@ -16,7 +16,10 @@
         <div class="logo-icon"><i class="fas fa-parking"></i></div>
         <span class="gradient-text">Smart Parking</span>
     </div>
-    <div class="nav-links">
+    <div class="nav-toggle" id="navToggle">
+        <i class="fas fa-bars"></i>
+    </div>
+    <div class="nav-links" id="navLinks">
         <a href="dashboard.html">Map View</a>
         <a href="bookings.html" class="active">My Bookings</a>
         <a href="saved.html">Saved Slots</a>
@@ -24,6 +27,24 @@
         <button class="btn-premium btn-sm" onclick="logout()">Logout</button>
     </div>
 </nav>
+
+<script>
+    // Navigation Toggle Logic
+    const toggleBtn = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    
+    if (toggleBtn && navLinks) {
+        toggleBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            const icon = toggleBtn.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.classList.replace('fa-bars', 'fa-times');
+            } else {
+                icon.classList.replace('fa-times', 'fa-bars');
+            }
+        });
+    }
+</script>
 
 <div class="app-container content-section animate-fade">
     <header class="section-header">

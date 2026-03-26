@@ -1,23 +1,16 @@
 // Initialize Map
-var map;
-var markers = [];
+var map = L.map('map').setView(CONFIG.DEFAULT_CENTER, CONFIG.DEFAULT_ZOOM);
 
-function initMap() {
-    map = new mappls.Map('map', {
-        center: CONFIG.DEFAULT_CENTER,
-        zoom: CONFIG.DEFAULT_ZOOM
-    });
-    map.addListener('load', function() {
-        console.log("Map Loaded");
-    });
-}
+// Premium Map Layer
+L.tileLayer(CONFIG.MAP_STYLE, {
+    attribution: '&copy; OpenStreetMap &copy; CARTO'
+}).addTo(map);
 
 // Global state
 let currentSavedIds = new Set();
 let lastFetchedParking = []; // Global cache for current results
 
 async function initDashboard() {
-    initMap();
     await loadSavedIds();
 }
 
@@ -44,10 +37,9 @@ async function searchPlace() {
         let data = await response.json();
 
         if (data && data.length > 0) {
-            let lat = parseFloat(data[0].lat);
-            let lon = parseFloat(data[0].lon);
-            map.setCenter([lat, lon]);
-            map.setZoom(14);
+            let lat = data[0].lat;
+            let lon = data[0].lon;
+            map.setView([lat, lon], 14);
             findParking(lat, lon, place);
         } else {
             alert("Place not found");
@@ -93,11 +85,9 @@ function renderParking(parkingLots) {
     
     if (countLabel) countLabel.innerText = `${parkingLots.length} Hubs Detected`;
 
-    // Clear existing markers
-    if (markers.length > 0) {
-        markers.forEach(m => m.remove());
-        markers = [];
-    }
+    map.eachLayer((layer) => {
+        if (layer instanceof L.Marker) map.removeLayer(layer);
+    });
 
     if (parkingLots.length === 0) {
         listContainer.innerHTML = '<div class="empty-state-v2"><i class="fas fa-search-location"></i><p>No parking slots found.</p></div>';
@@ -133,21 +123,22 @@ function renderParking(parkingLots) {
         `;
         listContainer.appendChild(item);
 
-        // Marker for Mappls
-        const marker = new mappls.Marker({
-            map: map,
-            position: { lat: p.latitude, lng: p.longitude },
-            html: `
+        const markerIcon = L.divIcon({
+            className: 'custom-marker',
+            html: `<div class="marker-pin ${p.availableSlots > 0 ? 'available' : 'full'} ${p.availableSlots > 10 ? 'pulse' : ''}"><i class="fas fa-parking"></i></div>`,
+            iconSize: [36, 36],
+            iconAnchor: [18, 36]
+        });
+
+        L.marker([p.latitude, p.longitude], { icon: markerIcon })
+            .addTo(map)
+            .bindPopup(`
                 <div class="map-popup glass-card" style="padding: 15px;">
                     <h4 style="margin-bottom: 8px;">${p.name || 'Unnamed Parking'}</h4>
                     <p style="font-size: 13px; margin-bottom: 12px;">${p.availableSlots} slots available</p>
                     <button class="btn-premium btn-sm" onclick="showDetails('${p.overpassId}')">Book Hub</button>
                 </div>
-            `,
-            width: 30,
-            height: 40
-        });
-        markers.push(marker);
+            `);
     });
 }
 

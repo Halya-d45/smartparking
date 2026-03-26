@@ -5,6 +5,7 @@ const CONFIG = {
         : 'https://backend-api-uhdp.onrender.com/api',
     
     // Default Map Settings
-    DEFAULT_CENTER: [16.3067, 80.4365], // [lat, lng]
+    MAP_STYLE: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    DEFAULT_CENTER: [16.3067, 80.4365],
     DEFAULT_ZOOM: 13
 };

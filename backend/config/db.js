@@ -25,4 +25,3 @@ process.exit(1);
 };
 
 module.exports = connectDB;
-// this is confighuiration for th database which 

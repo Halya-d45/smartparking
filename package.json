@@ -1,23 +1,25 @@
 {
   "name": "smartparking",
   "version": "1.0.0",
-  "description": "",
+  "description": "Smart Parking System",
   "main": "backend/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node backend/server.js",
-    "build": "mkdir -p build && cp -r frontend/css build/ && cp -r frontend/js build/ && cp frontend/*.html build/"
+    "build": "mkdir -p public && cp -a frontend/. public/",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "parking",
+    "smart",
+    "leaflet"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.3.0"
+    "mongoose": "^10.0.1"
   }
 }

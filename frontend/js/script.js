@@ -3,16 +3,11 @@ var map;
 var markers = [];
 
 function initMap() {
-    if (typeof mappls !== 'undefined') {
-        mappls.accessToken = 'idmskfmxyctfqzchqalvfjwouxzegyyfrffq';
-    }
-    map = new mappls.Map('map', {
-        center: CONFIG.DEFAULT_CENTER,
-        zoom: CONFIG.DEFAULT_ZOOM
-    });
-    map.addListener('load', function() {
-        console.log("Map Loaded");
-    });
+    map = L.map('map').setView([16.3067, 80.4365], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+    console.log("Map Initialized with Leaflet");
 }
 
 // Global state
@@ -49,8 +44,7 @@ async function searchPlace() {
         if (data && data.length > 0) {
             let lat = parseFloat(data[0].lat);
             let lon = parseFloat(data[0].lon);
-            map.setCenter([lat, lon]);
-            map.setZoom(14);
+            map.setView([lat, lon], 14);
             findParking(lat, lon, place);
         } else {
             alert("Place not found");
@@ -136,20 +130,16 @@ function renderParking(parkingLots) {
         `;
         listContainer.appendChild(item);
 
-        // Marker for Mappls
-        const marker = new mappls.Marker({
-            map: map,
-            position: { lat: p.latitude, lng: p.longitude },
-            html: `
-                <div class="map-popup glass-card" style="padding: 15px;">
-                    <h4 style="margin-bottom: 8px;">${p.name || 'Unnamed Parking'}</h4>
-                    <p style="font-size: 13px; margin-bottom: 12px;">${p.availableSlots} slots available</p>
-                    <button class="btn-premium btn-sm" onclick="showDetails('${p.overpassId}')">Book Hub</button>
+        // Marker for Leaflet
+        const marker = L.marker([p.latitude, p.longitude])
+            .addTo(map)
+            .bindPopup(`
+                <div class="map-popup glass-card" style="padding: 10px; color: black;">
+                    <h4 style="margin-bottom: 5px;">${p.name || 'Unnamed Parking'}</h4>
+                    <p style="font-size: 12px; margin-bottom: 8px;">${p.availableSlots} slots available</p>
+                    <button class="btn-premium btn-sm" onclick="showDetails('${p.overpassId}')" style="background: #2d63ff; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Book Hub</button>
                 </div>
-            `,
-            width: 30,
-            height: 40
-        });
+            `);
         markers.push(marker);
     });
 }

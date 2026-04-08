@@ -37,7 +37,7 @@ exports.syncWithOverpass = async (req, res) => {
                             longitude: lon,
                             totalSlots: Math.floor(Math.random() * 20) + 15,
                             availableSlots: Math.floor(Math.random() * 10) + 5,
-                            pricePerHour: (Math.random() * 4 + 2).toFixed(2),
+                            pricePerHour: parseFloat((Math.random() * 4 + 2).toFixed(2)),
                             image: `https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&q=80&w=400`
                         },
                         $set: {

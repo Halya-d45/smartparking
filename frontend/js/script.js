@@ -62,24 +62,64 @@ async function findParking(lat, lon, city) {
 
     try {
         let response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
+        
+        if (!response.ok) throw new Error("Overpass API request failed");
+        
         let data = await response.json();
 
         if (!data.elements || data.elements.length === 0) {
-            listContainer.innerHTML = '<p class="empty-state">No parking slots found.</p>';
+            listContainer.innerHTML = '<div class="empty-state-v2"><i class="fas fa-search-location"></i><p>No parking slots found in this area.</p></div>';
             return;
         }
 
-        let syncRes = await fetch(`${CONFIG.API_BASE}/parking/sync`, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ elements: data.elements, city: city })
-        });
-        lastFetchedParking = await syncRes.json();
+        // Limit elements to 50 for syncing to prevent payload issues
+        const elementsToSync = data.elements.slice(0, 50);
+
+        try {
+            console.log(`Syncing ${elementsToSync.length} hubs with backend...`);
+            let syncRes = await fetch(`${CONFIG.API_BASE}/parking/sync`, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ elements: elementsToSync, city: city })
+            });
+            
+            if (!syncRes.ok) throw new Error("Backend sync failed");
+            
+            lastFetchedParking = await syncRes.json();
+            console.log("Sync successful:", lastFetchedParking.length, "hubs loaded.");
+        } catch (syncErr) {
+            console.warn("Backend Sync Failed - Falling back to local Overpass data:", syncErr);
+            // Fallback: Convert Overpass elements to our Parking model format locally
+            lastFetchedParking = elementsToSync.map(p => {
+                const lat = p.lat || (p.center && p.center.lat);
+                const lon = p.lon || (p.center && p.center.lon);
+                const tags = p.tags || {};
+                const name = tags.name || (tags['addr:street'] ? `Parking at ${tags['addr:street']}` : `Unnamed Parking`);
+                
+                return {
+                    overpassId: p.id.toString(),
+                    name: name,
+                    location: tags['addr:full'] || tags['addr:street'] || city || "Unknown Location",
+                    latitude: lat,
+                    longitude: lon,
+                    totalSlots: 20,
+                    availableSlots: Math.floor(Math.random() * 10) + 2,
+                    pricePerHour: 2.50,
+                    isFallback: true // Flag to show it's local data
+                };
+            });
+        }
 
         renderParking(lastFetchedParking);
     } catch (err) {
-        console.error(err);
-        listContainer.innerHTML = '<p class="error">Failed to fetch parking data.</p>';
+        console.error("Discovery Error:", err);
+        listContainer.innerHTML = `
+            <div class="error-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Failed to discover parking hubs.</p>
+                <small>Please check your connection or try a different location.</small>
+            </div>
+        `;
     }
 }
 
@@ -109,7 +149,10 @@ function renderParking(parkingLots) {
         item.className = "parking-card-premium animate-fade";
         item.innerHTML = `
             <div class="card-header">
-                <h4>${p.name || 'Unnamed Parking'}</h4>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <h4>${p.name || 'Unnamed Parking'}</h4>
+                    ${p.isFallback ? '<span class="badge-fallback"><i class="fas fa-plug-circle-xmark"></i> Live Sync Unavailable</span>' : ''}
+                </div>
                 <button class="save-btn ${isSaved ? 'active' : ''}" data-id="${p.overpassId}" onclick="handleSaveClick(this)">
                     <i class="${isSaved ? 'fas' : 'far'} fa-heart"></i>
                 </button>
@@ -118,12 +161,12 @@ function renderParking(parkingLots) {
                 <i class="fas fa-map-marker-alt"></i> ${p.location}
             </p>
             <div class="availability-bar">
-                <div class="progress-fill" style="width: ${availabilityPercent}%"></div>
+                <div class="progress-fill" style="${p.isFallback ? 'background: var(--text-muted);' : ''} width: ${availabilityPercent}%"></div>
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
                 <span class="price-tag">$${p.pricePerHour}/hr</span>
-                <span style="font-size: 12px; color: ${p.availableSlots > 0 ? 'var(--success)' : 'var(--error)'}; font-weight: 700;">
-                    ${p.availableSlots} slots free
+                <span style="font-size: 12px; color: ${p.availableSlots > 0 ? (p.isFallback ? 'var(--text-dim)' : 'var(--success)') : 'var(--error)'}; font-weight: 700;">
+                    ${p.availableSlots} slots free ${p.isFallback ? '(est.)' : ''}
                 </span>
             </div>
             <button class="btn-premium btn-sm w-100 mt-4 btn-glow" onclick="showDetails('${p.overpassId}')">Select Hub</button>

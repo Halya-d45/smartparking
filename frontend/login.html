@@ -23,17 +23,17 @@
             </div>
 
             <div class="form-section">
-                <div class="form-group">
-                    <label>Email Address</label>
+                <div class="form-group mb-4">
+                    <label class="detail-label mb-2">Email Address</label>
                     <div class="input-wrapper">
                         <i class="fas fa-envelope"></i>
                         <input type="email" id="email" class="premium-input" placeholder="name@company.com">
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <div class="flex-between">
-                        <label>Password</label>
+                <div class="form-group mb-4">
+                    <div class="flex-between mb-2">
+                        <label class="detail-label">Password</label>
                         <a href="#" class="forgot-link">Forgot?</a>
                     </div>
                     <div class="input-wrapper">
@@ -42,7 +42,7 @@
                     </div>
                 </div>
 
-                <button class="btn-premium" style="width: 100%; margin-top: 10px;" onclick="login()">
+                <button class="btn-premium btn-glow" style="width: 100%; margin-top: 10px;" onclick="login()">
                     <span>Sign In</span>
                     <i class="fas fa-arrow-right"></i>
                 </button>
@@ -63,52 +63,68 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
+    background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 40%),
+                radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.05), transparent 40%);
 }
 .auth-container {
     width: 100%;
     max-width: 440px;
 }
 .auth-card {
-    padding: 40px;
+    padding: 48px;
+    border-radius: 32px;
 }
 .logo-section {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
 }
 .logo-section h1 {
-    font-size: 28px;
-    margin: 12px 0 4px;
+    font-size: 32px;
+    margin: 16px 0 6px;
+    letter-spacing: -1px;
 }
 .logo-section p {
     color: var(--text-secondary);
     font-size: 14px;
+    font-weight: 500;
 }
 .logo-icon {
-    width: 54px;
-    height: 54px;
-    background: var(--accent-blue);
-    border-radius: 14px;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+    border-radius: 20px;
     margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 28px;
     color: white;
-    box-shadow: 0 10px 20px -5px var(--accent-blue-glow);
+    box-shadow: 0 15px 30px -5px var(--accent-blue-glow);
 }
+.mb-2 { margin-bottom: 8px; }
+.mb-4 { margin-bottom: 24px; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+
 .auth-footer {
-    margin-top: 32px;
+    margin-top: 40px;
     text-align: center;
     font-size: 14px;
     color: var(--text-secondary);
 }
 .auth-footer a {
     color: var(--accent-blue);
-    font-weight: 600;
+    font-weight: 700;
+    text-decoration: none;
+    transition: var(--transition-base);
+}
+.auth-footer a:hover {
+    color: var(--accent-cyan);
 }
 .forgot-link {
     font-size: 12px;
     color: var(--text-muted) !important;
+    font-weight: 600;
+    text-decoration: none;
 }
 .forgot-link:hover {
     color: var(--accent-blue) !important;

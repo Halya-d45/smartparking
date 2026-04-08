@@ -23,6 +23,10 @@ app.use("/api/parking", parkingRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/saved", savedRoutes);
 
+/* HEALTH CHECK */
+app.get("/api/health", (req, res) => res.status(200).json({ status: "healthy", timestamp: new Date() }));
+app.get("/health", (req, res) => res.status(200).send("OK"));
+
 /* SERVE FRONTEND */
 app.use(express.static(path.join(__dirname,"../frontend")));
 

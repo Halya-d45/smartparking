@@ -56,9 +56,10 @@ html {
 body {
     background-color: var(--bg-base);
     color: var(--text-primary);
-    overflow: hidden; /* App like feel */
+    /* Removed overflow: hidden to allow scrolling */
+    /* Changed height: 100vh to min-height: 100vh for natural scrolling */
+    min-height: 100vh;
     line-height: 1.6;
-    height: 100vh;
 }
 
 /* GRADIENTS */

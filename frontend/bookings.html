@@ -12,7 +12,7 @@
 <body class="bookings-page gradient-bg">
 
 <nav class="navbar glass-card">
-    <div class="logo" onclick="window.location.href='dashboard.html'" style="cursor:pointer">
+    <div class="logo logo-clickable" onclick="window.location.href='dashboard.html'">
         <div class="logo-icon"><i class="fas fa-parking"></i></div>
         <span class="gradient-text">Smart Parking</span>
     </div>
@@ -39,6 +39,7 @@
                     <th>Slot No.</th>
                     <th>Date</th>
                     <th>Duration</th>
+                    <th>Amount</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -47,7 +48,7 @@
                 <!-- Data dynamic -->
             </tbody>
         </table>
-        <div id="emptyState" class="empty-state-full" style="display: none;">
+        <div id="emptyState" class="empty-state-full hidden">
             <i class="fas fa-calendar-times"></i>
             <h3>No Bookings Found</h3>
             <p>You haven't made any bookings yet. Find a spot and book it!</p>
@@ -112,29 +113,50 @@
                 return;
             }
 
-            table.innerHTML = bookings.map(b => `
-                <tr class="animate-fade">
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div class="logo-icon" style="width: 32px; height: 32px; font-size: 14px;"><i class="fas fa-parking"></i></div>
-                            <strong>${b.parkingId}</strong>
-                        </div>
-                    </td>
-                    <td><span class="badge-custom" style="background: rgba(59, 130, 246, 0.1); padding: 4px 12px; border-radius: 6px; color: var(--accent-blue); font-weight: 700;">${b.slot}</span></td>
-                    <td>${new Date(b.date).toLocaleDateString()}</td>
-                    <td>${b.duration} Hours</td>
-                    <td><span class="status-badge status-confirmed"><i class="fas fa-check-circle"></i> Confirmed</span></td>
-                    <td>
-                        <button class="btn-premium btn-sm" onclick='generateReceipt(${JSON.stringify(b)})'>
-                            <i class="fas fa-file-download"></i> Receipt
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            table.innerHTML = bookings.map(b => {
+                const isPaid = b.isPaid || b.paymentStatus === 'Confirmed';
+                const status = b.paymentStatus || (isPaid ? 'Confirmed' : 'Pending');
+                const statusClass = isPaid ? 'status-confirmed' : (status === 'Failed' ? 'status-failed' : 'status-pending');
+
+                return `
+                    <tr class="animate-fade">
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="logo-icon" style="width: 32px; height: 32px; font-size: 14px;"><i class="fas fa-parking"></i></div>
+                                <strong>${b.parkingId}</strong>
+                            </div>
+                        </td>
+                        <td><span class="badge-custom" style="background: rgba(59, 130, 246, 0.1); padding: 4px 12px; border-radius: 6px; color: var(--accent-blue); font-weight: 700;">${b.slot}</span></td>
+                        <td>${new Date(b.date).toLocaleDateString()}</td>
+                        <td>${b.duration} Hours</td>
+                        <td>₹ ${b.totalAmount?.toFixed(2) || '0.00'}</td>
+                        <td><span class="status-badge ${statusClass}"><i class="fas fa-${isPaid ? 'check-circle' : (status === 'Failed' ? 'times-circle' : 'clock')}"></i> ${status}</span></td>
+                        <td>
+                            ${isPaid ? '' : `<button class="btn-premium btn-sm" onclick='goToPayment("${b._id}", "${b.parkingId}", "${b.slot}", "${b.duration}", "${b.date}", "${b.ratePerHour}", "${b.totalAmount}")'><i class="fas fa-credit-card"></i> Pay</button>`}
+                            <button class="btn-premium btn-sm" ${isPaid ? '' : 'disabled'} onclick='generateReceipt(${JSON.stringify(b)})'>
+                                <i class="fas fa-file-download"></i> Receipt
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
 
         } catch (err) {
             console.error(err);
         }
+    }
+
+    function goToPayment(bookingId, parkingLot, slotNumber, duration, date, ratePerHour, totalAmount) {
+        const params = new URLSearchParams({
+            bookingId,
+            parkingLot,
+            slotNumber,
+            duration,
+            date,
+            ratePerHour: Number(ratePerHour) || 0,
+            totalAmount: Number(totalAmount) || 0
+        });
+        window.location.href = `payment.html?${params.toString()}`;
     }
 
     async function generateReceipt(b) {

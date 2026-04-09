@@ -9,6 +9,7 @@ const authRoutes = require("./routes/authRoutes");
 const parkingRoutes = require("./routes/parkingRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const savedRoutes = require("./routes/savedRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/parking", parkingRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/saved", savedRoutes);
+app.use("/api/payment", paymentRoutes);
 
 /* SERVE FRONTEND */
 app.use(express.static(path.join(__dirname,"../frontend")));
@@ -34,4 +36,4 @@ res.sendFile(path.join(__dirname,"../frontend/login.html"));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT,()=>{
   console.log(`Server running on port ${PORT}`);
-});
+});

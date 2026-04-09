@@ -1,0 +1,129 @@
+/* Autofill Detection and Dark Theme Fixes */
+/* This CSS detects when browser autofill is active and forces dark theme styles */
+
+@keyframes autofill {
+  0%, 100% {
+    background-color: transparent;
+    color: white;
+  }
+}
+
+/* Autofill detection - when browser applies autofill styles */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  /* Force transparent background */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: white !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  color: white !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  border-color: transparent !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Additional autofill fixes for different browsers */
+input:-moz-autofill,
+input:-moz-autofill:hover,
+input:-moz-autofill:focus,
+input:-moz-autofill:active {
+  background-color: transparent !important;
+  color: white !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+/* Form control base styles to prevent white backgrounds */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea {
+  /* Remove default browser styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* Force dark theme */
+  background-color: transparent !important;
+  color: white !important;
+  border-color: transparent !important;
+
+  /* Prevent white flashes */
+  -webkit-text-fill-color: white !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+/* Focus states - ensure no white backgrounds */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+textarea:focus {
+  background-color: transparent !important;
+  color: white !important;
+  -webkit-text-fill-color: white !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+/* Active states */
+input[type="text"]:active,
+input[type="email"]:active,
+input[type="password"]:active,
+input[type="search"]:active,
+textarea:active {
+  background-color: transparent !important;
+  color: white !important;
+  -webkit-text-fill-color: white !important;
+}
+
+/* Placeholder text styling */
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af !important; /* gray-400 */
+  opacity: 1 !important;
+  -webkit-text-fill-color: #9ca3af !important;
+}
+
+/* Selection styling */
+input::selection,
+textarea::selection {
+  background-color: rgba(59, 130, 246, 0.3) !important; /* blue-500 with opacity */
+  color: white !important;
+}
+
+/* Prevent any browser-specific white backgrounds */
+input:-webkit-autofill::first-line,
+input:-webkit-autofill::first-letter {
+  color: white !important;
+  -webkit-text-fill-color: white !important;
+}
+
+/* Additional Chrome-specific fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"] {
+    /* Chrome autofill background fix */
+    background-clip: padding-box !important;
+    background-color: transparent !important;
+  }
+}
+
+/* Firefox-specific fixes */
+@-moz-document url-prefix() {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"] {
+    background-color: transparent !important;
+    color: white !important;
+  }
+}

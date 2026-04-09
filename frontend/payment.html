@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment | Smart Parking</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body class="dashboard-page">
+<nav class="navbar-modern">
+    <div class="nav-container">
+        <div class="logo-section">
+            <div class="logo-icon-modern"><span class="logo-p">P</span></div>
+            <div>
+                <span class="brand-text">Smart Parking</span>
+                <div class="brand-subtitle">Payment</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard.html" class="nav-item"><i class="fas fa-map"></i><span>Dashboard</span></a>
+            <a href="bookings.html" class="nav-item"><i class="fas fa-calendar-check"></i><span>Bookings</span></a>
+            <a href="payment.html" class="nav-item active"><i class="fas fa-credit-card"></i><span>Payments</span></a>
+            <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
+        </div>
+        <button class="logout-btn-modern" onclick="logout()"> <i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+    </div>
+</nav>
+<main class="main-content payment-main">
+    <section class="payment-page-grid">
+        <article class="payment-panel glass-panel">
+            <h2>Confirm Your Payment</h2>
+            <div class="booking-details card-grid">
+                <div><label>Parking Lot ID</label><strong id="parkingLotId">LOT-14</strong></div>
+                <div><label>Slot Number</label><strong id="slotNumber">A2</strong></div>
+                <div><label>Date</label><strong id="bookingDate">2026-04-03</strong></div>
+                <div><label>Duration</label><strong id="durationValue">2h</strong></div>
+                <div><label>Total Amount</label><strong id="totalAmount">₹ 0</strong></div>
+            </div>
+            <div class="payment-methods">
+                <div class="method-tabs">
+                    <button class="method-tab active" data-method="UPI">UPI</button>
+                    <button class="method-tab" data-method="Card">Card</button>
+                    <button class="method-tab" data-method="NetBanking">Net Banking</button>
+                </div>
+                <div class="method-content" id="upiContent">
+                    <label>UPI ID</label>
+                    <input type="text" id="upiId" placeholder="user@bank" />
+                    <div class="upi-qr">QR code placeholder</div>
+                </div>
+                <div class="method-content hidden" id="cardContent">
+                    <label>Card Number</label>
+                    <input type="text" id="cardNumber" maxlength="19" placeholder="XXXX XXXX XXXX 1234" />
+                    <div class="input-row">
+                        <div><label>Expiry</label><input type="text" id="cardExpiry" maxlength="5" placeholder="MM/YY" /></div>
+                        <div><label>CVV</label><input type="text" id="cardCVV" maxlength="3" placeholder="123" /></div>
+                    </div>
+                </div>
+                <div class="method-content hidden" id="netbankingContent">
+                    <label for="netbankingBank">Choose Bank</label>
+                    <select id="netbankingBank" aria-label="Net Banking Bank Selection">
+                        <option value="" disabled selected>Select bank</option>
+                        <option value="HDFC">HDFC Bank</option>
+                        <option value="ICICI">ICICI Bank</option>
+                        <option value="SBI">State Bank of India</option>
+                        <option value="Axis">Axis Bank</option>
+                    </select>
+                </div>
+            </div>
+            <div class="payment-footer">
+                <button id="payNowBtn" class="btn-gradient">Pay ₹ <span id="paymentAmount">0</span></button>
+                <span id="paymentStatus" class="status-text">Payment status updates here</span>
+            </div>
+        </article>
+
+        <aside class="history-panel glass-panel">
+            <h3>Recent Payment History</h3>
+            <div id="paymentHistory" class="history-list"></div>
+        </aside>
+    </section>
+
+    <section id="receiptSection" class="receipt-card glass-panel hidden">
+        <h2>Payment Receipt</h2>
+        <div id="receiptContent"></div>
+        <button id="downloadReceiptBtn" class="btn-outline">Download Receipt</button>
+    </section>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/payment.js"></script>
+</body>
+</html>

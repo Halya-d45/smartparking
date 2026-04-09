@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Parking - Search Input Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Autofill Detection and Dark Theme Fixes */
+        @keyframes autofill {
+            0%, 100% {
+                background-color: transparent;
+                color: white;
+            }
+        }
+
+        /* Autofill detection - when browser applies autofill styles */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            /* Force transparent background */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: white !important;
+            background-color: transparent !important;
+            background-image: none !important;
+            color: white !important;
+            box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+            border-color: transparent !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        /* Additional autofill fixes for different browsers */
+        input:-moz-autofill,
+        input:-moz-autofill:hover,
+        input:-moz-autofill:focus,
+        input:-moz-autofill:active {
+            background-color: transparent !important;
+            color: white !important;
+            box-shadow: none !important;
+            border-color: transparent !important;
+        }
+
+        /* Form control base styles to prevent white backgrounds */
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="search"],
+        textarea {
+            /* Remove default browser styling */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+
+            /* Force dark theme */
+            background-color: transparent !important;
+            color: white !important;
+            border-color: transparent !important;
+
+            /* Prevent white flashes */
+            -webkit-text-fill-color: white !important;
+            -webkit-box-shadow: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Focus states - ensure no white backgrounds */
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="search"]:focus,
+        textarea:focus {
+            background-color: transparent !important;
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+        }
+
+        /* Active states */
+        input[type="text"]:active,
+        input[type="email"]:active,
+        input[type="password"]:active,
+        input[type="search"]:active,
+        textarea:active {
+            background-color: transparent !important;
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+        }
+
+        /* Placeholder text styling */
+        input::placeholder,
+        textarea::placeholder {
+            color: #9ca3af !important; /* gray-400 */
+            opacity: 1 !important;
+            -webkit-text-fill-color: #9ca3af !important;
+        }
+
+        /* Selection styling */
+        input::selection,
+        textarea::selection {
+            background-color: rgba(59, 130, 246, 0.3) !important; /* blue-500 with opacity */
+            color: white !important;
+        }
+
+        /* Prevent any browser-specific white backgrounds */
+        input:-webkit-autofill::first-line,
+        input:-webkit-autofill::first-letter {
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+        }
+
+        /* Additional Chrome-specific fixes */
+        @media screen and (-webkit-min-device-pixel-ratio: 0) {
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            input[type="search"] {
+                /* Chrome autofill background fix */
+                background-clip: padding-box !important;
+                background-color: transparent !important;
+            }
+        }
+
+        /* Firefox-specific fixes */
+        @-moz-document url-prefix() {
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            input[type="search"] {
+                background-color: transparent !important;
+                color: white !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-950 min-h-screen text-white p-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+            Smart Parking Search Demo
+        </h1>
+        <p class="text-gray-400 text-center mb-8">
+            Test the dark theme search input - no white backgrounds during typing or autofill!
+        </p>
+
+        <!-- Search Input Component -->
+        <div class="mb-8">
+            <div class="relative flex items-center bg-gray-900/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl overflow-hidden transition-all duration-300 focus-within:border-blue-500/50 focus-within:shadow-lg focus-within:shadow-blue-500/10 hover:border-gray-600/50">
+                <!-- Search Icon -->
+                <div class="flex items-center justify-center w-12 h-full text-gray-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+
+                <!-- Input Field -->
+                <input
+                    id="searchInput"
+                    type="text"
+                    placeholder="Search city like Hyderabad, Vijayawada..."
+                    class="
+                        flex-1 px-0 py-5 bg-transparent border-none outline-none
+                        text-white placeholder-gray-400 font-medium text-base
+                        autofill:bg-transparent autofill:text-white
+                        [-webkit-text-fill-color:white] [-webkit-box-shadow:none]
+                        focus:ring-0 focus:outline-none focus:bg-transparent
+                        selection:bg-blue-500/30 selection:text-white
+                    "
+                    style="
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        background-color: transparent !important;
+                        color: white !important;
+                        -webkit-text-fill-color: white !important;
+                        -webkit-box-shadow: none !important;
+                        box-shadow: none !important;
+                    "
+                >
+
+                <!-- Search Button -->
+                <button
+                    id="searchBtn"
+                    class="
+                        flex items-center gap-2 px-6 py-4
+                        bg-gradient-to-r from-blue-600 to-indigo-600
+                        hover:from-blue-500 hover:to-indigo-500
+                        disabled:from-gray-700 disabled:to-gray-700
+                        disabled:cursor-not-allowed
+                        text-white font-semibold text-sm
+                        transition-all duration-200
+                        rounded-l-none rounded-r-2xl
+                        shadow-lg shadow-blue-500/25
+                        hover:shadow-xl hover:shadow-blue-500/30
+                        active:scale-95
+                        focus:outline-none focus:ring-2 focus:ring-blue-500/50
+                    "
+                >
+                    <span id="btnText">Search</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="bg-gray-900/50 backdrop-blur-xl border border-gray-800/50 rounded-2xl p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-blue-400">Testing Instructions</h2>
+            <ul class="space-y-2 text-gray-300">
+                <li class="flex items-start space-x-2">
+                    <span class="text-green-400 mt-1">✓</span>
+                    <span>Type in the search box - notice no white background appears</span>
+                </li>
+                <li class="flex items-start space-x-2">
+                    <span class="text-green-400 mt-1">✓</span>
+                    <span>Try browser autofill - the dark theme is maintained</span>
+                </li>
+                <li class="flex items-start space-x-2">
+                    <span class="text-green-400 mt-1">✓</span>
+                    <span>Focus/blur the input - consistent styling</span>
+                </li>
+                <li class="flex items-start space-x-2">
+                    <span class="text-green-400 mt-1">✓</span>
+                    <span>Press Enter or click Search - button shows loading state</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Technical Details -->
+        <div class="bg-gray-900/50 backdrop-blur-xl border border-gray-800/50 rounded-2xl p-6">
+            <h2 class="text-xl font-semibold mb-4 text-blue-400">Technical Implementation</h2>
+            <div class="space-y-4 text-gray-300">
+                <div>
+                    <h3 class="font-medium text-white mb-2">CSS Autofill Fixes:</h3>
+                    <pre class="bg-gray-800/50 p-3 rounded-lg text-sm overflow-x-auto"><code>input:-webkit-autofill {
+  -webkit-text-fill-color: white !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}</code></pre>
+                </div>
+
+                <div>
+                    <h3 class="font-medium text-white mb-2">JavaScript Animation Detection:</h3>
+                    <pre class="bg-gray-800/50 p-3 rounded-lg text-sm overflow-x-auto"><code>const handleAnimationStart = (e) => {
+  if (e.animationName === 'autofill') {
+    // Force dark theme styles
+  }
+};</code></pre>
+                </div>
+
+                <div>
+                    <h3 class="font-medium text-white mb-2">Tailwind Classes:</h3>
+                    <pre class="bg-gray-800/50 p-3 rounded-lg text-sm overflow-x-auto"><code>bg-transparent border-none outline-none
+text-white placeholder-gray-400
+focus:ring-0 focus:outline-none</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const btnText = document.getElementById('btnText');
+
+        // Handle search
+        const handleSearch = async () => {
+            const query = searchInput.value.trim();
+            if (!query) return;
+
+            // Show loading state
+            searchBtn.disabled = true;
+            btnText.textContent = 'Searching...';
+
+            try {
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                console.log('Search completed for:', query);
+                alert(`Search completed for: ${query}`);
+            } catch (error) {
+                console.error('Search error:', error);
+            } finally {
+                // Reset loading state
+                searchBtn.disabled = false;
+                btnText.textContent = 'Search';
+            }
+        };
+
+        // Event listeners
+        searchBtn.addEventListener('click', handleSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        // Autofill detection (additional JavaScript layer)
+        searchInput.addEventListener('animationstart', (e) => {
+            if (e.animationName === 'autofill') {
+                // Force dark theme styles when autofill is detected
+                searchInput.style.setProperty('background-color', 'transparent', 'important');
+                searchInput.style.setProperty('color', 'white', 'important');
+                searchInput.style.setProperty('-webkit-text-fill-color', 'white', 'important');
+                searchInput.style.setProperty('box-shadow', 'none', 'important');
+            }
+        });
+
+        // Log when input is focused/blurred for testing
+        searchInput.addEventListener('focus', () => {
+            console.log('Input focused - dark theme maintained');
+        });
+
+        searchInput.addEventListener('blur', () => {
+            console.log('Input blurred - dark theme maintained');
+        });
+    </script>
+</body>
+</html>

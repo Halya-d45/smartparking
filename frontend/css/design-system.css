@@ -252,8 +252,8 @@ body {
 }
 
 .map-container {
-    flex: 2; /* Map takes more space */
-    border-radius: 24px;
+    flex: 2;
+    border-radius: var(--radius-lg);
     overflow: hidden;
     position: relative;
     border: 1px solid var(--line-soft);

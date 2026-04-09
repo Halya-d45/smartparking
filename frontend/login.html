@@ -27,17 +27,17 @@
             </div>
 
             <div class="form-section">
-                <div class="form-group">
-                    <label>Email Address</label>
+                <div class="form-group mb-4">
+                    <label class="detail-label mb-2">Email Address</label>
                     <div class="input-wrapper">
                         <i class="fas fa-envelope"></i>
                         <input type="email" id="email" class="premium-input" placeholder="name@company.com">
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <div class="flex-between">
-                        <label>Password</label>
+                <div class="form-group mb-4">
+                    <div class="flex-between mb-2">
+                        <label class="detail-label">Password</label>
                         <a href="#" class="forgot-link">Forgot?</a>
                     </div>
                     <div class="input-wrapper">
@@ -46,7 +46,11 @@
                     </div>
                 </div>
 
+<<<<<<< HEAD
                 <button class="btn-premium btn-full" onclick="login()">
+=======
+                <button class="btn-premium btn-glow" style="width: 100%; margin-top: 10px;" onclick="login()">
+>>>>>>> 48921d0b2087580b48a4c199773c5fddf2d1887e
                     <span>Sign In</span>
                     <i class="fas fa-arrow-right"></i>
                 </button>
@@ -72,13 +76,20 @@ body.gradient-bg {
     display: flex;
     align-items: center;
     justify-content: center;
+<<<<<<< HEAD
     padding: 28px 24px;
+=======
+    padding: 20px;
+    background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 40%),
+                radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.05), transparent 40%);
+>>>>>>> 48921d0b2087580b48a4c199773c5fddf2d1887e
 }
 .auth-container {
     width: 100%;
     max-width: 440px;
 }
 .auth-card {
+<<<<<<< HEAD
     padding: 44px 38px;
     background: linear-gradient(180deg, #f8efe3 0%, #faefe1 48%, #f5e5d7 100%);
     border-radius: 32px;
@@ -231,14 +242,54 @@ body.gradient-bg {
 .btn-premium:hover {
     transform: translateY(-2px);
     box-shadow: 0 22px 50px rgba(226, 114, 43, 0.34);
+=======
+    padding: 48px;
+    border-radius: 32px;
 }
+.logo-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.logo-section h1 {
+    font-size: 32px;
+    margin: 16px 0 6px;
+    letter-spacing: -1px;
+}
+.logo-section p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+}
+.logo-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+    border-radius: 20px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+    box-shadow: 0 15px 30px -5px var(--accent-blue-glow);
+>>>>>>> 48921d0b2087580b48a4c199773c5fddf2d1887e
+}
+.mb-2 { margin-bottom: 8px; }
+.mb-4 { margin-bottom: 24px; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+
 .auth-footer {
+<<<<<<< HEAD
     margin-top: 28px;
+=======
+    margin-top: 40px;
+>>>>>>> 48921d0b2087580b48a4c199773c5fddf2d1887e
     text-align: center;
     font-size: 14px;
     color: #765a48;
 }
 .auth-footer a {
+<<<<<<< HEAD
     color: #b46e39;
     font-weight: 600;
     text-decoration: none;
@@ -250,6 +301,21 @@ body.gradient-bg {
 .forgot-link {
     font-size: 13px;
     color: #8e6c57 !important;
+=======
+    color: var(--accent-blue);
+    font-weight: 700;
+    text-decoration: none;
+    transition: var(--transition-base);
+}
+.auth-footer a:hover {
+    color: var(--accent-cyan);
+}
+.forgot-link {
+    font-size: 12px;
+    color: var(--text-muted) !important;
+    font-weight: 600;
+    text-decoration: none;
+>>>>>>> 48921d0b2087580b48a4c199773c5fddf2d1887e
 }
 .forgot-link:hover {
     color: #ab7b52 !important;

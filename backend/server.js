@@ -9,7 +9,7 @@ const authRoutes = require("./routes/authRoutes");
 const parkingRoutes = require("./routes/parkingRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const savedRoutes = require("./routes/savedRoutes");
-const paymentRoutes = require("./routes/paymentRoutes");
+const paymentRoutes = require("./routes/paymentRoutes"); // Kept from your version
 
 const app = express();
 
@@ -23,14 +23,18 @@ app.use("/api/auth", authRoutes);
 app.use("/api/parking", parkingRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/saved", savedRoutes);
-app.use("/api/payment", paymentRoutes);
+app.use("/api/payment", paymentRoutes); // Kept from your version
+
+/* HEALTH CHECK (Kept from friend's version) */
+app.get("/api/health", (req, res) => res.status(200).json({ status: "healthy", timestamp: new Date() }));
+app.get("/health", (req, res) => res.status(200).send("OK"));
 
 /* SERVE FRONTEND */
 app.use(express.static(path.join(__dirname,"../frontend")));
 
 /* OPEN HOME PAGE */
 app.get("/",(req,res)=>{
-res.sendFile(path.join(__dirname,"../frontend/login.html"));
+  res.sendFile(path.join(__dirname,"../frontend/login.html"));
 });
 
 const PORT = process.env.PORT || 5000;

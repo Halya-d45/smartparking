@@ -10,9 +10,9 @@ try {
         process.exit(1);
     }
     await mongoose.connect(process.env.MONGO_URI);
-
-console.log("MongoDB Connected");
-
+    console.log("------------------------------------");
+    console.log("✅ MongoDB Connected Successfully");
+    console.log("------------------------------------");
 }
 
 catch(err){

@@ -9,13 +9,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        #map { width: 100%; height: 100%; min-height: 400px; }
+        .hidden { display: none; }
+    </style>
 </head>
 <body class="dashboard-page light-theme">
 
-<!-- Modern Navbar -->
 <nav class="navbar-modern">
     <div class="nav-container">
-        <div class="logo-section">
+        <div class="logo-section" onclick="window.location.href='dashboard.html'" style="cursor:pointer">
             <div class="logo-icon-modern">
                 <span class="logo-p">P</span>
             </div>
@@ -52,19 +55,17 @@
         <div class="user-dropdown">
             <button class="user-button" onclick="document.getElementById('userMenu').classList.toggle('hidden')">
                 <i class="fas fa-user-circle user-icon"></i>
-                <span>Admin</span>
+                <span id="userNameDisplay">User</span>
                 <i class="fas fa-chevron-down"></i>
             </button>
             <ul id="userMenu" class="user-menu hidden">
                 <li><a href="profile.html"><i class="fas fa-user-circle"></i> My Profile</a></li>
-                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
                 <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </div>
     </div>
 </nav>
 
-<!-- Improved Dashboard Layout -->
 <div class="dashboard-layout">
     <section class="top-metrics">
         <div class="metric-card">
@@ -73,160 +74,9 @@
             <div class="progress-bar">
                 <div class="progress-fill" style="width: 75%;"></div>
             </div>
-            <div class="metric-label">75% Occupied</div>
+            <div class="metric-label">System Capacity</div>
         </div>
         <div class="metric-card available">
             <div class="metric-title">Available Now</div>
             <div class="metric-value" id="availableNow">124</div>
-            <div class="line-graph">
-                <svg width="100" height="40" viewBox="0 0 100 40">
-                    <polyline fill="none" stroke="#22c55e" stroke-width="2" points="0,30 20,25 40,20 60,15 80,10 100,5"/>
-                </svg>
-            </div>
-            <div class="status-indicator good">GOOD</div>
-        </div>
-        <div class="metric-card active">
-            <div class="metric-title">Active Reservations</div>
-            <div class="metric-value" id="activeReservations">45</div>
-            <div class="calendar-view">
-                <div class="calendar-day">Today</div>
-                <div class="calendar-events">3 events</div>
-            </div>
-        </div>
-    </section>
-
-    <header class="search-header">
-        <div class="search-container">
-            <div class="search-input-group-premium">
-                <input
-                    type="text"
-                    id="placeSearch"
-                    placeholder="Search for Parking in [City]"
-                    onkeypress="handleSearchKeyPress(event)"
-                    class="search-input-premium"
-                >
-                <div class="search-icon-premium">
-                    <i class="fas fa-search"></i>
-                </div>
-                <button class="search-btn-gradient" onclick="searchPlace()">
-                    <span>Search</span>
-                    <i class="fas fa-arrow-right"></i>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Stats bar (sub metrics) -->
-    <div class="stats-bar" aria-label="secondary metrics">
-        <div class="stat-item grey-card">
-            <div class="stat-icon"><i class="fas fa-bolt"></i></div>
-            <div class="stat-content">
-                <div class="stat-number" id="activeBookingsCount">11</div>
-                <div class="stat-label">ACTIVE</div>
-            </div>
-        </div>
-        <div class="stat-item grey-card">
-            <div class="stat-icon"><i class="fas fa-bookmark"></i></div>
-            <div class="stat-content">
-                <div class="stat-number" id="savedPlacesCount">0</div>
-                <div class="stat-label">SAVED</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content Area -->
-    <main class="main-content">
-        <!-- Map Section -->
-        <section class="map-section">
-            <div class="map-wrapper">
-                <div id="map" class="map-canvas"></div>
-                <div class="map-overlay">
-                    <div class="map-controls-custom">
-                        <button class="map-control-btn" onclick="locateNow()" title="Find My Location">
-                            <i class="fas fa-location-crosshairs"></i>
-                        </button>
-                        <button class="map-control-btn" onclick="resetMapView()" title="Reset View">
-                            <i class="fas fa-home"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Sidebar -->
-        <aside class="sidebar-modern">
-            <div class="sidebar-header">
-                <h3 class="sidebar-title">
-                    <i class="fas fa-map-marker-alt"></i>
-                    Nearby Hubs
-                </h3>
-                <div class="hub-badge" id="hubCount">SCANNING...</div>
-            </div>
-
-            <div class="recent-hubs" id="recentHubs">
-                <!-- Recent hubs will be injected here -->
-            </div>
-
-            <div class="parking-list-modern" id="parkingList">
-                <div class="empty-state-modern">
-                    <div class="empty-icon">
-                        <i class="fas fa-search-location"></i>
-                    </div>
-                    <h4>Discover Parking Hubs</h4>
-                    <p>Search for a location to find premium parking slots near you</p>
-                </div>
-            </div>
-        </aside>
-    </main>
-</div>
-
-<div class="loading-overlay hidden" id="loadingOverlay">
-    <div class="loading-content">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Finding parking spots...</div>
-    </div>
-</div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="js/config.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/script.js"></script>
-<script>
-    // Initialize dashboard
-    const user = JSON.parse(localStorage.getItem("user"));
-    const token = localStorage.getItem("token");
-
-    if(!user || !token) {
-        window.location.href = "login.html";
-    } else {
-        loadStats();
-    }
-
-    async function loadStats() {
-        try {
-            const token = localStorage.getItem("token");
-            const res = await fetch(`${CONFIG.API_BASE}/saved/stats`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const stats = await res.json();
-
-            const bookingsEl = document.getElementById("activeBookingsCount");
-            const savedEl = document.getElementById("savedPlacesCount");
-
-            if(bookingsEl) bookingsEl.innerText = stats.activeBookings || 0;
-            if(savedEl) savedEl.innerText = stats.savedPlaces || 0;
-        } catch (err) {
-            console.error("Stats Error:", err);
-        }
-    }
-
-    // Reset map view function
-    function resetMapView() {
-        if (map) {
-            map.setView([16.3067, 80.4365], 13);
-        }
-    }
-</script>
-
-</body>
-</html>
+            <div class="status-indicator

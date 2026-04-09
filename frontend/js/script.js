@@ -59,14 +59,51 @@ async function findParking(lat, lon, city) {
     listContainer.innerHTML = '<div class="loader">Scanning for slots...</div>';
 
     let query = `[out:json][timeout:30];(node["amenity"="parking"](around:5000,${lat},${lon});way["amenity"="parking"](around:5000,${lat},${lon});relation["amenity"="parking"](around:5000,${lat},${lon});node["parking"](around:5000,${lat},${lon}););out center;`;
+    
+    // Multiple Overpass API mirrors for robustness
+    const mirrors = [
+        "https://overpass-api.de/api/interpreter",
+        "https://lz4.overpass-api.de/api/interpreter",
+        "https://z.overpass-api.de/api/interpreter"
+    ];
+
+    let data = null;
+    let success = false;
+
+    for (const mirror of mirrors) {
+        try {
+            console.log(`Trying Overpass mirror: ${mirror}`);
+            let response = await fetch(`${mirror}?data=${encodeURIComponent(query)}`);
+            
+            if (!response.ok) {
+                console.warn(`Mirror ${mirror} returned status ${response.status}`);
+                continue;
+            }
+            
+            data = await response.json();
+            if (data && data.elements) {
+                success = true;
+                break;
+            }
+        } catch (mirrorErr) {
+            console.warn(`Mirror ${mirror} failed:`, mirrorErr);
+        }
+    }
+
+    if (!success) {
+        console.error("All Overpass mirrors failed.");
+        listContainer.innerHTML = `
+            <div class="error-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Failed to discover parking hubs.</p>
+                <small>The parking discovery service is temporarily overloaded. Please try again in a few moments.</small>
+                <button class="btn-premium btn-sm mt-4" onclick="findParking(${lat}, ${lon}, '${city}')">Retry Discovery</button>
+            </div>
+        `;
+        return;
+    }
 
     try {
-        let response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
-        
-        if (!response.ok) throw new Error("Overpass API request failed");
-        
-        let data = await response.json();
-
         if (!data.elements || data.elements.length === 0) {
             listContainer.innerHTML = '<div class="empty-state-v2"><i class="fas fa-search-location"></i><p>No parking slots found in this area.</p></div>';
             return;
@@ -112,12 +149,12 @@ async function findParking(lat, lon, city) {
 
         renderParking(lastFetchedParking);
     } catch (err) {
-        console.error("Discovery Error:", err);
+        console.error("Processing Error:", err);
         listContainer.innerHTML = `
             <div class="error-state">
                 <i class="fas fa-exclamation-triangle"></i>
-                <p>Failed to discover parking hubs.</p>
-                <small>Please check your connection or try a different location.</small>
+                <p>Failed to process parking data.</p>
+                <small>An error occurred while displaying the results. Please try refreshing.</small>
             </div>
         `;
     }

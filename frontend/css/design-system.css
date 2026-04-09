@@ -303,6 +303,48 @@ body {
     padding: 20px;
 }
 
+/* ERROR & EMPTY STATES */
+.error-state, .empty-state-v2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed var(--line-soft);
+    border-radius: 24px;
+    margin: 20px;
+}
+
+.error-state i {
+    font-size: 48px;
+    color: var(--error);
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 15px rgba(248, 81, 73, 0.3));
+}
+
+.empty-state-v2 i {
+    font-size: 48px;
+    color: var(--accent-blue);
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 15px var(--accent-blue-glow));
+}
+
+.error-state p, .empty-state-v2 p {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.error-state small, .empty-state-v2 small {
+    font-size: 14px;
+    color: var(--text-secondary);
+    max-width: 250px;
+    line-height: 1.5;
+}
+
 .parking-list-optimized::-webkit-scrollbar {
     width: 4px;
 }

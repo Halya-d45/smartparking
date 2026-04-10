@@ -3,264 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Join Smart Parking</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/design-system.css">
-    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
+    <title>Join Smart Parking - Premium Access</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/premium.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: "#f9f7f2",
+                        primary: "#3b82f6",
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="gradient-bg">
+<body class="bg-background min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-[480px] animate-fade-in">
+        <!-- Logo Section -->
+        <div class="text-center mb-10">
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-600/20 mx-auto mb-6">
+                <i class="fas fa-parking text-white text-3xl"></i>
+            </div>
+            <h1 class="text-4xl font-black text-slate-900 tracking-tighter mb-2">Create Account</h1>
+            <p class="text-gray-500 font-semibold uppercase text-[10px] tracking-[0.2em]">Join the premium parking network</p>
+        </div>
 
-<div class="app-wrapper">
-    <div class="auth-container animate-fade">
-        <div class="glass-card auth-card">
-            <div class="logo-section">
-                <div class="logo-icon">
-                    <div class="logo-mark">
-                        <div class="app-icon">
-                            <div class="app-icon-top"></div>
-                            <div class="app-icon-sphere"><span>P</span></div>
+        <!-- Auth Card -->
+        <div class="bg-white/70 backdrop-blur-3xl border border-black/5 rounded-[3rem] p-10 shadow-2xl shadow-black/5">
+            <div class="space-y-6">
+                <!-- Name -->
+                <div>
+                    <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Full Name</label>
+                    <div class="relative flex items-center bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-inner focus-within:border-blue-200 transition-all">
+                        <div class="w-12 flex items-center justify-center text-gray-300">
+                            <i class="fas fa-user-tag text-sm"></i>
                         </div>
-                    </div>
-                </div>
-                <h1>Join SmartParking</h1>
-                <p>Create your secure account</p>
-            </div>
-
-            <div class="form-section">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="name" class="premium-input" placeholder="John Doe">
+                        <input type="text" placeholder="John Doe" class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 placeholder:text-gray-300">
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="email" class="premium-input" placeholder="name@company.com">
+                <!-- Email -->
+                <div>
+                    <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Email Address</label>
+                    <div class="relative flex items-center bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-inner focus-within:border-blue-200 transition-all">
+                        <div class="w-12 flex items-center justify-center text-gray-300">
+                            <i class="fas fa-envelope text-sm"></i>
+                        </div>
+                        <input type="email" placeholder="mike@example.com" class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 placeholder:text-gray-300">
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Password</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="password" class="premium-input" placeholder="••••••••">
+                <!-- Password -->
+                <div>
+                    <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Secure Password</label>
+                    <div class="relative flex items-center bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-inner focus-within:border-blue-200 transition-all">
+                        <div class="w-12 flex items-center justify-center text-gray-300">
+                            <i class="fas fa-shield-halved text-sm"></i>
+                        </div>
+                        <input type="password" placeholder="••••••••" class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 placeholder:text-gray-300">
                     </div>
                 </div>
 
-                <button class="btn-premium btn-full" onclick="signup()">
-                    <span>Create Account</span>
-                    <i class="fas fa-user-plus"></i>
-                </button>
-            </div>
+                <div class="pt-4">
+                    <button class="w-full py-5 bg-slate-900 text-white font-black text-sm rounded-[1.5rem] shadow-xl shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-95 flex items-center justify-center gap-3 group">
+                        Sign Up Now
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </button>
+                </div>
 
-            <div class="auth-footer">
-                <p>Already have an account? <a href="login.html">Sign in here</a></p>
+                <!-- Alternative -->
+                <div class="flex items-center gap-4 py-4">
+                    <div class="h-px flex-1 bg-gray-100"></div>
+                    <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">or continue with</span>
+                    <div class="h-px flex-1 bg-gray-100"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <button class="py-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="fab fa-google text-red-500"></i>
+                        <span class="text-xs font-black text-slate-700">Google</span>
+                    </button>
+                    <button class="py-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="fab fa-apple text-slate-900"></i>
+                        <span class="text-xs font-black text-slate-700">Apple</span>
+                    </button>
+                </div>
             </div>
         </div>
+
+        <p class="text-center mt-8 text-gray-400 font-semibold text-sm">
+            Already a member? <a href="login.html" class="text-blue-600 font-black hover:underline underline-offset-4">Sign In</a>
+        </p>
     </div>
-</div>
-
-<style>
-/* Page Specific Styles */
-body.gradient-bg {
-    background: radial-gradient(circle at top left, rgba(245, 166, 35, 0.14), transparent 26%),
-        radial-gradient(circle at bottom right, rgba(203, 77, 61, 0.12), transparent 25%),
-        linear-gradient(180deg, #150b17 0%, #1f1228 35%, #0d0812 100%);
-    color: #2d1f16;
-}
-.app-wrapper {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 28px 24px;
-}
-.auth-container {
-    width: 100%;
-    max-width: 440px;
-}
-.auth-card {
-    padding: 44px 38px;
-    background: linear-gradient(180deg, #f8efe3 0%, #faefe1 48%, #f5e5d7 100%);
-    border-radius: 32px;
-    box-shadow: 0 35px 80px rgba(14, 7, 22, 0.32);
-    border: 1px solid rgba(255, 255, 255, 0.55);
-}
-.logo-section {
-    text-align: center;
-    margin-bottom: 28px;
-}
-.logo-section h1 {
-    font-size: 34px;
-    margin: 12px 0 0;
-    font-weight: 700;
-    color: #2f4f4f;
-    letter-spacing: -0.03em;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    position: relative;
-    display: inline-block;
-}
-.logo-section h1::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 120%;
-    height: 80%;
-    background: rgba(135, 206, 235, 0.2);
-    border-radius: 50% / 30%;
-    z-index: -1;
-    filter: blur(8px);
-}
-.logo-section p {
-    color: #5c4031;
-    font-size: 14px;
-    line-height: 1.65;
-}
-.logo-icon {
-    margin: 0 auto 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.logo-mark {
-    width: 88px;
-    height: 88px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.app-icon {
-    position: relative;
-    width: 84px;
-    height: 84px;
-    border-radius: 28px;
-    background: linear-gradient(180deg, #5a2f2a 0%, #3c1a26 42%, #1c0d18 100%);
-    box-shadow: inset 0 2px 10px rgba(255, 190, 135, 0.12), 0 22px 42px rgba(0, 0, 0, 0.18);
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.app-icon-top {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 18px;
-    background: #2e1c24;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-.app-icon-sphere {
-    position: relative;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #f9f1e7 0%, #d7b596 30%, #a57955 55%, #6a4532 98%);
-    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.25), 0 14px 28px rgba(80, 37, 12, 0.24);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-}
-.app-icon-sphere span {
-    color: #322216;
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    font-family: 'Inter', sans-serif;
-}
-.form-section {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-.form-group {
-    margin-bottom: 18px;
-}
-.form-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: #5c4031;
-    margin-bottom: 8px;
-}
-.input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-.input-wrapper i {
-    position: absolute;
-    left: 16px;
-    color: #b1825f;
-    font-size: 16px;
-}
-.input-wrapper input {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.72);
-    border: 1px solid rgba(194, 141, 98, 0.35);
-    border-radius: 20px;
-    padding: 16px 18px 16px 46px;
-    color: #442f22;
-    font-size: 15px;
-    outline: none;
-    transition: all 0.25s ease;
-    min-height: 52px;
-    backdrop-filter: blur(10px);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
-}
-.input-wrapper input::placeholder {
-    color: rgba(97, 60, 43, 0.6);
-}
-.input-wrapper input:focus {
-    border-color: rgba(173, 99, 42, 0.7);
-    box-shadow: 0 0 0 4px rgba(233, 156, 80, 0.14);
-    background: rgba(255, 255, 255, 0.88);
-}
-.btn-full {
-    width: 100%;
-}
-.btn-premium {
-    min-height: 54px;
-    padding: 0 1.5rem;
-    border-radius: 22px;
-    font-size: 15px;
-    font-weight: 700;
-    color: #fff;
-    background: linear-gradient(135deg, #c95c1e 0%, #e49f6c 52%, #8f5d8c 100%);
-    border: none;
-    box-shadow: 0 18px 40px rgba(226, 114, 43, 0.28);
-    transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
-}
-.btn-premium:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 22px 50px rgba(226, 114, 43, 0.34);
-}
-.auth-footer {
-    margin-top: 28px;
-    text-align: center;
-    font-size: 14px;
-    color: #765a48;
-}
-.auth-footer a {
-    color: #b46e39;
-    font-weight: 600;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-.auth-footer a:hover {
-    color: #c88e62;
-}
-</style>
-
-<script src="js/config.js"></script>
-<script src="js/auth.js"></script>
 </body>
 </html>

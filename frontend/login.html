@@ -3,284 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Smart Parking</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/design-system.css">
-    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
+    <title>Login | Smart Parking Premium</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            /* Light fintech theme backdrop */
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
-            color: #0f172a;
-        }
-
-        .auth-container {
-            width: 100%;
-            max-width: 440px;
-            padding: 24px;
-            position: relative;
-        }
-
-        /* Blobs for bright UI depth */
-        .blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            z-index: -1;
-            opacity: 0.6;
-        }
-        .blob-1 { top: -60px; left: -80px; width: 300px; height: 300px; background: #bae6fd; }
-        .blob-2 { bottom: -60px; right: -80px; width: 350px; height: 350px; background: #ddd6fe; }
-
-        .auth-card {
-            padding: 48px;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            border-radius: 32px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .auth-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08);
-        }
-
-        .logo-section {
-            margin-bottom: 32px;
-        }
-
-        .logo-icon {
-            width: 72px;
-            height: 72px;
-            background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-            border-radius: 20px;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            color: white;
-            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3);
-            border: 3px solid #ffffff;
-        }
-
-        .logo-section h1 {
-            font-size: 28px;
-            margin: 0 0 8px;
-            letter-spacing: -1px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        .logo-section p {
-            color: #64748b;
-            font-size: 15px;
-            margin: 0;
-        }
-
-        .form-section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 700;
-            color: #475569;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .flex-between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .forgot-link {
-            font-size: 13px;
-            color: #0ea5e9;
-            font-weight: 600;
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .forgot-link:hover {
-            color: #0284c7;
-        }
-
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-wrapper i {
-            position: absolute;
-            left: 18px;
-            color: #94a3b8;
-            font-size: 16px;
-            transition: color 0.3s ease;
-        }
-
-        .premium-input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            border-radius: 16px;
-            padding: 16px 16px 16px 48px;
-            color: #0f172a;
-            font-size: 15px;
-            outline: none;
-            transition: all 0.25s ease;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        .premium-input:focus {
-            background: #ffffff;
-            border-color: #0ea5e9;
-            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
-        }
-
-        .premium-input:focus + i, .input-wrapper:focus-within i {
-            color: #0ea5e9;
-        }
-
-        .btn-premium {
-            width: 100%;
-            min-height: 56px;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 700;
-            color: #fff;
-            background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
-            border: none;
-            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        .btn-premium:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 35px rgba(14, 165, 233, 0.4);
-        }
-
-        .auth-footer {
-            margin-top: 32px;
-            font-size: 14px;
-            color: #64748b;
-        }
-
-        .auth-footer a {
-            color: #0ea5e9;
-            font-weight: 700;
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .auth-footer a:hover {
-            color: #0284c7;
-        }
-
-        @media (max-width: 480px) {
-            .auth-card {
-                padding: 40px 24px;
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/premium.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: "#f9f7f2",
+                        primary: "#3b82f6",
+                    }
+                }
             }
         }
-    </style>
+    </script>
 </head>
-<body>
-
-<div class="auth-container">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-
-    <div class="auth-card animate-fade">
-        <div class="logo-section">
-            <div class="logo-icon">
-                <i class="fas fa-parking"></i>
+<body class="bg-background min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-[460px] animate-fade-in text-center">
+        <!-- Logo Section -->
+        <div class="mb-10">
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-600/20 mx-auto mb-6">
+                <i class="fas fa-parking text-white text-3xl"></i>
             </div>
-            <h1>SmartParking</h1>
-            <p>Access your intelligent parking hub.</p>
+            <h1 class="text-4xl font-black text-slate-900 tracking-tighter mb-2">Welcome Back</h1>
+            <p class="text-gray-500 font-semibold uppercase text-[10px] tracking-[0.2em]">Secure Access to your hub</p>
         </div>
 
-        <div class="form-section">
-            <div class="form-group">
-                <label>Email Address</label>
-                <div class="input-wrapper">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="email" class="premium-input" placeholder="name@company.com">
+        <!-- Auth Card -->
+        <div class="bg-white/70 backdrop-blur-3xl border border-black/5 rounded-[3rem] p-10 shadow-2xl shadow-black/5 text-left">
+            <div class="space-y-6">
+                <!-- Email -->
+                <div>
+                    <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Email Address</label>
+                    <div class="relative flex items-center bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-inner focus-within:border-blue-200 transition-all">
+                        <div class="w-12 flex items-center justify-center text-gray-300">
+                            <i class="fas fa-envelope text-sm"></i>
+                        </div>
+                        <input type="email" id="email" placeholder="mike@example.com" class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 placeholder:text-gray-300">
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <div class="flex-between">
-                    <label>Password</label>
-                    <a href="#" class="forgot-link">Forgot?</a>
+                <!-- Password -->
+                <div>
+                    <div class="flex justify-between items-center mb-3 ml-1">
+                        <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest">Password</label>
+                        <a href="#" class="text-[10px] font-black text-blue-600 hover:underline">Forgot?</a>
+                    </div>
+                    <div class="relative flex items-center bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-inner focus-within:border-blue-200 transition-all">
+                        <div class="w-12 flex items-center justify-center text-gray-300">
+                            <i class="fas fa-shield-halved text-sm"></i>
+                        </div>
+                        <input type="password" id="password" placeholder="••••••••" class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 placeholder:text-gray-300">
+                    </div>
                 </div>
-                <div class="input-wrapper">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="password" class="premium-input" placeholder="••••••••">
-                </div>
-            </div>
 
-            <button class="btn-premium" onclick="login()">
-                <span>Sign In</span>
-                <i class="fas fa-arrow-right"></i>
-            </button>
+                <div class="pt-4">
+                    <button id="login-btn" class="w-full py-5 bg-blue-600 text-white font-black text-sm rounded-[1.5rem] shadow-xl shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-3 group">
+                        Sign In
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-4 py-2">
+                    <div class="h-px flex-1 bg-gray-100"></div>
+                    <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">or</span>
+                    <div class="h-px flex-1 bg-gray-100"></div>
+                </div>
+
+                <button class="w-full py-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-3 text-slate-700 font-bold text-xs">
+                    <i class="fab fa-google text-red-500 text-sm"></i>
+                    Sign in with Google
+                </button>
+            </div>
         </div>
 
-        <div class="auth-footer">
-            <p>Don't have an account? <a href="signup.html">Create one for free</a></p>
-        </div>
+        <p class="mt-8 text-gray-400 font-semibold text-sm">
+            New here? <a href="signup.html" class="text-blue-600 font-black hover:underline underline-offset-4">Create Account</a>
+        </p>
     </div>
-</div>
 
-<script src="js/config.js"></script>
-<script src="js/auth.js"></script>
-<script>
-    // Stub definition in case auth.js requires it
-    function login() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        if(!email || !password) {
-            alert('Please fill in both fields.');
-            return;
-        }
-
-        // We assume auth.js handles the actual API call logic
-        // This is a failsafe basic logic block if `auth.js` does not bind to onclick natively
-        if (typeof window.performLogin === "function") {
-            window.performLogin(email, password);
-        } else {
-            console.log("Mock Login triggered.");
-            // Mock direct routing for aesthetic walkthroughs
-            localStorage.setItem("user", JSON.stringify({ name: "Mike Account", email: email }));
-            localStorage.setItem("token", "dummy_token");
-            window.location.href = "dashboard.html";
-        }
-    }
-</script>
+    <script>
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (email && password) {
+                // Mock redirect to the new dashboard
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('Please enter your credentials');
+            }
+        });
+    </script>
 </body>
 </html>

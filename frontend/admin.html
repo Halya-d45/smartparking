@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Hub - Smart Parking System</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/premium.css">
+</head>
+<body class="bg-background">
+    <!-- Admin Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-900 border-b border-white/5 h-20 flex items-center">
+        <div class="max-w-[1700px] mx-auto w-full px-8 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-user-shield text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-black text-white leading-tight">Admin<span class="text-blue-500">Hub</span></h1>
+                    <p class="text-[10px] uppercase tracking-[0.2em] font-extrabold text-gray-400 -mt-1">System Management</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-6">
+                <button onclick="window.location.href='dashboard.html'" class="text-gray-400 hover:text-white transition-colors text-sm font-bold">Go to User Portal</button>
+                <div class="h-8 w-px bg-white/10"></div>
+                <button class="bg-red-500/10 text-red-500 px-6 py-2 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-32 px-8 max-w-[1700px] mx-auto pb-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+            <div class="stats-card">
+                <p class="stats-card-title">Total Revenue</p>
+                <p class="stats-card-value">$42,900</p>
+                <div class="mt-4 flex items-center gap-2 text-emerald-500 font-bold text-xs">
+                    <i class="fas fa-arrow-up"></i> 12% from last month
+                </div>
+            </div>
+            <div class="stats-card">
+                <p class="stats-card-title">Total Bookings</p>
+                <p class="stats-card-value">1,204</p>
+                <div class="mt-4 flex items-center gap-2 text-emerald-500 font-bold text-xs">
+                    <i class="fas fa-arrow-up"></i> 8% active now
+                </div>
+            </div>
+            <div class="stats-card">
+                <p class="stats-card-title">Occupancy Rate</p>
+                <p class="stats-card-value">84%</p>
+                <div class="mt-4 w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-blue-600 h-full w-[84%]"></div>
+                </div>
+            </div>
+            <div class="stats-card bg-slate-900 !border-none">
+                <p class="stats-card-title !text-gray-400">System Status</p>
+                <p class="stats-card-value !text-white">Active</p>
+                <div class="mt-4 flex items-center gap-2 text-blue-400 font-bold text-xs">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-ping"></div> Fully Operational
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <!-- Hub Management -->
+            <div class="lg:col-span-2">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tighter">Manage <span class="text-blue-600">Parking Hubs</span></h2>
+                    <button class="bg-blue-600 text-white px-8 py-3 rounded-2xl font-black text-sm shadow-xl shadow-blue-600/20 hover:scale-105 transition-all active:scale-95">+ Add New Hub</button>
+                </div>
+                
+                <div class="space-y-4" id="admin-hub-list">
+                    <!-- Dynamic List -->
+                    <div class="bg-white border border-black/5 rounded-[2.5rem] p-8 flex items-center justify-between hover:shadow-xl transition-all group">
+                        <div class="flex items-center gap-6">
+                            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-black text-xl text-slate-900 mb-1">Premium Hub Alpha</h4>
+                                <p class="text-gray-400 font-bold text-sm">Banjara Hills • 12/50 Slots Occupied</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <button class="w-12 h-12 bg-gray-50 text-slate-400 rounded-2xl hover:bg-slate-900 hover:text-white transition-all">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="w-12 h-12 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div>
+                <h2 class="text-3xl font-black text-slate-900 tracking-tighter mb-8">Recent <span class="text-blue-600">Events</span></h2>
+                <div class="glass-card !p-8 space-y-6">
+                    <div class="flex items-start gap-4">
+                        <div class="w-2 h-2 bg-emerald-500 rounded-full mt-2"></div>
+                        <div>
+                            <p class="text-sm font-black text-slate-900">New Booking: Mike A.</p>
+                            <p class="text-[10px] text-gray-400 uppercase font-black">2 mins ago • Hub Alpha</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                        <div>
+                            <p class="text-sm font-black text-slate-900">Payment Processed: $35.00</p>
+                            <p class="text-[10px] text-gray-400 uppercase font-black">15 mins ago • User ID: 4920</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
+                        <div>
+                            <p class="text-sm font-black text-slate-900">Maintenance Alert: Hub S-1</p>
+                            <p class="text-[10px] text-gray-400 uppercase font-black">1 hour ago • Column B Sensor</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

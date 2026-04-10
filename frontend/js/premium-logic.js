@@ -133,52 +133,57 @@ async function fetchSavedSlots() {
 }
 
 // 3. User Actions
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    
+    const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
+    
+    toast.innerHTML = `
+        <i class="fas ${icon} ${type === 'success' ? 'text-emerald-500' : (type === 'error' ? 'text-red-500' : 'text-blue-500')}"></i>
+        <span>${message}</span>
+    `;
+    
+    container.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 100);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 500);
+    }, 4000);
+}
+
 async function bookSlot(hubId) {
     const hub = PARKING_HUBS.find(h => h.id === hubId);
     if (!hub) return;
 
-    if (confirm(`Confirm booking for ${hub.name} at ${hub.price}?`)) {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            alert('Please login to book a slot.');
-            window.location.href = 'login.html';
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API_BASE}/bookings/create`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` 
-                },
-                body: JSON.stringify({ 
-                    parkingHubName: hub.name,
-                    location: hub.addr,
-                    price: hub.price,
-                    date: new Date().toLocaleDateString(),
-                    timer: '02:00'
-                })
-            });
-
-            if (res.ok) {
-                alert('Booking Successful!');
-                setActiveTab('my-bookings');
-            } else {
-                alert('Failed to create booking.');
-            }
-        } catch (err) {
-            alert('Booking flow simulated. Check My Bookings.');
-            setActiveTab('my-bookings');
-        }
-    }
+    // Capture context and move to checkout
+    localStorage.setItem('last_booking_hub', hub.name);
+    localStorage.setItem('last_booking_price', hub.price);
+    
+    showToast(`Redirecting to Secure Checkout...`, 'info');
+    setTimeout(() => {
+        window.location.href = 'booking-confirm.html';
+    }, 800);
 }
 
 async function saveSlot(hubId, e) {
     e.stopPropagation();
     const btn = e.currentTarget;
-    btn.classList.toggle('text-red-500');
+    const icon = btn.querySelector('i');
     
+    const isSaved = icon.classList.contains('fas');
+    icon.classList.toggle('fas');
+    icon.classList.toggle('far');
+    icon.classList.toggle('text-red-500');
+    
+    if (!isSaved) {
+        showToast(`Saved ${PARKING_HUBS.find(h => h.id === hubId).name} to favorites`, 'success');
+    }
+
     // In a real app, send to backend
     const token = localStorage.getItem('token');
     if (token) {
@@ -192,6 +197,7 @@ async function saveSlot(hubId, e) {
         });
     }
 }
+
 
 // 4. Map Logic
 function initMap() {

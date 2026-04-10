@@ -4,8 +4,37 @@
 
 let map;
 let markers = [];
-let currentHubs = [];
-const socket = io(window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://backend-api-uhdp.onrender.com');
+
+// DOM Elements
+const navButtons = document.querySelectorAll('.nav-link');
+const tabContents = document.querySelectorAll('.tab-content');
+const mapSearch = document.getElementById('map-search');
+const searchBtn = document.getElementById('search-btn');
+const clearSearchBtn = document.getElementById('clear-search');
+const mapLoader = document.getElementById('map-loader');
+const statsPanel = document.getElementById('stats-panel');
+const resultsPanel = document.getElementById('results-panel');
+const resultsList = document.getElementById('results-list');
+const resultsTitle = document.getElementById('results-title');
+const bookingsList = document.getElementById('bookings-list');
+
+// Configuration
+const API_BASE = window.location.hostname === 'localhost' 
+    ? 'http://localhost:5000/api' 
+    : 'https://backend-api-uhdp.onrender.com/api';
+
+// Data Mockup (Expanded)
+const PARKING_HUBS = [
+    { id: 1, name: 'Premium Hub Alpha', price: '$5.00/hr', slots: 12, distance: '0.2 km', lat: 17.3850, lng: 78.4867, addr: 'Banjara Hills, Road No 12' },
+    { id: 2, name: 'City Center Hub', price: '$3.50/hr', slots: 8, distance: '0.8 km', lat: 17.3950, lng: 78.4967, addr: 'Abids, Main Commercial St' },
+    { id: 3, name: 'Galleria Mall S-1', price: '$4.00/hr', slots: 0, distance: '1.2 km', lat: 17.3750, lng: 78.4767, addr: 'Panjagutta X-Road' },
+    { id: 4, name: 'Metro Parking East', price: '$2.00/hr', slots: 45, distance: '1.5 km', lat: 17.4050, lng: 78.4667, addr: 'Secunderabad Station' },
+    { id: 5, name: 'Park Avenue Plaza', price: '$6.00/hr', slots: 5, distance: '0.5 km', lat: 17.4150, lng: 78.5067, addr: 'Somajiguda, Opp Metro' },
+    { id: 6, name: 'Airlift Smart Hub', price: '$8.00/hr', slots: 20, distance: '2.4 km', lat: 17.4350, lng: 78.4467, addr: 'Madhapur High-tech City' },
+];
+
+let userBookings = [];
+let savedSlots = [];
 
 // 1. Tab Switching Logic
 function setActiveTab(tabId) {
@@ -17,33 +46,52 @@ function setActiveTab(tabId) {
     if (dropdown) dropdown.classList.remove('active');
 }
 
-// 2. Real-time Listeners
-socket.on('availability_update', (data) => {
-    console.log('Real-time sync:', data);
-    const hub = currentHubs.find(h => h.id === data.hubId || h.id == data.hubId);
-    if (hub) {
-        hub.slots = data.newCount;
-        // Re-render only if in search view
-        if (!resultsPanel.classList.contains('hidden')) {
-            renderHubList(currentHubs);
-            updateMapMarkers(currentHubs);
-        }
+function initTabs() {
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.dataset.tab;
+            
+            // Update Nav UI
+            navButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Update Content UI
+            tabContents.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.id === target) tab.classList.add('active');
+            });
+
+            // Specific Tab Actions
+            if (target === 'map-view') {
+                if (!map) initMap();
+                else map.invalidateSize();
+            }
+            if (target === 'my-bookings') fetchBookings();
+            if (target === 'saved-slots') fetchSavedSlots();
+        });
+    });
+
+    // Dropdown Toggle
+    const userPill = document.getElementById('user-pill');
+    const userDropdown = document.getElementById('user-dropdown');
+
+    if (userPill && userDropdown) {
+        userPill.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('active');
+        });
+
+        window.addEventListener('click', () => {
+            userDropdown.classList.remove('active');
+        });
     }
-});
+}
 
 // 4. Map Logic
 function initMap() {
     if (map) return;
-    map = L.map('map', { 
-        zoomControl: false, 
-        attributionControl: false 
-    }).setView([17.3850, 78.4867], 13);
-    
-    // Google Maps Style (Voyager)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { 
-        maxZoom: 19 
-    }).addTo(map);
-    
+    map = L.map('map', { zoomControl: false, attributionControl: false }).setView([17.3850, 78.4867], 13);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
     document.getElementById('recenter-btn').onclick = () => map.setView([17.3850, 78.4867], 13);
 }
 
@@ -66,13 +114,13 @@ async function handleSearch() {
             const cityName = result.display_name.split(',')[0];
 
             map.flyTo([lat, lon], 14);
-            currentHubs = await fetchRealParkingHubs(lat, lon);
+            const hubs = await fetchRealParkingHubs(lat, lon);
             
             setTimeout(() => {
                 mapLoader.classList.add('hidden');
                 mapLoader.classList.remove('flex');
-                showResults(cityName, currentHubs);
-                showToast(`Live sync with ${currentHubs.length} hubs in ${cityName}`, 'success');
+                showResults(cityName, hubs);
+                showToast(`Found ${hubs.length} genuine parking hubs in ${cityName}`, 'success');
             }, 1000);
         } else {
             throw new Error('City not found');
@@ -83,6 +131,7 @@ async function handleSearch() {
         showToast('Location not found or API busy.', 'error');
     }
 }
+
 
 async function fetchRealParkingHubs(lat, lon) {
     try {

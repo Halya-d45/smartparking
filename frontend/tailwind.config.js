@@ -7,6 +7,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        border: "hsl(var(--border))",
+        input: "rgba(255, 255, 255, 0.05)",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         gray: {
           950: '#0a0a0f', // Deep space black
           900: '#111118', // Card backgrounds

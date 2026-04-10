@@ -5,17 +5,24 @@
 /* Import autofill fixes */
 @import './styles/autofill-fixes.css';
 
-/* Custom base styles */
 @layer base {
-  * {
-    /* Borders handled by utility classes */
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
   }
+
+  * {
+    @apply border-border;
+  }
+  
   body {
-    @apply bg-gray-950 text-white antialiased;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-/* Custom component styles */
 @layer components {
   .btn-primary {
     @apply px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200;
@@ -23,5 +30,10 @@
 
   .card {
     @apply bg-gray-900/50 backdrop-blur-xl border border-gray-800/50 rounded-2xl;
+  }
+
+  /* Premium Glass Effect */
+  .glass-premium {
+    @apply bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl;
   }
 }

@@ -5,6 +5,8 @@ const Dashboard = () => {
     const [activeTab, setActiveTab] = useState('Map View');
     const [stats] = useState({ activeBookings: 124, totalSlots: 500 });
     const [isSearching, setIsSearching] = useState(false);
+    const [hasResults, setHasResults] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const NavItem = ({ label, icon }) => (
         <button
@@ -16,80 +18,155 @@ const Dashboard = () => {
         </button>
     );
 
-    const MapViewContent = () => (
-        <div className="animate-slide-up">
-            {/* Search and Stats Grid */}
-            <div className="flex flex-col lg:flex-row gap-8 mb-8">
-                {/* Search Sidebar/Panel */}
-                <div className="w-full lg:w-1/3 flex flex-col gap-6">
-                    <div className="stats-card !min-h-0 py-6">
-                        <h3 className="stats-card-title !mb-4">Search Location</h3>
-                        <SearchInput onSearch={(q) => {
-                            console.log("Searching for:", q);
-                            setIsSearching(true);
-                            setTimeout(() => setIsSearching(false), 2000);
-                        }} />
+    const MapViewContent = () => {
+        const handleSearch = (q) => {
+            setSearchQuery(q);
+            setIsSearching(true);
+            setHasResults(false);
+            
+            // Simulate API logic to find slots
+            setTimeout(() => {
+                setIsSearching(false);
+                setHasResults(true);
+            }, 1800);
+        };
+
+        const parkingHubs = [
+            { id: 1, name: 'Premium Hub Alpha', price: '$5.00/hr', slots: 12, distance: '0.2 km', rating: 4.8 },
+            { id: 2, name: 'City Center Parking', price: '$3.50/hr', slots: 8, distance: '0.8 km', rating: 4.5 },
+            { id: 3, name: 'Galleria Mall S-1', price: '$4.00/hr', slots: 0, distance: '1.2 km', rating: 4.2 },
+        ];
+
+        return (
+            <div className="animate-slide-up">
+                <div className="flex flex-col lg:flex-row gap-8 mb-8">
+                    {/* Search Sidebar */}
+                    <div className="w-full lg:w-1/3 flex flex-col gap-6">
+                        <div className="stats-card !min-h-0 py-6">
+                            <h3 className="stats-card-title !mb-4">Search Location</h3>
+                            <SearchInput onSearch={handleSearch} />
+                        </div>
+
+                        <div className="stats-card !min-h-0 py-6 overflow-hidden">
+                            <h3 className="stats-card-title !mb-4">
+                                {hasResults ? `Parking in ${searchQuery}` : 'Quick Stats'}
+                            </h3>
+                            
+                            {hasResults ? (
+                                <div className="space-y-4 animate-slide-up">
+                                    {parkingHubs.map(hub => (
+                                        <div key={hub.id} className={`p-4 rounded-2xl border transition-all duration-300 cursor-pointer ${hub.slots > 0 ? 'bg-white border-blue-100 shadow-sm hover:shadow-lg hover:shadow-blue-500/5' : 'bg-gray-50 border-gray-100 opacity-60'}`}>
+                                            <div className="flex justify-between items-start mb-2">
+                                                <h5 className="font-bold text-slate-800 text-sm">{hub.name}</h5>
+                                                <span className="text-xs font-black text-blue-600">{hub.price}</span>
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${hub.slots > 0 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                                                    {hub.slots > 0 ? `${hub.slots} Slots Available` : 'Fully Booked'}
+                                                </span>
+                                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{hub.distance}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <button onClick={() => setHasResults(false)} className="w-full py-2 text-xs font-bold text-gray-400 hover:text-slate-800 transition-colors uppercase tracking-widest mt-2 border-t border-gray-100 pt-4">
+                                        Clear Results
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-6">
+                                    <div>
+                                        <div className="flex justify-between items-end mb-2">
+                                            <p className="text-3xl font-extrabold text-slate-800">{stats.totalSlots}</p>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Slots</p>
+                                        </div>
+                                        <div className="w-full bg-[#e8e2d6] h-1.5 rounded-full overflow-hidden">
+                                            <div className="bg-gradient-to-r from-blue-400 to-cyan-400 h-full w-[70%] rounded-full"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="flex justify-between items-end">
+                                            <p className="text-3xl font-extrabold text-blue-600">{stats.activeBookings}</p>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Available Now</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="stats-card !min-h-0 py-6 flex-1">
-                        <h3 className="stats-card-title !mb-4">Quick Stats</h3>
-                        <div className="space-y-6">
-                            <div>
-                                <div className="flex justify-between items-end mb-2">
-                                    <p className="text-3xl font-extrabold text-slate-800">{stats.totalSlots}</p>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Slots</p>
+                    {/* Interactive Map Area */}
+                    <div className="flex-1 relative bg-white/40 backdrop-blur-sm border border-black/5 rounded-[2.5rem] h-[600px] overflow-hidden group">
+                        {/* Mock Map Background */}
+                        <div className="absolute inset-0 bg-[#f0ede4] opacity-50 flex items-center justify-center">
+                            <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1a1a1a 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
+                            
+                            {isSearching ? (
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                                    <p className="text-blue-600 font-black tracking-tight text-xl">Scanning City Hubs...</p>
                                 </div>
-                                <div className="w-full bg-[#e8e2d6] h-1.5 rounded-full overflow-hidden">
-                                    <div className="bg-gradient-to-r from-blue-400 to-cyan-400 h-full w-[70%] rounded-full"></div>
+                            ) : hasResults ? (
+                                <div className="absolute inset-0 animate-fade-in">
+                                    {/* Mock Map Features/Markers */}
+                                    <div className="absolute top-[20%] left-[30%] group/pin cursor-pointer">
+                                        <div className="relative">
+                                            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-xl shadow-blue-500/30 group-hover/pin:scale-125 transition-transform duration-300 border-2 border-white">
+                                                <i className="fas fa-parking text-sm"></i>
+                                            </div>
+                                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover/pin:opacity-100 transition-opacity whitespace-nowrap">
+                                                Alpha Hub • 12 Slots
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="absolute top-[50%] left-[60%] group/pin cursor-pointer">
+                                        <div className="relative">
+                                            <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-xl shadow-indigo-500/30 group-hover/pin:scale-125 transition-transform duration-300 border-2 border-white">
+                                                <i className="fas fa-parking text-sm"></i>
+                                            </div>
+                                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover/pin:opacity-100 transition-opacity whitespace-nowrap">
+                                                City Center • 8 Slots
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="absolute top-[40%] left-[45%] group/pin cursor-pointer">
+                                        <div className="relative">
+                                            <div className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center text-white shadow-xl group-hover/pin:scale-125 transition-transform duration-300 border-2 border-white">
+                                                <i className="fas fa-parking text-sm"></i>
+                                            </div>
+                                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover/pin:opacity-100 transition-opacity whitespace-nowrap">
+                                                Galleria • Full
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <div className="flex justify-between items-end">
-                                    <p className="text-3xl font-extrabold text-blue-600">{stats.activeBookings}</p>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Available Now</p>
+                            ) : (
+                                <div className="text-center group-hover:scale-110 transition-transform duration-500">
+                                    <div className="w-20 h-20 bg-white rounded-full shadow-2xl flex items-center justify-center mb-4 mx-auto border-4 border-blue-50/50">
+                                        <i className="fas fa-map-marked-alt text-3xl text-blue-500"></i>
+                                    </div>
+                                    <p className="text-slate-400 font-extrabold text-sm uppercase tracking-widest">Interactive Map Ready</p>
+                                    <p className="text-xs text-gray-400 mt-2">Search a city above to view real-time parking availability</p>
                                 </div>
-                            </div>
+                            )}
+                        </div>
+
+                        {/* Floating Controls */}
+                        <div className="absolute top-6 right-6 flex flex-col gap-2">
+                            <button className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-colors">
+                                <i className="fas fa-plus"></i>
+                            </button>
+                            <button className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-colors">
+                                <i className="fas fa-minus"></i>
+                            </button>
+                            <button className="w-12 h-12 bg-blue-600 rounded-2xl shadow-xl flex items-center justify-center text-white hover:bg-blue-700 transition-colors mt-4 shadow-blue-500/20">
+                                <i className="fas fa-location-arrow"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
-
-                {/* Map Area */}
-                <div className="flex-1 relative bg-white/40 backdrop-blur-sm border border-black/5 rounded-[2.5rem] h-[600px] overflow-hidden group">
-                    {/* Mock Map Background */}
-                    <div className="absolute inset-0 bg-[#f0ede4] opacity-50 flex items-center justify-center">
-                         <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1a1a1a 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
-                         {isSearching ? (
-                            <div className="flex flex-col items-center gap-4">
-                                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                                <p className="text-blue-600 font-bold tracking-tight">Locating parking slots...</p>
-                            </div>
-                         ) : (
-                            <div className="text-center group-hover:scale-110 transition-transform duration-500">
-                                <div className="w-20 h-20 bg-white rounded-full shadow-2xl flex items-center justify-center mb-4 mx-auto border-4 border-blue-50/50">
-                                    <i className="fas fa-map-marked-alt text-3xl text-blue-500"></i>
-                                </div>
-                                <p className="text-slate-400 font-extrabold text-sm uppercase tracking-widest">Interactive Map Ready</p>
-                                <p className="text-xs text-gray-400 mt-2">Search a city to see available spots</p>
-                            </div>
-                         )}
-                    </div>
-
-                    {/* Floating Controls */}
-                    <div className="absolute top-6 right-6 flex flex-col gap-2">
-                        <button className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-colors">
-                            <i className="fas fa-plus"></i>
-                        </button>
-                        <button className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-colors">
-                            <i className="fas fa-minus"></i>
-                        </button>
-                        <button className="w-12 h-12 bg-blue-600 rounded-2xl shadow-xl flex items-center justify-center text-white hover:bg-blue-700 transition-colors mt-4">
-                            <i className="fas fa-location-arrow"></i>
-                        </button>
-                    </div>
-                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     const MyBookingsContent = () => (
         <div className="animate-slide-up max-w-5xl mx-auto">

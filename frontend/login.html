@@ -91,15 +91,45 @@
     </div>
 
     <script>
-        document.getElementById('login-btn').addEventListener('click', () => {
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5000/api' 
+            : 'https://backend-api-uhdp.onrender.com/api';
+
+        document.getElementById('login-btn').addEventListener('click', async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const btn = document.getElementById('login-btn');
             
-            if (email && password) {
-                // Mock redirect to the new dashboard
-                window.location.href = 'dashboard.html';
-            } else {
+            if (!email || !password) {
                 alert('Please enter your credentials');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Signing In...';
+
+            try {
+                const res = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user_name', data.user.name);
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert(data.message || 'Login failed');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Server connection error. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Sign In <i class="fas fa-arrow-right"></i>';
             }
         });
     </script>

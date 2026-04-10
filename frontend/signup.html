@@ -25,6 +25,51 @@
             }
         }
     </script>
+    <script>
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5000/api' 
+            : 'https://backend-api-uhdp.onrender.com/api';
+
+        document.querySelector('button.bg-slate-900').addEventListener('click', async () => {
+            const name = document.querySelector('input[placeholder="John Doe"]').value;
+            const email = document.querySelector('input[placeholder="mike@example.com"]').value;
+            const password = document.querySelector('input[placeholder="••••••••"]').value;
+            const btn = document.querySelector('button.bg-slate-900');
+
+            if (!name || !email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Creating Account...';
+
+            try {
+                const res = await fetch(`${API_BASE}/auth/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user_name', data.user.name);
+                    alert('Account created successfully!');
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert(data.message || 'Signup failed');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Server connection error. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Sign Up Now <i class="fas fa-arrow-right"></i>';
+            }
+        });
+    </script>
 </head>
 <body class="bg-background min-h-screen flex items-center justify-center p-6">
     <div class="w-full max-w-[480px] animate-fade-in">

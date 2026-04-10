@@ -154,7 +154,7 @@
                         'Authorization': `Bearer ${token}` 
                     },
                     body: JSON.stringify({ 
-                        parkingId: localStorage.getItem('last_booking_id'),
+                        parkingId: localStorage.getItem('last_booking_id') || ("HUB-" + Math.random().toString(36).substr(2, 6)),
                         parkingName: hubName,
                         location: localStorage.getItem('last_booking_addr') || 'City Center',
                         pricePerHour: price,

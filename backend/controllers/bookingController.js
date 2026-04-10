@@ -36,9 +36,9 @@ exports.createBooking = async (req, res) => {
 
         const booking = new Booking({
             userId,
-            parkingId,
+            parkingId: parking.overpassId || parkingId, // Use the ID from the created/found parking record
             slot: slot || "A-1",
-            duration: duration || 2,
+            duration: parseInt(duration) || 2,
             ratePerHour,
             totalAmount,
             date: new Date(),

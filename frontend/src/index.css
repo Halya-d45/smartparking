@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 /* Import autofill fixes */
-@import './src/styles/autofill-fixes.css';
+@import './styles/autofill-fixes.css';
 
 /* Custom base styles */
 @layer base {
   * {
-    @apply border-border;
+    /* Borders handled by utility classes */
   }
   body {
     @apply bg-gray-950 text-white antialiased;

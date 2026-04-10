@@ -207,54 +207,80 @@ function initMap() {
     document.getElementById('recenter-btn').onclick = () => map.setView([17.3850, 78.4867], 13);
 }
 
-function handleSearch() {
+// 3. Search & Geocoding Logic
+async function handleSearch() {
     const query = mapSearch.value.trim();
     if (!query) return;
+
     mapLoader.classList.remove('hidden');
     mapLoader.classList.add('flex');
-    setTimeout(() => {
+    
+    try {
+        // Real Geocoding using Nominatim (OSM)
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            const result = data[0];
+            const lat = parseFloat(result.lat);
+            const lon = parseFloat(result.lon);
+            const cityName = result.display_name.split(',')[0];
+
+            setTimeout(() => {
+                mapLoader.classList.add('hidden');
+                mapLoader.classList.remove('flex');
+                
+                // Fly to found city
+                map.flyTo([lat, lon], 13);
+                
+                showResults(cityName);
+                updateMarkersForCity(lat, lon);
+                showToast(`Found parking hubs in ${cityName}`, 'success');
+            }, 1000);
+        } else {
+            throw new Error('City not found');
+        }
+    } catch (err) {
         mapLoader.classList.add('hidden');
         mapLoader.classList.remove('flex');
-        showResults(query);
-        addMarkers();
-    }, 1200);
+        showToast('Location not found. Showing default hubs.', 'error');
+    }
 }
 
-function showResults(city) {
-    statsPanel.classList.add('hidden');
-    resultsPanel.classList.remove('hidden');
-    resultsTitle.innerText = `Parking in ${city}`;
-    
-    resultsList.innerHTML = PARKING_HUBS.map(hub => `
-        <div onclick="bookSlot(${hub.id})" class="p-5 rounded-2xl border ${hub.slots > 0 ? 'bg-white border-blue-100 shadow-sm' : 'bg-gray-50 border-gray-100 opacity-60'} transition-all cursor-pointer hover:shadow-lg group">
-            <div class="flex justify-between items-start mb-2">
-                <h5 class="font-black text-slate-800 text-sm">${hub.name}</h5>
-                <span class="text-xs font-black text-blue-600">${hub.price}</span>
-            </div>
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <span class="text-[10px] font-black px-2 py-0.5 rounded-md ${hub.slots > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
-                        ${hub.slots > 0 ? hub.slots + ' SLOTS' : 'BOOKED'}
-                    </span>
-                    <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest">${hub.distance}</span>
-                </div>
-                <button onclick="saveSlot(${hub.id}, event)" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors">
-                    <i class="fas fa-heart text-xs"></i>
-                </button>
-            </div>
-        </div>
-    `).join('');
-}
-
-function addMarkers() {
+function updateMarkersForCity(cityLat, cityLon) {
+    // Clear old markers
     markers.forEach(m => map.removeLayer(m));
     markers = [];
-    PARKING_HUBS.forEach(hub => {
-        const marker = L.circleMarker([hub.lat, hub.lng], { radius: 10, fillColor: "#3b82f6", color: "#fff", weight: 3, opacity: 1, fillOpacity: 0.9 }).addTo(map);
-        marker.bindPopup(`<div class="font-['Plus_Jakarta_Sans'] font-bold text-slate-800">${hub.name}<br><button onclick="bookSlot(${hub.id})" class="text-xs text-blue-600 mt-2 font-black cursor-pointer">BOOK NOW</button></div>`);
+
+    // Scatter mock hubs around the new city coordinates
+    PARKING_HUBS.forEach((hub, index) => {
+        // Add random offset so they aren't all on top of each other
+        const offsetLat = (Math.random() - 0.5) * 0.05;
+        const offsetLon = (Math.random() - 0.5) * 0.05;
+        
+        const hLat = cityLat + offsetLat;
+        const hLon = cityLon + offsetLon;
+
+        const marker = L.circleMarker([hLat, hLon], { 
+            radius: 10, 
+            fillColor: "#3b82f6", 
+            color: "#fff", 
+            weight: 3, 
+            opacity: 1, 
+            fillOpacity: 0.9 
+        }).addTo(map);
+
+        marker.bindPopup(`
+            <div class="font-['Plus_Jakarta_Sans'] font-bold text-slate-800">
+                ${hub.name}<br>
+                <p class="text-[10px] text-gray-400 font-bold mb-2">NEAR ${hub.addr}</p>
+                <button onclick="bookSlot(${hub.id})" class="text-xs text-blue-600 font-black cursor-pointer">BOOK NOW</button>
+            </div>
+        `);
         markers.push(marker);
     });
 }
+
 
 function renderBookings(data) {
     if (data.length === 0) {

@@ -4,37 +4,8 @@
 
 let map;
 let markers = [];
-
-// DOM Elements
-const navButtons = document.querySelectorAll('.nav-link');
-const tabContents = document.querySelectorAll('.tab-content');
-const mapSearch = document.getElementById('map-search');
-const searchBtn = document.getElementById('search-btn');
-const clearSearchBtn = document.getElementById('clear-search');
-const mapLoader = document.getElementById('map-loader');
-const statsPanel = document.getElementById('stats-panel');
-const resultsPanel = document.getElementById('results-panel');
-const resultsList = document.getElementById('results-list');
-const resultsTitle = document.getElementById('results-title');
-const bookingsList = document.getElementById('bookings-list');
-
-// Configuration
-const API_BASE = window.location.hostname === 'localhost' 
-    ? 'http://localhost:5000/api' 
-    : 'https://backend-api-uhdp.onrender.com/api';
-
-// Data Mockup (Expanded)
-const PARKING_HUBS = [
-    { id: 1, name: 'Premium Hub Alpha', price: '$5.00/hr', slots: 12, distance: '0.2 km', lat: 17.3850, lng: 78.4867, addr: 'Banjara Hills, Road No 12' },
-    { id: 2, name: 'City Center Hub', price: '$3.50/hr', slots: 8, distance: '0.8 km', lat: 17.3950, lng: 78.4967, addr: 'Abids, Main Commercial St' },
-    { id: 3, name: 'Galleria Mall S-1', price: '$4.00/hr', slots: 0, distance: '1.2 km', lat: 17.3750, lng: 78.4767, addr: 'Panjagutta X-Road' },
-    { id: 4, name: 'Metro Parking East', price: '$2.00/hr', slots: 45, distance: '1.5 km', lat: 17.4050, lng: 78.4667, addr: 'Secunderabad Station' },
-    { id: 5, name: 'Park Avenue Plaza', price: '$6.00/hr', slots: 5, distance: '0.5 km', lat: 17.4150, lng: 78.5067, addr: 'Somajiguda, Opp Metro' },
-    { id: 6, name: 'Airlift Smart Hub', price: '$8.00/hr', slots: 20, distance: '2.4 km', lat: 17.4350, lng: 78.4467, addr: 'Madhapur High-tech City' },
-];
-
-let userBookings = [];
-let savedSlots = [];
+let currentHubs = [];
+const socket = io(window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://backend-api-uhdp.onrender.com');
 
 // 1. Tab Switching Logic
 function setActiveTab(tabId) {
@@ -46,164 +17,33 @@ function setActiveTab(tabId) {
     if (dropdown) dropdown.classList.remove('active');
 }
 
-function initTabs() {
-    navButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const target = btn.dataset.tab;
-            
-            // Update Nav UI
-            navButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            // Update Content UI
-            tabContents.forEach(tab => {
-                tab.classList.remove('active');
-                if (tab.id === target) tab.classList.add('active');
-            });
-
-            // Specific Tab Actions
-            if (target === 'map-view') {
-                if (!map) initMap();
-                else map.invalidateSize();
-            }
-            if (target === 'my-bookings') fetchBookings();
-            if (target === 'saved-slots') fetchSavedSlots();
-        });
-    });
-
-    // Dropdown Toggle
-    const userPill = document.getElementById('user-pill');
-    const userDropdown = document.getElementById('user-dropdown');
-
-    if (userPill && userDropdown) {
-        userPill.addEventListener('click', (e) => {
-            e.stopPropagation();
-            userDropdown.classList.toggle('active');
-        });
-
-        window.addEventListener('click', () => {
-            userDropdown.classList.remove('active');
-        });
+// 2. Real-time Listeners
+socket.on('availability_update', (data) => {
+    console.log('Real-time sync:', data);
+    const hub = currentHubs.find(h => h.id === data.hubId || h.id == data.hubId);
+    if (hub) {
+        hub.slots = data.newCount;
+        // Re-render only if in search view
+        if (!resultsPanel.classList.contains('hidden')) {
+            renderHubList(currentHubs);
+            updateMapMarkers(currentHubs);
+        }
     }
-}
-
-// 2. Data Fetching (Backend Integration)
-async function fetchBookings() {
-    bookingsList.innerHTML = '<div class="text-center py-20 text-gray-400 font-bold animate-pulse">Syncing with database...</div>';
-    const token = localStorage.getItem('token');
-    
-    try {
-        if (!token) throw new Error('No token found');
-        
-        const res = await fetch(`${API_BASE}/bookings`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
-        userBookings = data.bookings || [];
-        renderBookings(userBookings);
-    } catch (err) {
-        console.warn('Using fallback data:', err);
-        // Fallback to mock if API fails
-        renderBookings([
-            { hub: 'Downtown Plaza Hub', addr: '124 Main St, City Center', date: 'Oct 12, 2026', time: '10:00 AM - 02:00 PM', price: '$14.00', status: 'UPCOMING', icon: 'fa-building', slot: 'A-24' },
-            { hub: 'Central Mall Parking', addr: 'Sector 5, Cross Road', date: 'Oct 15, 2026', time: '11:00 AM - 01:00 PM', price: '$08.00', status: 'PENDING', icon: 'fa-shopping-cart', slot: 'C-09' }
-        ]);
-    }
-}
-
-async function fetchSavedSlots() {
-    const savedContainer = document.querySelector('#saved-slots div');
-    if (!savedContainer) return;
-    
-    savedContainer.innerHTML = '<div class="text-center py-20 text-gray-400 font-bold animate-pulse">Scanning saved hubs...</div>';
-    const token = localStorage.getItem('token');
-
-    try {
-        if (!token) throw new Error();
-        const res = await fetch(`${API_BASE}/saved`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
-        savedSlots = data.saved || [];
-        renderSaved(savedSlots);
-    } catch (err) {
-        // Fallback mock
-        renderSaved([PARKING_HUBS[0], PARKING_HUBS[1]]);
-    }
-}
-
-// 3. User Actions
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    if (!container) return;
-    
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    
-    const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
-    
-    toast.innerHTML = `
-        <i class="fas ${icon} ${type === 'success' ? 'text-emerald-500' : (type === 'error' ? 'text-red-500' : 'text-blue-500')}"></i>
-        <span>${message}</span>
-    `;
-    
-    container.appendChild(toast);
-    setTimeout(() => toast.classList.add('show'), 100);
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 500);
-    }, 4000);
-}
-
-async function bookSlot(hubId) {
-    const hub = PARKING_HUBS.find(h => h.id === hubId);
-    if (!hub) return;
-
-    // Capture context and move to checkout
-    localStorage.setItem('last_booking_hub', hub.name);
-    localStorage.setItem('last_booking_price', hub.price);
-    
-    showToast(`Redirecting to Secure Checkout...`, 'info');
-    setTimeout(() => {
-        window.location.href = 'booking-confirm.html';
-    }, 800);
-}
-
-async function saveSlot(hubId, e) {
-    e.stopPropagation();
-    const btn = e.currentTarget;
-    const icon = btn.querySelector('i');
-    
-    const isSaved = icon.classList.contains('fas');
-    icon.classList.toggle('fas');
-    icon.classList.toggle('far');
-    icon.classList.toggle('text-red-500');
-    
-    if (!isSaved) {
-        showToast(`Saved ${PARKING_HUBS.find(h => h.id === hubId).name} to favorites`, 'success');
-    }
-
-    // In a real app, send to backend
-    const token = localStorage.getItem('token');
-    if (token) {
-        fetch(`${API_BASE}/saved/add`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` 
-            },
-            body: JSON.stringify({ hubId })
-        });
-    }
-}
-
+});
 
 // 4. Map Logic
 function initMap() {
     if (map) return;
-    map = L.map('map', { zoomControl: false, attributionControl: false }).setView([17.3850, 78.4867], 13);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+    map = L.map('map', { 
+        zoomControl: false, 
+        attributionControl: false 
+    }).setView([17.3850, 78.4867], 13);
+    
+    // Google Maps Style (Voyager)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { 
+        maxZoom: 19 
+    }).addTo(map);
+    
     document.getElementById('recenter-btn').onclick = () => map.setView([17.3850, 78.4867], 13);
 }
 
@@ -216,7 +56,6 @@ async function handleSearch() {
     mapLoader.classList.add('flex');
     
     try {
-        // Real Geocoding using Nominatim (OSM)
         const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
         const data = await response.json();
 
@@ -226,15 +65,14 @@ async function handleSearch() {
             const lon = parseFloat(result.lon);
             const cityName = result.display_name.split(',')[0];
 
+            map.flyTo([lat, lon], 14);
+            currentHubs = await fetchRealParkingHubs(lat, lon);
+            
             setTimeout(() => {
                 mapLoader.classList.add('hidden');
                 mapLoader.classList.remove('flex');
-                
-                // Fly to found city
-                map.flyTo([lat, lon], 13);
-                
-                showResults(cityName, lat, lon);
-                showToast(`Found parking hubs in ${cityName}`, 'success');
+                showResults(cityName, currentHubs);
+                showToast(`Live sync with ${currentHubs.length} hubs in ${cityName}`, 'success');
             }, 1000);
         } else {
             throw new Error('City not found');
@@ -242,38 +80,102 @@ async function handleSearch() {
     } catch (err) {
         mapLoader.classList.add('hidden');
         mapLoader.classList.remove('flex');
-        showToast('Location not found. Showing default hubs.', 'error');
+        showToast('Location not found or API busy.', 'error');
     }
 }
 
-function showResults(city, lat, lon) {
+async function fetchRealParkingHubs(lat, lon) {
+    try {
+        const query = `[out:json];node["amenity"="parking"](around:3000,${lat},${lon});out 15;`;
+        const res = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        
+        if (!data.elements || data.elements.length === 0) {
+            return Array.from({length: 8}, (_, i) => ({
+                id: 'sim-' + i,
+                name: `Smart Point ${i+1}`,
+                price: `$${(Math.random() * 5 + 2).toFixed(2)}/hr`,
+                slots: Math.floor(Math.random() * 50) + 10,
+                distance: `${(Math.random() * 2).toFixed(1)} km`,
+                lat: lat + (Math.random() - 0.5) * 0.03,
+                lon: lon + (Math.random() - 0.5) * 0.03,
+                addr: 'Local Area'
+            }));
+        }
+
+        return data.elements.map(el => ({
+            id: el.id,
+            name: el.tags.name || 'Public Parking',
+            price: `$${(Math.random() * 5 + 3).toFixed(2)}/hr`,
+            slots: Math.floor(Math.random() * 30),
+            distance: 'nearby',
+            lat: el.lat,
+            lon: el.lon,
+            addr: el.tags['addr:street'] || 'City Center'
+        }));
+    } catch (err) {
+        return [];
+    }
+}
+
+function showResults(city, hubs) {
     statsPanel.classList.add('hidden');
     resultsPanel.classList.remove('hidden');
     resultsTitle.innerText = `Parking in ${city}`;
     
-    // Update markers
-    updateMarkersForCity(lat, lon);
-    
-    resultsList.innerHTML = PARKING_HUBS.map(hub => `
-        <div onclick="bookSlot(${hub.id})" class="p-5 rounded-2xl border ${hub.slots > 0 ? 'bg-white border-blue-100 shadow-sm' : 'bg-gray-50 border-gray-100 opacity-60'} transition-all cursor-pointer hover:shadow-lg group">
+    renderHubList(hubs);
+    updateMapMarkers(hubs);
+}
+
+function updateMapMarkers(hubs) {
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+
+    hubs.forEach(hub => {
+        const marker = L.circleMarker([hub.lat, hub.lon], { 
+            radius: 10, 
+            fillColor: hub.slots > 0 ? "#3b82f6" : "#ef4444", 
+            color: "#fff", 
+            weight: 3, 
+            opacity: 1, 
+            fillOpacity: 0.9 
+        }).addTo(map);
+
+        marker.bindPopup(`
+            <div class="font-['Plus_Jakarta_Sans'] font-bold text-slate-800">
+                ${hub.name}<br>
+                <p class="text-[10px] ${hub.slots > 0 ? 'text-emerald-500' : 'text-red-500'} font-black mb-2">
+                    ${hub.slots > 0 ? hub.slots + ' SLOTS FREE' : 'FULL'}
+                </p>
+                ${hub.slots > 0 ? `<button onclick="bookSlot('${hub.id}')" class="text-xs text-blue-600 font-black cursor-pointer">BOOK NOW</button>` : ''}
+            </div>
+        `);
+        markers.push(marker);
+    });
+}
+
+function renderHubList(hubs) {
+    resultsList.innerHTML = hubs.map(hub => `
+        <div onclick="${hub.slots > 0 ? `bookSlot('${hub.id}')` : ''}" class="p-5 rounded-2xl border ${hub.slots > 0 ? 'bg-white border-blue-100 shadow-sm' : 'bg-gray-50 border-gray-100 opacity-60 grayscale'} transition-all cursor-pointer hover:shadow-lg group">
             <div class="flex justify-between items-start mb-2">
-                <h5 class="font-black text-slate-800 text-sm">${hub.name}</h5>
-                <span class="text-xs font-black text-blue-600">${hub.price}</span>
+                <h5 class="font-black text-slate-800 text-sm truncate pr-4">${hub.name}</h5>
+                <span class="text-xs font-black text-blue-600 whitespace-nowrap">${hub.price}</span>
             </div>
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <span class="text-[10px] font-black px-2 py-0.5 rounded-md ${hub.slots > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
-                        ${hub.slots > 0 ? hub.slots + ' SLOTS' : 'BOOKED'}
+                        ${hub.slots > 0 ? hub.slots + ' SLOTS' : 'FULL'}
                     </span>
                     <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest">${hub.distance}</span>
                 </div>
-                <button onclick="saveSlot(${hub.id}, event)" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors">
+                <button onclick="saveSlot('${hub.id}', event)" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors">
                     <i class="fas fa-heart text-xs"></i>
                 </button>
             </div>
         </div>
     `).join('');
 }
+
 
 
 function updateMarkersForCity(cityLat, cityLon) {

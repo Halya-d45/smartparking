@@ -140,10 +140,36 @@ async function saveSlot(hubId, e) {
     e.stopPropagation();
     const btn = e.currentTarget;
     const icon = btn.querySelector('i');
-    icon.classList.toggle('fas');
-    icon.classList.toggle('far');
-    icon.classList.toggle('text-red-500');
-    showToast(`Saved to favorites`, 'success');
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        showToast("Please login to save places", "error");
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/saved/toggle`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify({ hubId })
+        });
+
+        if (res.ok) {
+            const isSaved = icon.classList.contains('fas');
+            icon.classList.toggle('fas');
+            icon.classList.toggle('far');
+            icon.classList.toggle('text-red-500');
+            showToast(isSaved ? "Removed from favorites" : "Saved to favorites", 'success');
+        } else {
+            showToast("Failed to sync with database", "error");
+        }
+    } catch (err) {
+        console.error(err);
+        showToast("Database connection error", "error");
+    }
 }
 
 // 4. Map & Search Logic

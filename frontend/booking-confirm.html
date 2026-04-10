@@ -130,26 +130,63 @@
         const btnText = document.getElementById('btn-text');
         const successView = document.getElementById('success-view');
 
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5000/api' 
+            : 'https://backend-api-uhdp.onrender.com/api';
+
         payBtn.addEventListener('click', async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert("Please login to proceed with payment.");
+                window.location.href = 'login.html';
+                return;
+            }
+
             // Processing...
             payBtn.disabled = true;
             btnText.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Processing...';
             
-            setTimeout(() => {
-                payBtn.parentElement.classList.add('hidden');
-                successView.classList.remove('hidden');
-                successView.classList.add('flex');
-                
-                // Generate QR Code
-                new QRCode(document.getElementById("qrcode"), {
-                    text: `BOOKING-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-                    width: 128,
-                    height: 128,
-                    colorDark : "#0f172a",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.H
+            try {
+                const res = await fetch(`${API_BASE}/booking/create`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ 
+                        parkingHubName: hubName,
+                        location: 'City Center Hub', // fallback or fetch from LS
+                        price: price,
+                        date: new Date().toLocaleDateString(),
+                        timer: '02:00',
+                        status: 'UPCOMING'
+                    })
                 });
-            }, 2000);
+
+                if (res.ok) {
+                    setTimeout(() => {
+                        payBtn.parentElement.classList.add('hidden');
+                        successView.classList.remove('hidden');
+                        successView.classList.add('flex');
+                        
+                        // Generate QR Code
+                        new QRCode(document.getElementById("qrcode"), {
+                            text: `BOOKING-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+                            width: 128,
+                            height: 128,
+                            colorDark : "#0f172a",
+                            colorLight : "#ffffff",
+                            correctLevel : QRCode.CorrectLevel.H
+                        });
+                    }, 1500);
+                } else {
+                    throw new Error("Booking failed");
+                }
+            } catch (err) {
+                alert("Database Error: " + err.message);
+                payBtn.disabled = false;
+                btnText.innerText = 'Confirm & Pay';
+            }
         });
     </script>
 </body>

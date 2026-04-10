@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import SearchInput from './SearchInput';
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState('Map View');
-    const [stats, setStats] = useState({ activeBookings: 124, totalSlots: 500 });
+    const [stats] = useState({ activeBookings: 124, totalSlots: 500 });
+    const [isSearching, setIsSearching] = useState(false);
 
     const NavItem = ({ label, icon }) => (
         <button
@@ -17,33 +18,143 @@ const Dashboard = () => {
 
     const MapViewContent = () => (
         <div className="animate-slide-up">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                {/* Total Slots Card */}
-                <div className="stats-card">
-                    <div>
-                        <h3 className="stats-card-title">Total Slots</h3>
-                        <p className="stats-card-value font-['Plus_Jakarta_Sans']">{stats.totalSlots}</p>
+            {/* Search and Stats Grid */}
+            <div className="flex flex-col lg:flex-row gap-8 mb-8">
+                {/* Search Sidebar/Panel */}
+                <div className="w-full lg:w-1/3 flex flex-col gap-6">
+                    <div className="stats-card !min-h-0 py-6">
+                        <h3 className="stats-card-title !mb-4">Search Location</h3>
+                        <SearchInput onSearch={(q) => {
+                            console.log("Searching for:", q);
+                            setIsSearching(true);
+                            setTimeout(() => setIsSearching(false), 2000);
+                        }} />
                     </div>
-                    <div className="w-full bg-[#e8e2d6] h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-gradient-to-r from-blue-400 to-cyan-400 h-full w-[70%] rounded-full shadow-[0_0_10px_rgba(34,211,238,0.5)]"></div>
+
+                    <div className="stats-card !min-h-0 py-6 flex-1">
+                        <h3 className="stats-card-title !mb-4">Quick Stats</h3>
+                        <div className="space-y-6">
+                            <div>
+                                <div className="flex justify-between items-end mb-2">
+                                    <p className="text-3xl font-extrabold text-slate-800">{stats.totalSlots}</p>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Slots</p>
+                                </div>
+                                <div className="w-full bg-[#e8e2d6] h-1.5 rounded-full overflow-hidden">
+                                    <div className="bg-gradient-to-r from-blue-400 to-cyan-400 h-full w-[70%] rounded-full"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div className="flex justify-between items-end">
+                                    <p className="text-3xl font-extrabold text-blue-600">{stats.activeBookings}</p>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Available Now</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-4">System Capacity</p>
                 </div>
 
-                {/* Available Now Card */}
-                <div className="stats-card">
-                    <div>
-                        <h3 className="stats-card-title">Available Now</h3>
-                        <p className="stats-card-value">{stats.activeBookings}</p>
+                {/* Map Area */}
+                <div className="flex-1 relative bg-white/40 backdrop-blur-sm border border-black/5 rounded-[2.5rem] h-[600px] overflow-hidden group">
+                    {/* Mock Map Background */}
+                    <div className="absolute inset-0 bg-[#f0ede4] opacity-50 flex items-center justify-center">
+                         <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1a1a1a 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+                         {isSearching ? (
+                            <div className="flex flex-col items-center gap-4">
+                                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                                <p className="text-blue-600 font-bold tracking-tight">Locating parking slots...</p>
+                            </div>
+                         ) : (
+                            <div className="text-center group-hover:scale-110 transition-transform duration-500">
+                                <div className="w-20 h-20 bg-white rounded-full shadow-2xl flex items-center justify-center mb-4 mx-auto border-4 border-blue-50/50">
+                                    <i className="fas fa-map-marked-alt text-3xl text-blue-500"></i>
+                                </div>
+                                <p className="text-slate-400 font-extrabold text-sm uppercase tracking-widest">Interactive Map Ready</p>
+                                <p className="text-xs text-gray-400 mt-2">Search a city to see available spots</p>
+                            </div>
+                         )}
+                    </div>
+
+                    {/* Floating Controls */}
+                    <div className="absolute top-6 right-6 flex flex-col gap-2">
+                        <button className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-colors">
+                            <i className="fas fa-plus"></i>
+                        </button>
+                        <button className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-colors">
+                            <i className="fas fa-minus"></i>
+                        </button>
+                        <button className="w-12 h-12 bg-blue-600 rounded-2xl shadow-xl flex items-center justify-center text-white hover:bg-blue-700 transition-colors mt-4">
+                            <i className="fas fa-location-arrow"></i>
+                        </button>
                     </div>
                 </div>
             </div>
+        </div>
+    );
 
-            {/* Placeholder for Map or other content */}
-            <div className="bg-white/40 backdrop-blur-sm border border-black/5 rounded-[2.5rem] h-[500px] flex items-center justify-center">
-                <div className="text-center">
-                    <p className="text-gray-400 font-medium">Map content for {activeTab} will appear here</p>
+    const MyBookingsContent = () => (
+        <div className="animate-slide-up max-w-5xl mx-auto">
+            <div className="flex items-center justify-between mb-8">
+                <div>
+                    <h1 className="text-3xl font-extrabold text-slate-800 mb-1">My <span className="text-primary">Bookings</span></h1>
+                    <p className="text-gray-400 font-medium">View and manage your current and past parking reservations.</p>
                 </div>
+                <div className="flex bg-[#f2ede4] rounded-2xl p-1 gap-1 border border-black/5">
+                    <button className="px-6 py-2 bg-white rounded-xl shadow-sm text-sm font-bold text-slate-800">All</button>
+                    <button className="px-6 py-2 text-sm font-bold text-gray-500 hover:text-slate-800 transition-colors">Upcoming</button>
+                    <button className="px-6 py-2 text-sm font-bold text-gray-500 hover:text-slate-800 transition-colors">History</button>
+                </div>
+            </div>
+
+            <div className="space-y-4">
+                {[
+                    { hub: 'Downtown Plaza Hub', addr: '124 Main St, City Center', date: 'Oct 12, 2026', time: '10:00 AM - 02:00 PM', price: '$14.00', status: 'UPCOMING', icon: 'fa-building', slot: 'A-24' },
+                    { hub: 'Central Mall Parking', addr: 'Sector 5, Cross Road', date: 'Oct 15, 2026', time: '11:00 AM - 01:00 PM', price: '$08.00', status: 'PENDING', icon: 'fa-shopping-cart', slot: 'C-09' },
+                    { hub: 'Railway Station East', addr: 'Station Rd, East Gate', date: 'Sept 28, 2026', time: '09:00 AM - 06:00 PM', price: '$35.00', status: 'COMPLETED', icon: 'fa-train', slot: 'B-12' },
+                ].map((booking, i) => (
+                    <div key={i} className="bg-white/60 backdrop-blur-xl border border-black/5 rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 hover:bg-white transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 group">
+                        <div className="flex items-center gap-8 w-full md:w-auto">
+                            <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center text-2xl ${booking.status === 'COMPLETED' ? 'bg-gray-100 text-gray-400' : 'bg-blue-100 text-blue-600'}`}>
+                                <i className={`fas ${booking.icon}`}></i>
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-3 mb-1">
+                                    <h4 className="font-extrabold text-xl text-slate-900 leading-none">{booking.hub}</h4>
+                                    <span className="bg-blue-50 text-blue-600 text-[10px] font-extrabold px-2 py-0.5 rounded-lg border border-blue-100 uppercase tracking-tighter">Slot: {booking.slot}</span>
+                                </div>
+                                <p className="text-gray-400 font-medium text-sm flex items-center gap-1.5 mb-2">
+                                    <i className="fas fa-location-dot text-[10px]"></i> {booking.addr}
+                                </p>
+                                <div className="flex items-center gap-4">
+                                    <p className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                                        <i className="fas fa-calendar text-[10px] text-blue-500"></i> {booking.date}
+                                    </p>
+                                    <p className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                                        <i className="fas fa-clock text-[10px] text-blue-500"></i> {booking.time}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-10 w-full md:w-auto justify-between md:justify-end">
+                            <div className="text-right">
+                                <p className="text-2xl font-black text-slate-900 mb-1">{booking.price}</p>
+                                <span className={`status-badge ${booking.status === 'COMPLETED' ? 'status-completed' : 'status-upcoming'}`}>
+                                    {booking.status}
+                                </span>
+                            </div>
+                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                {booking.status !== 'COMPLETED' && (
+                                    <button className="w-12 h-12 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all duration-200">
+                                        <i className="fas fa-times"></i>
+                                    </button>
+                                )}
+                                <button className="w-12 h-12 bg-gray-50 text-slate-500 rounded-2xl hover:bg-slate-900 hover:text-white transition-all duration-200">
+                                    <i className="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );
@@ -92,41 +203,37 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* Recent Bookings */}
+                {/* Recent Bookings Glance */}
                 <div className="lg:col-span-3">
                     <div className="flex items-center gap-3 mb-6">
                         <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-500">
-                            <i className="fas fa-calendar-check"></i>
+                            <i className="fas fa-history"></i>
                         </div>
-                        <h2 className="text-xl font-bold text-slate-800">Recent Bookings</h2>
+                        <h2 className="text-xl font-bold text-slate-800">Recent Glance</h2>
                     </div>
                     <div className="space-y-4 bg-white/40 backdrop-blur-lg rounded-[2.5rem] p-6 border border-black/5">
                         {[
-                            { date: '12 OCT', hub: 'Downtown Plaza Hub', addr: '124 Main St, City Center', price: '$14.00', status: 'COMPLETED' },
-                            { date: '28 SEP', hub: 'Airport Terminal A', addr: 'Level 2, Spot 42', price: '$35.00', status: 'UPCOMING' },
-                            { date: '15 SEP', hub: 'Tech District Garage', addr: '800 Innovation Way', price: '$22.50', status: 'COMPLETED' },
+                            { hub: 'Downtown Plaza Hub', price: '$14.00', status: 'COMPLETED' },
+                            { hub: 'Airport Terminal A', price: '$35.00', status: 'UPCOMING' },
                         ].map((booking, i) => (
                             <div key={i} className="flex items-center justify-between p-4 hover:bg-white/60 rounded-3xl transition-all duration-200">
-                                <div className="flex items-center gap-6">
-                                    <div className="text-center w-12 border-r border-gray-100 pr-6">
-                                        <p className="text-sm font-bold text-blue-500">{booking.date.split(' ')[0]}</p>
-                                        <p className="text-[10px] font-extrabold text-gray-300">{booking.date.split(' ')[1]}</p>
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-400 shadow-sm">
+                                        <i className="fas fa-building text-xs"></i>
                                     </div>
-                                    <div>
-                                        <h5 className="font-bold text-slate-800">{booking.hub}</h5>
-                                        <p className="text-[11px] text-gray-400 flex items-center gap-1">
-                                            <i className="fas fa-location-dot text-[9px]"></i> {booking.addr}
-                                        </p>
-                                    </div>
+                                    <h5 className="font-bold text-slate-800">{booking.hub}</h5>
                                 </div>
                                 <div className="text-right">
-                                    <p className="font-extrabold text-slate-800 mb-1">{booking.price}</p>
-                                    <span className={`status-badge ${booking.status === 'COMPLETED' ? 'status-completed' : 'status-upcoming'}`}>
+                                    <p className="font-extrabold text-slate-800">{booking.price}</p>
+                                    <span className={`text-[10px] font-black ${booking.status === 'COMPLETED' ? 'text-green-500' : 'text-blue-500'}`}>
                                         {booking.status}
                                     </span>
                                 </div>
                             </div>
                         ))}
+                        <button onClick={() => setActiveTab('My Bookings')} className="w-full py-3 mt-2 text-blue-500 font-bold text-sm bg-blue-50 hover:bg-blue-100 rounded-2xl transition-colors">
+                            View All Bookings
+                        </button>
                     </div>
                 </div>
             </div>
@@ -189,9 +296,10 @@ const Dashboard = () => {
             {/* Main Content Area */}
             <div className="pt-32 px-8 max-w-[1600px] mx-auto">
                 {activeTab === 'Map View' && <MapViewContent />}
+                {activeTab === 'My Bookings' && <MyBookingsContent />}
                 {activeTab === 'Profile' && <ProfileContent />}
                 {activeTab === 'Saved Slots' && <SavedSlotsContent />}
-                {(activeTab === 'My Bookings' || activeTab === 'Payments') && (
+                {activeTab === 'Payments' && (
                     <div className="animate-slide-up text-center py-32">
                         <h2 className="text-2xl font-bold text-gray-400 italic">Coming soon: {activeTab} Screen</h2>
                     </div>

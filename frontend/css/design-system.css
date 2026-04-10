@@ -79,9 +79,9 @@ html {
 body {
     background-color: var(--bg-base);
     color: var(--text-primary);
-    overflow: hidden; /* App like feel */
+    /* Removed overflow: hidden to allow natural scrolling across pages */
     line-height: 1.6;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 /* GRADIENTS */

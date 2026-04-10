@@ -67,11 +67,27 @@
                     <i class="fas fa-bell text-xl"></i>
                     <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                 </button>
-                <div class="bg-[#1e293b] rounded-full pl-2 pr-4 py-1.5 flex items-center space-x-3 cursor-pointer hover:scale-105 transition-all shadow-xl shadow-slate-900/20">
-                    <div class="w-8 h-8 rounded-full bg-slate-400 border border-slate-600 flex items-center justify-center text-slate-800 text-xs font-bold font-['Plus_Jakarta_Sans']">SM</div>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-xs font-extrabold text-white">User</span>
-                        <i class="fas fa-chevron-down text-[10px] text-gray-400"></i>
+                <div class="relative">
+                    <div id="user-pill" class="bg-[#1e293b] rounded-full pl-2 pr-4 py-1.5 flex items-center space-x-3 cursor-pointer hover:scale-105 transition-all shadow-xl shadow-slate-900/20">
+                        <div class="w-8 h-8 rounded-full bg-slate-400 border border-slate-600 flex items-center justify-center text-slate-800 text-xs font-bold font-['Plus_Jakarta_Sans']">SM</div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-extrabold text-white">User</span>
+                            <i class="fas fa-chevron-down text-[10px] text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="user-dropdown" class="user-dropdown-menu">
+                        <button class="dropdown-item" onclick="setActiveTab('profile')">
+                            <i class="fas fa-user-circle"></i> Profile
+                        </button>
+                        <button class="dropdown-item">
+                            <i class="fas fa-cog"></i> Settings
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item text-red-400" onclick="window.location.href='login.html'">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
                     </div>
                 </div>
             </div>

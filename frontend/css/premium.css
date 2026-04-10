@@ -170,3 +170,61 @@ body {
 .tab-content.active {
     display: block;
 }
+
+/* User Dropdown */
+.user-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 200px;
+    background: #1e293b;
+    border-radius: 1.5rem;
+    padding: 8px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.05);
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100;
+}
+
+.user-dropdown-menu.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 12px;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background: rgba(255,255,255,0.05);
+    color: white;
+}
+
+.dropdown-item.text-red-400:hover {
+    background: rgba(248,113,113,0.1);
+    color: #f87171;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.05);
+    margin: 8px 12px;
+}
+

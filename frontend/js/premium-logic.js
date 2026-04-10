@@ -32,6 +32,15 @@ const BOOKINGS = [
 ];
 
 // 1. Tab Switching Logic
+function setActiveTab(tabId) {
+    const btn = document.querySelector(`.nav-link[data-tab="${tabId}"]`);
+    if (btn) btn.click();
+    
+    // Close dropdown regardless
+    const dropdown = document.getElementById('user-dropdown');
+    if (dropdown) dropdown.classList.remove('active');
+}
+
 function initTabs() {
     navButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -55,7 +64,24 @@ function initTabs() {
             if (target === 'my-bookings') renderBookings();
         });
     });
+
+    // Dropdown Toggle
+    const userPill = document.getElementById('user-pill');
+    const userDropdown = document.getElementById('user-dropdown');
+
+    if (userPill && userDropdown) {
+        userPill.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('active');
+        });
+
+        // Close when clicking outside
+        window.addEventListener('click', () => {
+            userDropdown.classList.remove('active');
+        });
+    }
 }
+
 
 // 2. Map Logic (Leaflet)
 function initMap() {

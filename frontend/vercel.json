@@ -4,5 +4,8 @@
   "framework": null,
   "installCommand": "echo 'Skipping install...'",
   "buildCommand": "echo 'Static site ready!'",
-  "outputDirectory": "."
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/", "destination": "/login.html" }
+  ]
 }

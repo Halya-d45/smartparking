@@ -233,8 +233,7 @@ async function handleSearch() {
                 // Fly to found city
                 map.flyTo([lat, lon], 13);
                 
-                showResults(cityName);
-                updateMarkersForCity(lat, lon);
+                showResults(cityName, lat, lon);
                 showToast(`Found parking hubs in ${cityName}`, 'success');
             }, 1000);
         } else {
@@ -246,6 +245,36 @@ async function handleSearch() {
         showToast('Location not found. Showing default hubs.', 'error');
     }
 }
+
+function showResults(city, lat, lon) {
+    statsPanel.classList.add('hidden');
+    resultsPanel.classList.remove('hidden');
+    resultsTitle.innerText = `Parking in ${city}`;
+    
+    // Update markers
+    updateMarkersForCity(lat, lon);
+    
+    resultsList.innerHTML = PARKING_HUBS.map(hub => `
+        <div onclick="bookSlot(${hub.id})" class="p-5 rounded-2xl border ${hub.slots > 0 ? 'bg-white border-blue-100 shadow-sm' : 'bg-gray-50 border-gray-100 opacity-60'} transition-all cursor-pointer hover:shadow-lg group">
+            <div class="flex justify-between items-start mb-2">
+                <h5 class="font-black text-slate-800 text-sm">${hub.name}</h5>
+                <span class="text-xs font-black text-blue-600">${hub.price}</span>
+            </div>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <span class="text-[10px] font-black px-2 py-0.5 rounded-md ${hub.slots > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
+                        ${hub.slots > 0 ? hub.slots + ' SLOTS' : 'BOOKED'}
+                    </span>
+                    <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest">${hub.distance}</span>
+                </div>
+                <button onclick="saveSlot(${hub.id}, event)" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors">
+                    <i class="fas fa-heart text-xs"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
 
 function updateMarkersForCity(cityLat, cityLon) {
     // Clear old markers

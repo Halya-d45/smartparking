@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "framework": null,
+  "installCommand": "echo 'Skipping install...'",
+  "buildCommand": "echo 'Static site ready!'",
+  "outputDirectory": "."
+}

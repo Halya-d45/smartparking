@@ -132,6 +132,8 @@ function bookSlot(hubId) {
     }
     localStorage.setItem('last_booking_hub', hub.name || 'Public Parking');
     localStorage.setItem('last_booking_price', hub.price || '$5.00/hr');
+    localStorage.setItem('last_booking_id', hub.id);
+    localStorage.setItem('last_booking_addr', hub.addr || 'City Center');
     showToast(`Redirecting to Secure Checkout...`, 'info');
     setTimeout(() => window.location.href = 'booking-confirm.html', 800);
 }

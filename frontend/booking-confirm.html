@@ -154,12 +154,12 @@
                         'Authorization': `Bearer ${token}` 
                     },
                     body: JSON.stringify({ 
-                        parkingHubName: hubName,
-                        location: 'City Center Hub', // fallback or fetch from LS
-                        price: price,
-                        date: new Date().toLocaleDateString(),
-                        timer: '02:00',
-                        status: 'UPCOMING'
+                        parkingId: localStorage.getItem('last_booking_id'),
+                        parkingName: hubName,
+                        location: localStorage.getItem('last_booking_addr') || 'City Center',
+                        pricePerHour: price,
+                        duration: 2, // default 2 hours
+                        slot: 'A-24'
                     })
                 });
 

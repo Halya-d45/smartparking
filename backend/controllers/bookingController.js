@@ -3,28 +3,42 @@ const Parking = require("../models/Parking");
 
 exports.createBooking = async (req, res) => {
     try {
-        const { parkingId, slot, duration } = req.body;
+        const { parkingId, slot, duration, parkingName, location, pricePerHour } = req.body;
         const userId = req.user.id;
-        const parking = await Parking.findOne({ overpassId: parkingId });
-        if (!parking) return res.status(404).json({ error: "Parking lot not found" });
+
+        // Try to find existing parking
+        let parking = await Parking.findOne({ overpassId: parkingId });
+
+        // If not found (dynamic hub), create it on the fly
+        if (!parking) {
+            parking = new Parking({
+                overpassId: parkingId,
+                name: parkingName || "Public Parking",
+                location: location || "City Center",
+                pricePerHour: parseFloat(pricePerHour.replace('$','')) || 5.0,
+                totalSlots: 50,
+                availableSlots: 49
+            });
+            await parking.save();
+        }
 
         if (parking.availableSlots <= 0) {
             return res.status(400).json({ error: "No slots available" });
         }
 
         const ratePerHour = parking.pricePerHour || 0;
-        const totalAmount = duration * ratePerHour;
+        const totalAmount = (duration || 2) * ratePerHour;
 
         const booking = new Booking({
             userId,
             parkingId,
-            slot,
-            duration,
+            slot: slot || "A-1",
+            duration: duration || 2,
             ratePerHour,
             totalAmount,
             date: new Date(),
-            paymentStatus: 'Awaiting Payment',
-            isPaid: false
+            paymentStatus: 'Confirmed',
+            isPaid: true
         });
 
         await booking.save();
@@ -35,8 +49,8 @@ exports.createBooking = async (req, res) => {
 
         res.status(201).json({ message: "Booking confirmed", booking });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Booking failed" });
+        console.error("Booking Error:", err);
+        res.status(500).json({ error: "Booking failed: " + err.message });
     }
 };
 

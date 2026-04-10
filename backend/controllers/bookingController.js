@@ -11,11 +11,16 @@ exports.createBooking = async (req, res) => {
 
         // If not found (dynamic hub), create it on the fly
         if (!parking) {
+            let parsedPrice = 5.0;
+            if (pricePerHour) {
+                parsedPrice = parseFloat(String(pricePerHour).replace(/[^\d.]/g, '')) || 5.0;
+            }
+            
             parking = new Parking({
-                overpassId: parkingId,
+                overpassId: parkingId || ("MOCK-" + Math.random().toString(36).substr(2, 5)),
                 name: parkingName || "Public Parking",
                 location: location || "City Center",
-                pricePerHour: parseFloat(pricePerHour.replace('$','')) || 5.0,
+                pricePerHour: parsedPrice,
                 totalSlots: 50,
                 availableSlots: 49
             });

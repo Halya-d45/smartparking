@@ -180,10 +180,11 @@
                         });
                     }, 1500);
                 } else {
-                    throw new Error("Booking failed");
+                    const errorData = await res.json();
+                    throw new Error(errorData.error || "Booking failed");
                 }
             } catch (err) {
-                alert("Database Error: " + err.message);
+                alert("Booking Error: " + err.message);
                 payBtn.disabled = false;
                 btnText.innerText = 'Confirm & Pay';
             }

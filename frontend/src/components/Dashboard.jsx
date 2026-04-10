@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import SearchInput from './SearchInput';
 
 const Dashboard = () => {
@@ -7,6 +7,8 @@ const Dashboard = () => {
     const [isSearching, setIsSearching] = useState(false);
     const [hasResults, setHasResults] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const mapRef = useRef(null);
+    const leafletMap = useRef(null);
 
     const NavItem = ({ label, icon }) => (
         <button
@@ -18,16 +20,65 @@ const Dashboard = () => {
         </button>
     );
 
+    // Initialize Leaflet Map
+    useEffect(() => {
+        if (activeTab === 'Map View' && mapRef.current && !leafletMap.current) {
+            const L = window.L;
+            if (!L) return;
+
+            leafletMap.current = L.map(mapRef.current, {
+                zoomControl: false,
+                attributionControl: false
+            }).setView([17.3850, 78.4867], 13); // Default to Hyderabad
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19
+            }).addTo(leafletMap.current);
+        }
+
+        // Cleanup on unmount or tab change
+        return () => {
+            if (leafletMap.current) {
+                leafletMap.current.remove();
+                leafletMap.current = null;
+            }
+        };
+    }, [activeTab]);
+
     const MapViewContent = () => {
         const handleSearch = (q) => {
             setSearchQuery(q);
             setIsSearching(true);
             setHasResults(false);
             
-            // Simulate API logic to find slots
             setTimeout(() => {
                 setIsSearching(false);
                 setHasResults(true);
+                
+                // Add mock markers to real map
+                if (leafletMap.current) {
+                    const L = window.L;
+                    const points = [
+                        { lat: 17.3850, lng: 78.4867, name: 'Premium Hub Alpha' },
+                        { lat: 17.3950, lng: 78.4967, name: 'City Center Parking' },
+                        { lat: 17.3750, lng: 78.4767, name: 'Galleria Mall S-1' }
+                    ];
+
+                    points.forEach(p => {
+                        const marker = L.circleMarker([p.lat, p.lng], {
+                            radius: 10,
+                            fillColor: "#3b82f6",
+                            color: "#fff",
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        }).addTo(leafletMap.current);
+                        marker.bindPopup(`<b>${p.name}</b>`).openPopup();
+                    });
+
+                    // Pan to first result
+                    leafletMap.current.flyTo([points[0].lat, points[0].lng], 14);
+                }
             }, 1800);
         };
 
@@ -94,71 +145,36 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    {/* Interactive Map Area */}
-                    <div className="flex-1 relative bg-white/40 backdrop-blur-sm border border-black/5 rounded-[2.5rem] h-[600px] overflow-hidden group">
-                        {/* Mock Map Background */}
-                        <div className="absolute inset-0 bg-[#f0ede4] opacity-50 flex items-center justify-center">
-                            <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1a1a1a 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
-                            
-                            {isSearching ? (
-                                <div className="flex flex-col items-center gap-4">
-                                    <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                                    <p className="text-blue-600 font-black tracking-tight text-xl">Scanning City Hubs...</p>
-                                </div>
-                            ) : hasResults ? (
-                                <div className="absolute inset-0 animate-fade-in">
-                                    {/* Mock Map Features/Markers */}
-                                    <div className="absolute top-[20%] left-[30%] group/pin cursor-pointer">
-                                        <div className="relative">
-                                            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-xl shadow-blue-500/30 group-hover/pin:scale-125 transition-transform duration-300 border-2 border-white">
-                                                <i className="fas fa-parking text-sm"></i>
-                                            </div>
-                                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover/pin:opacity-100 transition-opacity whitespace-nowrap">
-                                                Alpha Hub • 12 Slots
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="absolute top-[50%] left-[60%] group/pin cursor-pointer">
-                                        <div className="relative">
-                                            <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-xl shadow-indigo-500/30 group-hover/pin:scale-125 transition-transform duration-300 border-2 border-white">
-                                                <i className="fas fa-parking text-sm"></i>
-                                            </div>
-                                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover/pin:opacity-100 transition-opacity whitespace-nowrap">
-                                                City Center • 8 Slots
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="absolute top-[40%] left-[45%] group/pin cursor-pointer">
-                                        <div className="relative">
-                                            <div className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center text-white shadow-xl group-hover/pin:scale-125 transition-transform duration-300 border-2 border-white">
-                                                <i className="fas fa-parking text-sm"></i>
-                                            </div>
-                                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover/pin:opacity-100 transition-opacity whitespace-nowrap">
-                                                Galleria • Full
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="text-center group-hover:scale-110 transition-transform duration-500">
-                                    <div className="w-20 h-20 bg-white rounded-full shadow-2xl flex items-center justify-center mb-4 mx-auto border-4 border-blue-50/50">
-                                        <i className="fas fa-map-marked-alt text-3xl text-blue-500"></i>
-                                    </div>
-                                    <p className="text-slate-400 font-extrabold text-sm uppercase tracking-widest">Interactive Map Ready</p>
-                                    <p className="text-xs text-gray-400 mt-2">Search a city above to view real-time parking availability</p>
-                                </div>
-                            )}
-                        </div>
+                    {/* REAL Interactive Map Area */}
+                    <div className="flex-1 relative bg-white/40 backdrop-blur-sm border border-black/5 rounded-[2.5rem] h-[640px] overflow-hidden shadow-2xl shadow-black/5">
+                        <div ref={mapRef} className="absolute inset-0 z-0"></div>
+                        
+                        {/* Overlay when searching */}
+                        {isSearching && (
+                            <div className="absolute inset-0 z-10 bg-white/60 backdrop-blur-md flex flex-col items-center justify-center gap-4">
+                                <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                                <p className="text-blue-600 font-black tracking-tight text-xl animate-pulse">Scanning City Hubs...</p>
+                            </div>
+                        )}
 
                         {/* Floating Controls */}
-                        <div className="absolute top-6 right-6 flex flex-col gap-2">
-                            <button className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-colors">
+                        <div className="absolute top-6 right-6 z-20 flex flex-col gap-2">
+                            <button 
+                                onClick={() => leafletMap.current?.zoomIn()}
+                                className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-colors border border-black/5"
+                            >
                                 <i className="fas fa-plus"></i>
                             </button>
-                            <button className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-colors">
+                            <button 
+                                onClick={() => leafletMap.current?.zoomOut()}
+                                className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-colors border border-black/5"
+                            >
                                 <i className="fas fa-minus"></i>
                             </button>
-                            <button className="w-12 h-12 bg-blue-600 rounded-2xl shadow-xl flex items-center justify-center text-white hover:bg-blue-700 transition-colors mt-4 shadow-blue-500/20">
+                            <button 
+                                onClick={() => leafletMap.current?.setView([17.3850, 78.4867], 13)}
+                                className="w-12 h-12 bg-blue-600 rounded-2xl shadow-xl flex items-center justify-center text-white hover:bg-blue-700 transition-colors mt-4 shadow-blue-500/20"
+                            >
                                 <i className="fas fa-location-arrow"></i>
                             </button>
                         </div>
@@ -188,7 +204,7 @@ const Dashboard = () => {
                     { hub: 'Central Mall Parking', addr: 'Sector 5, Cross Road', date: 'Oct 15, 2026', time: '11:00 AM - 01:00 PM', price: '$08.00', status: 'PENDING', icon: 'fa-shopping-cart', slot: 'C-09' },
                     { hub: 'Railway Station East', addr: 'Station Rd, East Gate', date: 'Sept 28, 2026', time: '09:00 AM - 06:00 PM', price: '$35.00', status: 'COMPLETED', icon: 'fa-train', slot: 'B-12' },
                 ].map((booking, i) => (
-                    <div key={i} className="bg-white/60 backdrop-blur-xl border border-black/5 rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 hover:bg-white transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 group">
+                    <div key={i} className="bg-white/60 backdrop-blur-xl border border-black/5 rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 hover:bg-white transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 group border-transparent">
                         <div className="flex items-center gap-8 w-full md:w-auto">
                             <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center text-2xl ${booking.status === 'COMPLETED' ? 'bg-gray-100 text-gray-400' : 'bg-blue-100 text-blue-600'}`}>
                                 <i className={`fas ${booking.icon}`}></i>
@@ -259,7 +275,7 @@ const Dashboard = () => {
                         <h2 className="text-xl font-bold text-slate-800">My Vehicles</h2>
                     </div>
                     <div className="space-y-4">
-                        <div className="item-card">
+                        <div className="item-card border-transparent">
                             <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-500">
                                 <i className="fas fa-car"></i>
                             </div>
@@ -268,7 +284,7 @@ const Dashboard = () => {
                                 <p className="text-xs text-gray-400 font-bold mt-0.5">CA • 9XDL204</p>
                             </div>
                         </div>
-                        <div className="item-card">
+                        <div className="item-card border-transparent">
                             <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-500">
                                 <i className="fas fa-truck-pickup"></i>
                             </div>
@@ -295,7 +311,7 @@ const Dashboard = () => {
                         ].map((booking, i) => (
                             <div key={i} className="flex items-center justify-between p-4 hover:bg-white/60 rounded-3xl transition-all duration-200">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-400 shadow-sm">
+                                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-400 shadow-sm border border-black/5">
                                         <i className="fas fa-building text-xs"></i>
                                     </div>
                                     <h5 className="font-bold text-slate-800">{booking.hub}</h5>
@@ -308,7 +324,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         ))}
-                        <button onClick={() => setActiveTab('My Bookings')} className="w-full py-3 mt-2 text-blue-500 font-bold text-sm bg-blue-50 hover:bg-blue-100 rounded-2xl transition-colors">
+                        <button onClick={() => setActiveTab('My Bookings')} className="w-full py-3 mt-2 text-blue-500 font-bold text-sm bg-blue-50 hover:bg-blue-100 rounded-2xl transition-all">
                             View All Bookings
                         </button>
                     </div>

@@ -7,15 +7,21 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "rgba(255, 255, 255, 0.05)",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        gray: {
-          950: '#0a0a0f', // Deep space black
-          900: '#111118', // Card backgrounds
-          800: '#1a1a24', // Secondary elements
+        border: "rgba(0, 0, 0, 0.05)",
+        input: "rgba(0, 0, 0, 0.02)",
+        ring: "rgba(59, 130, 246, 0.5)",
+        background: "#f9f7f2",
+        foreground: "#1a1a1a",
+        primary: "#3b82f6",
+        cream: {
+          50: '#fdfbf7',
+          100: '#f8f5f0',
+          200: '#eee9e0',
+        },
+        slate: {
+          900: '#0f172a',
+          800: '#1e293b',
+          100: '#f1f5f9',
         },
         blue: {
           500: '#3b82f6', // Electric blue

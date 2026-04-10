@@ -388,6 +388,11 @@ body {
     color: #8e6c57;
 }
 
+.user-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
     backdrop-filter: blur(18px);
     background: rgba(11, 15, 28, 0.82);
     border-radius: 12px;

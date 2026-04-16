@@ -21,10 +21,42 @@
     <link rel="stylesheet" href="css/premium.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <style>
-        .dark .text-slate-800 { color: #f8fafc !important; }
-        .dark .text-slate-900 { color: #ffffff !important; }
-        .dark .bg-white { background-color: #1e293b !important; }
-        .dark .glass-card { background: rgba(15, 23, 42, 0.7) !important; color: white !important; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.03) !important;
+            transition: all 0.4s ease;
+        }
+
+        .dark .glass-card {
+            background: rgba(15, 23, 42, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .stats-card {
+            background: rgba(255, 255, 255, 0.45) !important;
+            backdrop-filter: blur(12px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .dark .stats-card {
+            background: rgba(15, 23, 42, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .booking-row-item {
+            background: rgba(255, 255, 255, 0.5) !important;
+            backdrop-filter: blur(32px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .dark .booking-row-item {
+            background: rgba(15, 23, 42, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
         
         #dashboard-3d-bg {
             position: fixed;

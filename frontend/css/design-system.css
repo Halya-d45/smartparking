@@ -14,10 +14,10 @@
     
     /* NEUTRALS - LIGHT SLATE & SILVER */
     --bg-base: #f8fafc;           
-    --bg-surface: rgba(255, 255, 255, 0.7);        
-    --bg-card: rgba(255, 255, 255, 0.85);
+    --bg-surface: rgba(255, 255, 255, 0.4);        
+    --bg-card: rgba(255, 255, 255, 0.3);
     --bg-sidebar: #f1f5f9;
-    --bg-muted: #e2e8f0;
+    --bg-muted: rgba(226, 232, 240, 0.2);
     
     /* BORDER & LINE */
     --line-soft: rgba(0, 0, 0, 0.05);
@@ -83,14 +83,8 @@ body {
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
     background-attachment: fixed;
     color: var(--text-primary);
-<<<<<<< HEAD
-    /* Removed overflow: hidden to allow natural scrolling across pages */
     line-height: 1.6;
     min-height: 100vh;
-=======
-    min-height: 100vh;
-    line-height: 1.6;
->>>>>>> 09f51c2a69dd64662bbbd874b6c27e0993632853
 }
 
 /* GRADIENTS */
@@ -109,9 +103,9 @@ body {
 /* GLASS CARD */
 .glass-card {
     background: var(--bg-card);
-    backdrop-filter: var(--blur-glass);
-    -webkit-backdrop-filter: var(--blur-glass);
-    border: 1px solid var(--line-border);
+    backdrop-filter: blur(28px) !important;
+    -webkit-backdrop-filter: blur(28px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-main);
     transition: var(--transition-base);

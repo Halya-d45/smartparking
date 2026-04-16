@@ -558,9 +558,9 @@ function renderHubList(hubs) {
 function renderBookings(data) {
     if (!data || data.length === 0) {
         bookingsList.innerHTML = `
-            <div class="bg-white/60 backdrop-blur-xl border border-black/5 rounded-[2.5rem] p-12 flex flex-col items-center justify-center text-center">
+            <div class="glass-card !bg-white/10 p-12 flex flex-col items-center justify-center text-center">
                 <i class="fas fa-wallet text-6xl text-slate-200 mb-6"></i>
-                <h3 class="text-2xl font-black text-slate-900 tracking-tight">No Bookings Yet</h3>
+                <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">No Bookings Yet</h3>
                 <p class="text-gray-400 font-bold mt-2">When you confirm a spot at a hub, your reservations will appear right here.</p>
             </div>
         `;
@@ -568,24 +568,24 @@ function renderBookings(data) {
     }
 
     bookingsList.innerHTML = data.map(b => `
-        <div class="bg-white/60 backdrop-blur-xl border border-black/5 rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between hover:bg-white transition-all shadow-sm group">
+        <div class="booking-row-item !p-8 flex flex-col md:flex-row items-center justify-between rounded-[2.5rem] hover:!bg-white/30 transition-all shadow-sm group">
             <div class="flex items-center gap-8">
-                <div class="w-16 h-16 rounded-[1.5rem] flex items-center justify-center text-2xl bg-blue-100 text-blue-600">
+                <div class="w-16 h-16 rounded-[1.5rem] flex items-center justify-center text-2xl bg-blue-100 dark:bg-blue-600/20 text-blue-600">
                     <i class="fas ${b.icon || 'fa-building'}"></i>
                 </div>
                 <div>
-                    <h4 class="font-black text-xl text-slate-900">${b.hub || b.parkingHubName}</h4>
+                    <h4 class="font-black text-xl text-slate-900 dark:text-white">${b.hub || b.parkingHubName}</h4>
                     <p class="text-gray-400 font-semibold text-sm">${b.addr || b.location}</p>
                     <div class="flex items-center gap-3 mt-4">
-                        <button onclick="downloadReceipt('${b.id}')" class="text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-4 py-2 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
+                        <button onclick="downloadReceipt('${b.id}')" class="text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 dark:bg-blue-500/10 px-4 py-2 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
                             <i class="fas fa-file-invoice mr-1"></i> Receipt
                         </button>
-                        <span class="text-[10px] font-bold text-gray-300 uppercase">ID: ${b.id.slice(-6)}</span>
+                        <span class="text-[10px] font-bold text-gray-300 uppercase">ID: ${b.id.substring(0,6)}</span>
                     </div>
                 </div>
             </div>
             <div class="text-right flex flex-col items-end">
-                <p class="text-2xl font-black text-slate-900 mb-1">${b.price}</p>
+                <p class="text-2xl font-black text-slate-900 dark:text-white mb-1">${b.price}</p>
                 <span class="status-badge status-upcoming">${b.status || 'CONFIRMED'}</span>
                 <p class="text-[10px] font-bold text-gray-400 mt-2">Slot: ${b.slot || 'N/A'}</p>
             </div>

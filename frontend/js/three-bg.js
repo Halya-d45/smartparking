@@ -1,6 +1,6 @@
 /**
- * Smart Parking - Cyber City 3D Engine (Ver 2.0)
- * High-end digital traffic simulation with neon aesthetics
+ * Smart Parking - Cyber City 3D Engine (Ver 3.0)
+ * High-fidelity procedural car models and smart traffic simulation
  */
 
 function init3DBackground() {
@@ -8,97 +8,106 @@ function init3DBackground() {
     if (!container) return;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
     // 1. Digital Ground Grid
     const gridColor = 0x3b82f6;
-    const gridHelper = new THREE.GridHelper(200, 40, gridColor, gridColor);
+    const gridHelper = new THREE.GridHelper(200, 30, gridColor, gridColor);
     gridHelper.position.y = -10;
-    gridHelper.material.opacity = 0.1;
+    gridHelper.material.opacity = 0.08;
     gridHelper.material.transparent = true;
     scene.add(gridHelper);
 
-    // 2. City Buildings (Ghost columns)
-    const buildingGroup = new THREE.Group();
-    for (let i = 0; i < 40; i++) {
-        const h = 5 + Math.random() * 20;
-        const geo = new THREE.BoxGeometry(2, h, 2);
-        const mat = new THREE.MeshPhongMaterial({ 
-            color: 0x1e293b, 
-            transparent: true, 
-            opacity: 0.05,
-            wireframe: true 
-        });
-        const b = new THREE.Mesh(geo, mat);
-        b.position.set((Math.random() - 0.5) * 100, h/2 - 10, (Math.random() - 0.5) * 100);
-        buildingGroup.add(b);
+    // 2. Neon Perspective Lines
+    const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-100, -10, 0), new THREE.Vector3(100, -10, 0)]);
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x1e3a8a, transparent: true, opacity: 0.2 });
+    for(let i=0; i<10; i++) {
+        const line = new THREE.Line(lineGeo, lineMat);
+        line.position.z = (i * 20) - 100;
+        scene.add(line);
     }
-    scene.add(buildingGroup);
 
-    // 3. Smart Traffic (Cars with Neon Trails)
+    // 3. High-Fidelity Procedural Cars
     const cars = [];
-    const carColors = [0x3b82f6, 0x60a5fa, 0x93c5fd];
+    const carColors = [0x2563eb, 0x4f46e5, 0x7c3aed, 0x0891b2];
     
-    for (let i = 0; i < 60; i++) {
-        const carGroup = new THREE.Group();
-        
-        // Car Body
-        const bodyGeo = new THREE.BoxGeometry(1.4, 0.4, 0.6);
-        const bodyMat = new THREE.MeshPhongMaterial({ 
-            color: carColors[Math.floor(Math.random() * carColors.length)],
-            emissive: 0x1e3a8a,
-            emissiveIntensity: 0.5
+    for (let i = 0; i < 40; i++) {
+        const car = new THREE.Group();
+        const mainColor = carColors[Math.floor(Math.random() * carColors.length)];
+
+        // A. Chassis (Body)
+        const body = new THREE.Mesh(
+            new THREE.BoxGeometry(2.2, 0.4, 1.0),
+            new THREE.MeshPhongMaterial({ color: mainColor, shininess: 80 })
+        );
+        car.add(body);
+
+        // B. Cabin (Top part)
+        const cabin = new THREE.Mesh(
+            new THREE.BoxGeometry(1.2, 0.4, 0.8),
+            new THREE.MeshPhongMaterial({ color: 0x111827, transparent: true, opacity: 0.9 })
+        );
+        cabin.position.set(-0.2, 0.4, 0);
+        car.add(cabin);
+
+        // C. Wheels (Cylinders)
+        const wheelGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.1, 12);
+        const wheelMat = new THREE.MeshPhongMaterial({ color: 0x000000 });
+        const wheels = [];
+        const wCoords = [
+            [0.7, -0.2, 0.5], [0.7, -0.2, -0.5],
+            [-0.7, -0.2, 0.5], [-0.7, -0.2, -0.5]
+        ];
+
+        wCoords.forEach(pos => {
+            const w = new THREE.Mesh(wheelGeo, wheelMat);
+            w.rotation.x = Math.PI / 2;
+            w.position.set(...pos);
+            car.add(w);
+            wheels.push(w);
         });
-        const body = new THREE.Mesh(bodyGeo, bodyMat);
-        carGroup.add(body);
 
-        // Headlights (Neon White)
-        const lightGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-        const lightMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const h1 = new THREE.Mesh(lightGeo, lightMat);
-        const h2 = new THREE.Mesh(lightGeo, lightMat);
-        h1.position.set(0.7, 0, 0.2);
-        h2.position.set(0.7, 0, -0.2);
-        carGroup.add(h1);
-        carGroup.add(h2);
+        // D. Lights (Emissive)
+        const frontL = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.15, 0.2), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        const frontR = frontL.clone();
+        frontL.position.set(1.1, 0, 0.3);
+        frontR.position.set(1.1, 0, -0.3);
+        car.add(frontL, frontR);
 
-        // Tail Lights (Neon Red)
-        const tailMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
-        const t1 = new THREE.Mesh(lightGeo, tailMat);
-        const t2 = new THREE.Mesh(lightGeo, tailMat);
-        t1.position.set(-0.7, 0, 0.2);
-        t2.position.set(-0.7, 0, -0.2);
-        carGroup.add(t1);
-        carGroup.add(t2);
+        const tailL = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.15, 0.2), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+        const tailR = tailL.clone();
+        tailL.position.set(-1.1, 0, 0.3);
+        tailR.position.set(-1.1, 0, -0.3);
+        car.add(tailL, tailR);
 
         // Initial Position
         const zPos = (Math.random() - 0.5) * 60;
-        const xPos = (Math.random() - 0.5) * 100;
-        carGroup.position.set(xPos, -9.6, zPos);
+        const xPos = (Math.random() - 0.5) * 120;
+        car.position.set(xPos, -9.5, zPos);
         
-        carGroup.userData = {
-            speed: 0.1 + Math.random() * 0.2,
-            dir: Math.random() > 0.5 ? 1 : -1
+        car.userData = {
+            speed: 0.15 + Math.random() * 0.25,
+            dir: Math.random() > 0.5 ? 1 : -1,
+            wheels: wheels
         };
         
-        if (carGroup.userData.dir === -1) carGroup.rotation.y = Math.PI;
+        if (car.userData.dir === -1) car.rotation.y = Math.PI;
 
-        scene.add(carGroup);
-        cars.push(carGroup);
+        scene.add(car);
+        cars.push(car);
     }
 
-    // Lighting
-    const amb = new THREE.AmbientLight(0xffffff, 0.4);
-    scene.add(amb);
-    const point = new THREE.PointLight(0x3b82f6, 1, 100);
-    point.position.set(10, 10, 10);
-    scene.add(point);
+    // Modern Lighting
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(5, 10, 7);
+    scene.add(light);
 
-    camera.position.set(0, 5, 30);
+    camera.position.set(0, 8, 40);
     camera.lookAt(0, 0, 0);
 
     function animate() {
@@ -106,12 +115,16 @@ function init3DBackground() {
         
         cars.forEach(car => {
             car.position.x += car.userData.speed * car.userData.dir;
-            if (car.position.x > 60) car.position.x = -60;
-            if (car.position.x < -60) car.position.x = 60;
-        });
+            
+            // Loop with random lane change
+            if (car.position.x > 70) car.position.x = -70;
+            if (car.position.x < -70) car.position.x = 70;
 
-        gridHelper.position.z += 0.05;
-        if (gridHelper.position.z > 5) gridHelper.position.z = 0;
+            // Spin the wheels
+            car.userData.wheels.forEach(w => {
+                w.rotation.y += car.userData.speed * 2;
+            });
+        });
 
         renderer.render(scene, camera);
     }

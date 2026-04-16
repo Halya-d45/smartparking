@@ -1,6 +1,6 @@
 const CONFIG = {
     // Dynamic API URL based on environment
-    API_BASE: window.location.hostname === 'localhost' 
+    API_BASE: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
         ? 'http://localhost:5000/api' 
         : 'https://backend-api-uhdp.onrender.com/api',
     

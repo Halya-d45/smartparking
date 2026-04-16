@@ -20,7 +20,7 @@ const resultsTitle = document.getElementById('results-title');
 const bookingsList = document.getElementById('bookings-list');
 
 // Configuration
-const API_BASE = window.location.hostname === 'localhost' 
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:5000/api' 
     : 'https://backend-api-uhdp.onrender.com/api';
 

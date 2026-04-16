@@ -66,10 +66,14 @@ function initTabs() {
             }
             if (target === 'my-bookings') fetchBookings();
             if (target === 'saved-slots') fetchSavedSlots();
-            if (target === 'profile') fetchProfile();
+            if (target === 'profile') {
+                fetchProfile();
+                fetchBookings(); // Ensure Recent Glance is updated
+            }
         });
     });
-    fetchProfile(); // Load profile data on start
+    fetchProfile();
+    fetchBookings(); // Initial load for glance
 
     const userPill = document.getElementById('user-pill');
     const userDropdown = document.getElementById('user-dropdown');

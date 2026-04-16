@@ -66,8 +66,10 @@ function initTabs() {
             }
             if (target === 'my-bookings') fetchBookings();
             if (target === 'saved-slots') fetchSavedSlots();
+            if (target === 'profile') fetchProfile();
         });
     });
+    fetchProfile(); // Load profile data on start
 
     const userPill = document.getElementById('user-pill');
     const userDropdown = document.getElementById('user-dropdown');
@@ -99,23 +101,124 @@ async function fetchBookings() {
         const res = await fetch(`${API_BASE}/booking`, { headers: { 'Authorization': `Bearer ${token}` } });
         const data = await res.json();
         
-        // Map backend fields to frontend format
         const bookingsFromDB = (data.bookings || []).map(b => ({
             id: b._id || b.id || "N/A",
             hub: b.parkingHubName || "Public Hub",
             addr: b.location || "City Center",
             price: `$${(b.totalAmount || 0).toFixed(2)}`,
             slot: b.slot,
-            status: b.isPaid ? 'CONFIRMED' : 'PENDING'
+            status: b.isPaid ? 'CONFIRMED' : (b.status || 'PENDING'),
+            date: new Date(b.createdAt).toLocaleDateString()
         }));
 
         userBookings = [...bookingsFromDB, ...localMockBookings];
         renderBookings(userBookings);
+        renderRecentGlance(userBookings.slice(0, 3));
     } catch (err) {
         userBookings = localMockBookings;
         renderBookings(userBookings);
+        renderRecentGlance(userBookings.slice(0, 3));
     }
 }
+
+async function fetchProfile() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+        const res = await fetch(`${API_BASE}/user/profile`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const user = await res.json();
+        if (user.name) {
+            document.getElementById('profile-name-span').innerText = user.name;
+            document.getElementById('nav-user-name').innerText = user.name;
+            document.getElementById('edit-name').value = user.name;
+            if (user.phone) document.getElementById('edit-phone').value = user.phone;
+        }
+        renderVehicles(user.vehicles || []);
+    } catch (e) { console.error(e); }
+}
+
+function renderVehicles(vehicles) {
+    const list = document.getElementById('vehicles-list');
+    if (!list) return;
+    if (vehicles.length === 0) {
+        list.innerHTML = `<div class="text-center py-10 text-gray-400 font-bold border-2 border-dashed border-gray-100 rounded-[2rem]">No vehicles added yet</div>`;
+        return;
+    }
+    list.innerHTML = vehicles.map(v => `
+        <div class="item-card group hover:scale-[1.02] transition-transform">
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+                <i class="fas ${v.type === 'truck' ? 'fa-truck' : 'fa-car'}"></i>
+            </div>
+            <div>
+                <h4 class="text-lg font-black text-slate-900">${v.model}</h4>
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">${v.plate}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderRecentGlance(bookings) {
+    const list = document.getElementById('recent-glance-list');
+    if (!list) return;
+    if (bookings.length === 0) {
+        list.innerHTML = `<div class="text-center py-10 text-gray-400 font-bold">No recent activity</div>`;
+        return;
+    }
+    list.innerHTML = bookings.map(b => `
+        <div class="flex items-center justify-between p-5 bg-white/60 hover:bg-white rounded-[2rem] transition-all cursor-pointer border border-transparent hover:border-blue-100">
+             <div class="flex items-center gap-6">
+                 <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400"><i class="fas fa-building text-sm"></i></div>
+                 <div>
+                    <h5 class="text-md font-black text-slate-900">${b.hub}</h5>
+                    <p class="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">${b.addr}</p>
+                 </div>
+             </div>
+             <div class="text-right">
+                 <p class="text-lg font-black text-slate-800">${b.price}</p>
+                 <span class="text-[8px] font-black uppercase tracking-widest text-blue-500">${b.status}</span>
+             </div>
+        </div>
+    `).join('');
+}
+
+// Form Handlers
+document.getElementById('add-vehicle-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    const model = document.getElementById('veh-model').value;
+    const plate = document.getElementById('veh-plate').value;
+    try {
+        const res = await fetch(`${API_BASE}/user/vehicles`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ model, plate })
+        });
+        if (res.ok) {
+            showToast("Vehicle added to your fleet!", "success");
+            document.getElementById('add-vehicle-modal').classList.add('hidden');
+            fetchProfile();
+        }
+    } catch (e) { showToast("Failed to sync vehicle", "error"); }
+});
+
+document.getElementById('edit-profile-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    const name = document.getElementById('edit-name').value;
+    const phone = document.getElementById('edit-phone').value;
+    try {
+        const res = await fetch(`${API_BASE}/user/profile`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ name, phone })
+        });
+        if (res.ok) {
+            showToast("Profile updated successfully", "success");
+            document.getElementById('edit-profile-modal').classList.add('hidden');
+            fetchProfile();
+        }
+    } catch (e) { showToast("Update failed", "error"); }
+});
 
 async function fetchSavedSlots() {
     const savedContainer = document.querySelector('#saved-slots div');

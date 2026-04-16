@@ -83,8 +83,14 @@ body {
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
     background-attachment: fixed;
     color: var(--text-primary);
+<<<<<<< HEAD
+    /* Removed overflow: hidden to allow natural scrolling across pages */
+    line-height: 1.6;
+    min-height: 100vh;
+=======
     min-height: 100vh;
     line-height: 1.6;
+>>>>>>> 09f51c2a69dd64662bbbd874b6c27e0993632853
 }
 
 /* GRADIENTS */

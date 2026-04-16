@@ -69,9 +69,9 @@
                 </button>
                 <div class="relative">
                     <div id="user-pill" class="bg-[#1e293b] rounded-full pl-2 pr-4 py-1.5 flex items-center space-x-3 cursor-pointer hover:scale-105 transition-all shadow-xl shadow-slate-900/20">
-                        <div class="w-8 h-8 rounded-full bg-slate-400 border border-slate-600 flex items-center justify-center text-slate-800 text-xs font-bold font-['Plus_Jakarta_Sans']">SM</div>
+                        <div id="nav-user-initials" class="w-8 h-8 rounded-full bg-slate-400 border border-slate-600 flex items-center justify-center text-slate-800 text-xs font-bold font-['Plus_Jakarta_Sans']">US</div>
                         <div class="flex items-center space-x-2">
-                            <span class="text-xs font-extrabold text-white">User</span>
+                            <span id="nav-user-name" class="text-xs font-extrabold text-white">User</span>
                             <i class="fas fa-chevron-down text-[10px] text-gray-400"></i>
                         </div>
                     </div>
@@ -189,8 +189,11 @@
         <div id="profile" class="tab-content animate-fade-in max-w-6xl mx-auto">
             <div class="glass-card mb-12 flex items-center justify-between !p-12">
                 <div>
-                    <h1 class="text-5xl font-black text-slate-900 mb-3 tracking-tighter">Welcome back, Mike.</h1>
-                    <p class="text-gray-500 font-semibold text-xl">Manage your fleet and track your parking activity here.</p>
+                    <h1 class="text-5xl font-black text-slate-900 mb-3 tracking-tighter">Welcome back, <span id="profile-name-span">Guest</span>.</h1>
+                    <p class="text-gray-500 font-semibold text-xl mb-6">Manage your profile, fleet and track your parking activity.</p>
+                    <button onclick="document.getElementById('edit-profile-modal').classList.remove('hidden')" class="px-6 py-2.5 bg-slate-900 text-white rounded-xl font-bold shadow hover:bg-slate-800 transition-colors text-sm">
+                        <i class="fas fa-edit mr-2"></i> Edit Profile
+                    </button>
                 </div>
                 <div class="w-32 h-32 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white shadow-2xl shadow-blue-600/30">
                     <i class="fas fa-user-circle text-6xl"></i>
@@ -285,6 +288,31 @@
 
     <!-- Toast System -->
     <div id="toast-container"></div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] w-full max-w-lg p-8 shadow-2xl relative">
+            <button onclick="document.getElementById('edit-profile-modal').classList.add('hidden')" class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="text-2xl font-black text-slate-900 mb-6">Edit Profile</h2>
+            <form id="edit-profile-form" class="space-y-5">
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Full Name</label>
+                    <input type="text" id="edit-name" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:outline-none focus:border-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Email Address</label>
+                    <input type="email" id="edit-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:outline-none focus:border-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Phone Number</label>
+                    <input type="text" id="edit-phone" placeholder="Optional" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+                </div>
+                <button type="submit" class="w-full py-4 mt-4 bg-blue-600 text-white rounded-xl font-black text-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30">Save Changes</button>
+            </form>
+        </div>
+    </div>
 
     <!-- Custom Logic -->
     <script src="js/premium-logic.js"></script>

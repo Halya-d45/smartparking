@@ -80,20 +80,29 @@ function initTabs() {
     }
 }
 
+function getLocalKey(base) {
+    let userStr = localStorage.getItem('user');
+    let userId = 'guest';
+    if (userStr) {
+        try { userId = JSON.parse(userStr).id || 'guest'; } catch(e){}
+    }
+    return `${base}_${userId}`;
+}
+
 // 2. Data Fetching
 async function fetchBookings() {
     bookingsList.innerHTML = '<div class="text-center py-20 text-gray-400 font-bold animate-pulse">Syncing with database...</div>';
     const token = localStorage.getItem('token');
+    let localMockBookings = JSON.parse(localStorage.getItem(getLocalKey('local_mock_bookings')) || '[]');
     try {
         if (!token) throw new Error();
         const res = await fetch(`${API_BASE}/bookings`, { headers: { 'Authorization': `Bearer ${token}` } });
         const data = await res.json();
-        userBookings = data.bookings || [];
+        userBookings = [...(data.bookings || []), ...localMockBookings];
         renderBookings(userBookings);
     } catch (err) {
-        renderBookings([
-            { hub: 'Downtown Plaza Hub', addr: '124 Main St, City Center', date: 'Oct 12, 2026', time: '10:00 AM - 02:00 PM', price: '$14.00', status: 'UPCOMING', icon: 'fa-building', slot: 'A-24' }
-        ]);
+        userBookings = localMockBookings;
+        renderBookings(userBookings);
     }
 }
 
@@ -101,13 +110,35 @@ async function fetchSavedSlots() {
     const savedContainer = document.querySelector('#saved-slots div');
     if (!savedContainer) return;
     const token = localStorage.getItem('token');
+    let localSaved = JSON.parse(localStorage.getItem(getLocalKey('local_saved_hubs')) || '[]');
+
     try {
         if (!token) throw new Error();
         const res = await fetch(`${API_BASE}/saved`, { headers: { 'Authorization': `Bearer ${token}` } });
         const data = await res.json();
-        renderSaved(data.saved || []);
+        
+        // Merge backend and frontend mock saves without duplicates
+        const combined = [...data.saved];
+        localSaved.forEach(ls => {
+            if (!combined.some(s => s.id == ls.id || s.name === ls.name)) {
+                combined.push(ls);
+            }
+        });
+        
+        let deletedSaved = JSON.parse(localStorage.getItem(getLocalKey('deleted_saved_hubs')) || '[]');
+        renderSaved(combined.filter(h => !deletedSaved.includes(h.id.toString())));
     } catch (err) {
-        renderSaved([PARKING_HUBS[0], PARKING_HUBS[1]]);
+        // Fallback demo data
+        const mockFallback = [PARKING_HUBS[0], PARKING_HUBS[1]];
+        const combined = [...mockFallback];
+        localSaved.forEach(ls => {
+            if (!combined.some(s => s.id == ls.id || s.name === ls.name)) {
+                combined.push(ls);
+            }
+        });
+        
+        let deletedSaved = JSON.parse(localStorage.getItem(getLocalKey('deleted_saved_hubs')) || '[]');
+        renderSaved(combined.filter(h => !deletedSaved.includes(h.id.toString())));
     }
 }
 
@@ -130,6 +161,7 @@ function bookSlot(hubId) {
         showToast("Hub details not found", "error");
         return;
     }
+    localStorage.setItem('last_booking_hub_id', hub.id);
     localStorage.setItem('last_booking_hub', hub.name || 'Public Parking');
     localStorage.setItem('last_booking_price', hub.price || '$5.00/hr');
     localStorage.setItem('last_booking_id', hub.id);
@@ -273,6 +305,17 @@ function renderHubList(hubs) {
 }
 
 function renderBookings(data) {
+    if (!data || data.length === 0) {
+        bookingsList.innerHTML = `
+            <div class="bg-white/60 backdrop-blur-xl border border-black/5 rounded-[2.5rem] p-12 flex flex-col items-center justify-center text-center">
+                <i class="fas fa-wallet text-6xl text-slate-200 mb-6"></i>
+                <h3 class="text-2xl font-black text-slate-900 tracking-tight">No Bookings Yet</h3>
+                <p class="text-gray-400 font-bold mt-2">When you confirm a spot at a hub, your reservations will appear right here.</p>
+            </div>
+        `;
+        return;
+    }
+
     bookingsList.innerHTML = data.map(b => `
         <div class="bg-white/60 backdrop-blur-xl border border-black/5 rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between hover:bg-white transition-all shadow-sm group">
             <div class="flex items-center gap-8">
@@ -292,16 +335,62 @@ function renderBookings(data) {
     `).join('');
 }
 
+async function removeSavedSlot(hubId, hubName, e) {
+    if (e) e.stopPropagation();
+    
+    // Remove from local storage array
+    let localSaved = JSON.parse(localStorage.getItem(getLocalKey('local_saved_hubs')) || '[]');
+    localSaved = localSaved.filter(h => h.id != hubId && h.name !== hubName);
+    localStorage.setItem(getLocalKey('local_saved_hubs'), JSON.stringify(localSaved));
+
+    // Track as permanently deleted local override
+    let deletedSaved = JSON.parse(localStorage.getItem(getLocalKey('deleted_saved_hubs')) || '[]');
+    if (!deletedSaved.includes(hubId.toString())) {
+        deletedSaved.push(hubId.toString());
+        localStorage.setItem(getLocalKey('deleted_saved_hubs'), JSON.stringify(deletedSaved));
+    }
+
+    // Try removing from backend if token exists
+    const token = localStorage.getItem('token');
+    if (token) {
+        try {
+            await fetch(`${API_BASE}/saved/toggle`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ parkingId: hubId, name: hubName, location: "City Center Hub" })
+            });
+        } catch(err) {}
+    }
+
+    showToast("Removed from Saved Places", "success");
+    fetchSavedSlots(); // Refresh the UI
+}
+
 function renderSaved(data) {
     const container = document.getElementById('saved-slots');
+    
+    if (!data || data.length === 0) {
+        container.innerHTML = `
+            <h1 class="text-4xl font-black text-slate-900 mb-2 tracking-tighter">Your <span class="text-primary">Saved Places</span></h1>
+            <p class="text-gray-500 font-medium mb-12">You haven't saved any places yet. Go explore the map!</p>
+        `;
+        return;
+    }
+
     container.innerHTML = `
         <h1 class="text-4xl font-black text-slate-900 mb-2 tracking-tighter">Your <span class="text-primary">Saved Places</span></h1>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
             ${data.map(hub => `
-                <div onclick="bookSlot('${hub.id}')" class="stats-card !p-8 transition-all cursor-pointer hover:shadow-2xl">
-                    <h3 class="text-xl font-black text-slate-900 mb-2">${hub.name}</h3>
+                <div onclick="bookSlot('${hub.id}')" class="stats-card !p-8 transition-all cursor-pointer hover:shadow-2xl relative group">
+                    <button onclick="removeSavedSlot('${hub.id}', '${hub.name}', event)" class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all shadow-sm z-10" title="Remove">
+                        <i class="fas fa-trash-alt text-xs"></i>
+                    </button>
+                    <h3 class="text-xl font-black text-slate-900 mb-2 pr-8">${hub.name}</h3>
                     <p class="text-gray-400 font-bold text-xs mb-6">${hub.addr || 'City Center'}</p>
-                    <button class="w-full py-3 bg-slate-900 text-white font-black text-xs rounded-xl">Book Again</button>
+                    <button class="w-full py-3 bg-slate-900 text-white font-black text-xs rounded-xl hover:bg-blue-600 transition-colors">Book Again</button>
                 </div>
             `).join('')}
         </div>
@@ -320,4 +409,49 @@ if (clearSearchBtn) {
         map.setView([17.3850, 78.4867], 13);
     });
 }
-window.addEventListener('DOMContentLoaded', () => { initTabs(); initMap(); });
+
+// Profile Logic
+function initProfile() {
+    let userStr = localStorage.getItem('user');
+    let user = userStr ? JSON.parse(userStr) : { name: "Guest", email: "guest@example.com", phone: "" };
+    
+    // Update Header Pill
+    const navName = document.getElementById('nav-user-name');
+    const navInitials = document.getElementById('nav-user-initials');
+    if (navName) navName.innerText = user.name.split(' ')[0] || "User";
+    if (navInitials) navInitials.innerText = (user.name.substring(0, 2) || "US").toUpperCase();
+    
+    // Update Profile Page Text
+    const profileNameSpan = document.getElementById('profile-name-span');
+    if (profileNameSpan) profileNameSpan.innerText = user.name.split(' ')[0] || "Guest";
+    
+    // Pre-fill Edit Modal
+    const editName = document.getElementById('edit-name');
+    const editEmail = document.getElementById('edit-email');
+    const editPhone = document.getElementById('edit-phone');
+    if (editName) editName.value = user.name || "";
+    if (editEmail) editEmail.value = user.email || "";
+    if (editPhone) editPhone.value = user.phone || "";
+}
+
+const editProfileForm = document.getElementById('edit-profile-form');
+if (editProfileForm) {
+    editProfileForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        let userStr = localStorage.getItem('user');
+        let user = userStr ? JSON.parse(userStr) : {};
+        
+        user.name = document.getElementById('edit-name').value;
+        user.email = document.getElementById('edit-email').value;
+        user.phone = document.getElementById('edit-phone').value;
+        
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        document.getElementById('edit-profile-modal').classList.add('hidden');
+        showToast("Profile updated successfully!", "success");
+        initProfile(); // visually refresh globally
+    });
+}
+
+window.addEventListener('DOMContentLoaded', () => { initTabs(); initMap(); initProfile(); });

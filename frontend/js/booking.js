@@ -5,6 +5,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const lotId = urlParams.get('id');
 
 let selectedSlot = null;
+let basePrice = 0;
 
 async function loadDetails() {
     if (!lotId) return;
@@ -15,12 +16,28 @@ async function loadDetails() {
 
         document.getElementById("lotName").innerText = lot.name;
         document.getElementById("lotLocation").innerHTML = `<i class="fas fa-map-marker-alt"></i> ${lot.location}`;
-        document.getElementById("lotPrice").innerText = `$${lot.pricePerHour}/hr`;
+        
+        basePrice = lot.pricePerHour || 0;
+        updatePriceDisplay();
+        
         document.getElementById("lotImage").src = lot.image;
 
         renderSlots(lot);
     } catch (err) {
         console.error(err);
+    }
+}
+
+function updatePriceDisplay() {
+    const durationEl = document.getElementById("duration");
+    if (!durationEl) return;
+    const duration = durationEl.value;
+    const totalPrice = basePrice * parseInt(duration);
+    document.getElementById("lotPrice").innerText = `$${totalPrice.toFixed(2)}`;
+    
+    const priceLabel = document.getElementById("priceLabel");
+    if (priceLabel) {
+        priceLabel.innerText = duration == 1 ? "1 Hour Fee" : `Total Fee (${duration} Hours)`;
     }
 }
 
@@ -106,3 +123,10 @@ async function confirmBooking() {
 }
 
 loadDetails();
+
+document.addEventListener("DOMContentLoaded", () => {
+    const durationSelectEl = document.getElementById("duration");
+    if (durationSelectEl) {
+        durationSelectEl.addEventListener("change", updatePriceDisplay);
+    }
+});

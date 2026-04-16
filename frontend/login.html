@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Smart Parking Premium</title>
-    
+
     <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/premium.css">
-    
+
     <script>
         tailwind.config = {
             theme: {
@@ -26,11 +29,13 @@
         }
     </script>
 </head>
+
 <body class="bg-background min-h-screen flex items-center justify-center p-6">
     <div class="w-full max-w-[460px] animate-fade-in text-center">
         <!-- Logo Section -->
         <div class="mb-10">
-            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-600/20 mx-auto mb-6">
+            <div
+                class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-600/20 mx-auto mb-6">
                 <i class="fas fa-parking text-white text-3xl"></i>
             </div>
             <h1 class="text-4xl font-black text-slate-900 tracking-tighter mb-2">Welcome Back</h1>
@@ -38,35 +43,43 @@
         </div>
 
         <!-- Auth Card -->
-        <div class="bg-white/70 backdrop-blur-3xl border border-black/5 rounded-[3rem] p-10 shadow-2xl shadow-black/5 text-left">
+        <div
+            class="bg-white/70 backdrop-blur-3xl border border-black/5 rounded-[3rem] p-10 shadow-2xl shadow-black/5 text-left">
             <div class="space-y-6">
                 <!-- Email -->
                 <div>
-                    <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Email Address</label>
-                    <div class="relative flex items-center bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-inner focus-within:border-blue-200 transition-all">
+                    <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Email
+                        Address</label>
+                    <div
+                        class="relative flex items-center bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-inner focus-within:border-blue-200 transition-all">
                         <div class="w-12 flex items-center justify-center text-gray-300">
                             <i class="fas fa-envelope text-sm"></i>
                         </div>
-                        <input type="email" id="email" placeholder="mike@example.com" class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 placeholder:text-gray-300">
+                        <input type="email" id="email" placeholder="mike@example.com"
+                            class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 placeholder:text-gray-300">
                     </div>
                 </div>
 
                 <!-- Password -->
                 <div>
                     <div class="flex justify-between items-center mb-3 ml-1">
-                        <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest">Password</label>
+                        <label
+                            class="block text-[11px] font-black text-gray-400 uppercase tracking-widest">Password</label>
                         <a href="#" class="text-[10px] font-black text-blue-600 hover:underline">Forgot?</a>
                     </div>
-                    <div class="relative flex items-center bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-inner focus-within:border-blue-200 transition-all">
+                    <div
+                        class="relative flex items-center bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-inner focus-within:border-blue-200 transition-all">
                         <div class="w-12 flex items-center justify-center text-gray-300">
                             <i class="fas fa-shield-halved text-sm"></i>
                         </div>
-                        <input type="password" id="password" placeholder="••••••••" class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 placeholder:text-gray-300">
+                        <input type="password" id="password" placeholder="••••••••"
+                            class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 placeholder:text-gray-300">
                     </div>
                 </div>
 
                 <div class="pt-4">
-                    <button id="login-btn" class="w-full py-5 bg-blue-600 text-white font-black text-sm rounded-[1.5rem] shadow-xl shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-3 group">
+                    <button id="login-btn"
+                        class="w-full py-5 bg-blue-600 text-white font-black text-sm rounded-[1.5rem] shadow-xl shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-3 group">
                         Sign In
                         <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
                     </button>
@@ -78,7 +91,8 @@
                     <div class="h-px flex-1 bg-gray-100"></div>
                 </div>
 
-                <button class="w-full py-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-3 text-slate-700 font-bold text-xs">
+                <button
+                    class="w-full py-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-3 text-slate-700 font-bold text-xs">
                     <i class="fab fa-google text-red-500 text-sm"></i>
                     Sign in with Google
                 </button>
@@ -86,52 +100,26 @@
         </div>
 
         <p class="mt-8 text-gray-400 font-semibold text-sm">
-            New here? <a href="signup.html" class="text-blue-600 font-black hover:underline underline-offset-4">Create Account</a>
+            New here? <a href="signup.html" class="text-blue-600 font-black hover:underline underline-offset-4">Create
+                Account</a>
         </p>
     </div>
 
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
     <script>
-        const API_BASE = window.location.hostname === 'localhost' 
-            ? 'http://localhost:5000/api' 
-            : 'https://backend-api-uhdp.onrender.com/api';
-
-        document.getElementById('login-btn').addEventListener('click', async () => {
+        document.getElementById('login-btn').addEventListener('click', () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const btn = document.getElementById('login-btn');
-            
-            if (!email || !password) {
+
+            if (email && password) {
+                // Mock redirect to the new dashboard
+                window.location.href = 'dashboard.html';
+            } else {
                 alert('Please enter your credentials');
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Signing In...';
-
-            try {
-                const res = await fetch(`${API_BASE}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('user_name', data.user.name);
-                    window.location.href = 'dashboard.html';
-                } else {
-                    alert(data.message || 'Login failed');
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Server connection error. Please try again.');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = 'Sign In <i class="fas fa-arrow-right"></i>';
             }
         });
     </script>
 </body>
+
 </html>

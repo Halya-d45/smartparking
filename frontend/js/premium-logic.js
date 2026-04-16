@@ -348,9 +348,21 @@ async function saveSlot(hubId, e) {
 // 4. Map & Search Logic
 function initMap() {
     if (map) return;
-    map = L.map('map', { zoomControl: false, attributionControl: false }).setView([17.3850, 78.4867], 13);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+    console.log("Initializing map...");
+    map = L.map('map', { zoomControl: false, attributionControl: false, fadeAnimation: true }).setView([17.3850, 78.4867], 13);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        crossOrigin: true,
+        zIndex: 1
+    }).addTo(map);
+
     document.getElementById('recenter-btn').onclick = () => map.setView([17.3850, 78.4867], 13);
+    
+    // Safety check for tile display
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 500);
 }
 
 async function handleSearch() {

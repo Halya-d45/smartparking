@@ -3,182 +3,495 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Settings | Smart Parking Premium</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Profile | Smart Parking</title>
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        background: { light: "#f8fafc", dark: "#0f172a" },
-                        primary: "#3b82f6"
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        #dashboard-3d-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -10; opacity: 0.15; pointer-events: none; }
-        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4); }
-        .dark .glass-card { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); }
+        :root {
+            /* Clean Light Theme */
+            --bg-color: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-bg-hover: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            
+            --primary: #0ea5e9;
+            --secondary: #10b981;    
+            --accent1: #f97316;
+            
+            --card-radius: 28px;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* Minimal NavBar */
+        .navbar-minimal {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 24px;
+            padding: 14px 40px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+        
+        .navbar-minimal a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .navbar-minimal a:hover, .navbar-minimal a.active {
+            color: var(--primary);
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            width: 100%;
+            max-width: 960px;
+            margin: 110px auto 40px;
+            padding: 0 24px;
+            position: relative;
+        }
+
+        /* Decorative Blobs for soft depth */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            z-index: -1;
+            opacity: 0.6;
+        }
+        .blob-1 { top: -80px; left: -100px; width: 350px; height: 350px; background: #bae6fd; }
+        .blob-2 { bottom: -60px; right: -80px; width: 400px; height: 400px; background: #ddd6fe; }
+        .blob-3 { top: 40%; left: 50%; transform: translate(-50%, -50%); width: 450px; height: 450px; background: #fef08a; opacity: 0.4; }
+
+        /* Glass Panel Base */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            padding: 40px;
+            box-shadow: var(--glass-shadow);
+            position: relative;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Top Welcome Card */
+        .welcome-card {
+            background: rgba(255, 255, 255, 0.85);
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: -30px; /* Overlaps lower cards */
+            border: 1px solid rgba(255, 255, 255, 0.9);
+        }
+        
+        .welcome-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+        }
+
+        .welcome-text h1 {
+            margin: 0;
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -1px;
+        }
+        
+        .welcome-text p {
+            margin: 10px 0 0;
+            font-size: 16px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .profile-avatar-wrap {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #38bdf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 34px;
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+            border: 3px solid #fff;
+        }
+
+        /* Content Grid (Overlapping) */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1.9fr;
+            position: relative;
+            z-index: 1;
+        }
+
+        .panel-vehicles {
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.65);
+            transform: translateX(30px) translateY(30px);
+            padding-bottom: 50px;
+        }
+
+        .panel-vehicles:hover {
+            transform: translateX(30px) translateY(25px);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .panel-bookings {
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.45);
+            padding-left: 60px; /* Space for overlap */
+            padding-top: 70px;  /* Space for top overlap */
+            transform: translateX(-30px);
+            min-height: 480px;
+        }
+
+        .panel-bookings:hover {
+            background: rgba(255, 255, 255, 0.65);
+        }
+
+        /* Section Headings */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .icon-blue { background: linear-gradient(135deg, #0ea5e9, #38bdf8); box-shadow: 0 6px 16px rgba(14, 165, 233, 0.3); }
+        .icon-green { background: linear-gradient(135deg, #10b981, #34d399); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3); }
+
+        /* Vehicles Layout */
+        .vehicles-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .vehicle-item {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .vehicle-item:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 1);
+        }
+
+        .car-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .car-yellow { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+        .car-purple { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+
+        .vehicle-info h4 { margin: 0; font-size: 16px; font-weight: 600; color: var(--text-main); }
+        .vehicle-info p { margin: 4px 0 0; font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Bookings Layout */
+        .bookings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .booking-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 24px;
+            padding: 20px 24px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .booking-item:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 1);
+        }
+
+        .booking-date {
+            text-align: center;
+            background: #fff;
+            padding: 12px 16px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .booking-date span.day { display: block; font-size: 22px; font-weight: 700; color: var(--primary); line-height: 1; }
+        .booking-date span.month { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
+
+        .booking-details h4 { margin: 0; font-size: 17px; font-weight: 600; color: var(--text-main); }
+        .booking-details p { margin: 8px 0 0; font-size: 14px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; font-weight: 400; }
+
+        .booking-cost {
+            text-align: right;
+        }
+
+        .booking-cost .amount {
+            display: block;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .booking-cost .status {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-completed { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .status-upcoming { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+
+        @media (max-width: 768px) {
+            .dashboard-grid { 
+                grid-template-columns: 1fr; 
+                gap: 20px; 
+            }
+            .panel-vehicles { 
+                transform: none; 
+                padding-bottom: 40px; 
+                margin-bottom: -15px; 
+            }
+            .panel-vehicles:hover { transform: translateY(-4px); }
+            
+            .panel-bookings { 
+                transform: none; 
+                padding: 40px 24px; 
+            }
+            .welcome-card { margin-bottom: 20px; flex-direction: column; text-align: center; gap: 20px; }
+            .booking-item { grid-template-columns: 1fr; text-align: center; gap: 16px; padding: 24px; }
+            .booking-date { display: inline-block; }
+            .booking-details p { justify-content: center; }
+            .booking-cost { text-align: center; }
+            .navbar-minimal { width: 90%; justify-content: center; padding: 14px 20px; }
+        }
     </style>
 </head>
-<body class="bg-white dark:bg-[#0f172a] min-h-screen text-slate-900 dark:text-slate-100 transition-colors duration-300">
-    <div id="dashboard-3d-bg"></div>
+<body>
 
-    <!-- Premium Top Navigation -->
-    <nav class="fixed top-0 left-0 right-0 h-24 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl border-b border-black/5 dark:border-white/5 z-[60] transition-all duration-300">
-        <div class="max-w-[1700px] mx-auto h-full px-8 flex items-center justify-between">
-            <div class="flex items-center space-x-12">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-600/30">
-                        <i class="fas fa-parking text-white text-xl"></i>
-                    </div>
-                    <div class="hidden sm:block">
-                        <h1 class="text-xl font-black text-slate-800 dark:text-white leading-tight">SmartPark</h1>
-                        <p class="text-[10px] uppercase tracking-[0.2em] font-extrabold text-blue-500">Premium</p>
-                    </div>
-                </div>
-
-                <div class="hidden lg:flex items-center space-x-2 bg-gray-100/50 dark:bg-white/5 p-1.5 rounded-2xl border border-black/5 dark:border-white/5">
-                    <button onclick="location.href='dashboard.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
-                        <i class="fas fa-map-location-dot"></i> <span class="font-bold text-sm">Explore</span>
-                    </button>
-                    <button onclick="location.href='bookings.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
-                        <i class="fas fa-calendar-check"></i> <span class="font-bold text-sm">Bookings</span>
-                    </button>
-                    <button onclick="location.href='saved.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
-                        <i class="fas fa-bookmark"></i> <span class="font-bold text-sm">Saved</span>
-                    </button>
-                    <button onclick="location.href='wallet.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
-                        <i class="fas fa-wallet"></i> <span class="font-bold text-sm">Wallet</span>
-                    </button>
-                    <button onclick="location.href='profile.html'" class="px-6 py-3 rounded-xl transition-all bg-blue-600 text-white shadow-xl shadow-blue-500/20 flex items-center gap-3">
-                        <i class="fas fa-user-circle"></i> <span class="font-bold text-sm">Profile</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex items-center space-x-6">
-                <button id="themeToggle" class="w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-2xl text-slate-400 font-bold transition-all hover:text-blue-500">
-                    <i class="fas fa-moon dark:hidden"></i>
-                    <i class="fas fa-sun hidden dark:block"></i>
-                </button>
-                <button onclick="logout()" class="text-xs font-black uppercase text-red-500 bg-red-50 dark:bg-red-500/10 px-4 py-2.5 rounded-xl hover:bg-red-500 hover:text-white transition-all">Logout</button>
-            </div>
-        </div>
+    <nav class="navbar-minimal">
+        <a href="dashboard.html"><i class="fas fa-map-marked-alt"></i> Map</a>
+        <a href="bookings.html"><i class="fas fa-history"></i> Bookings</a>
+        <a href="profile.html" class="active"><i class="fas fa-user-circle"></i> Profile</a>
+        <a href="javascript:void(0)" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </nav>
 
-    <main class="max-w-[1200px] mx-auto pt-40 px-8 relative z-10 pb-20">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+    <div class="dashboard-container">
+        <!-- Background Orbs -->
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+
+        <!-- Welcome Card -->
+        <div class="glass-panel welcome-card">
+            <div class="welcome-text">
+                <h1 id="welcomeTitle">Welcome back, Mike.</h1>
+                <p>Manage your vehicles, track your bookings, and control your profile.</p>
+            </div>
+            <div class="profile-avatar-wrap">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+
+        <!-- Overlapping Glass Grid -->
+        <div class="dashboard-grid">
             
-            <!-- Left: Avatar Card -->
-            <div class="lg:col-span-1">
-                <div class="glass-card p-10 rounded-[3rem] text-center shadow-2xl relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent"></div>
-                    <div class="w-32 h-32 rounded-[2.5rem] bg-blue-600 mx-auto mb-8 flex items-center justify-center text-5xl text-white shadow-2xl shadow-blue-500/30 font-black relative z-10" id="profile-initials">AJ</div>
-                    <h2 class="text-3xl font-black text-slate-800 dark:text-white tracking-tighter mb-2" id="profile-name">Alex Johnson</h2>
-                    <p class="text-gray-400 font-black uppercase text-[10px] tracking-widest mb-8" id="profile-role">Premium Member</p>
-                    
-                    <div class="space-y-3 pt-6 border-t border-black/5 dark:border-white/5 relative z-10">
-                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-2xl">
-                            <span class="text-xs font-bold text-gray-400">Total Bookings</span>
-                            <span class="text-sm font-black text-slate-800 dark:text-white" id="stat-bookings">--</span>
+            <!-- Left Side: My Vehicles -->
+            <div class="glass-panel panel-vehicles">
+                <div class="section-header">
+                    <div class="section-icon icon-blue">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <h2>My Vehicles</h2>
+                </div>
+                
+                <div class="vehicles-list">
+                    <div class="vehicle-item">
+                        <div class="car-icon car-yellow">
+                            <i class="fas fa-car-side"></i>
                         </div>
-                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-2xl">
-                            <span class="text-xs font-bold text-gray-400">Account Safety</span>
-                            <span class="text-xs font-black text-emerald-500">Verified Hub</span>
+                        <div class="vehicle-info">
+                            <h4>Tesla Model 3</h4>
+                            <p>CA • 9XDL204</p>
+                        </div>
+                    </div>
+                    
+                    <div class="vehicle-item">
+                        <div class="car-icon car-purple">
+                            <i class="fas fa-truck-pickup"></i>
+                        </div>
+                        <div class="vehicle-info">
+                            <h4>Ford F-150</h4>
+                            <p>TX • M29 BKW</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right: Settings Form -->
-            <div class="lg:col-span-2 space-y-8">
-                <div class="glass-card p-10 rounded-[3rem]">
-                    <h3 class="text-2xl font-black text-slate-800 dark:text-white mb-2 tracking-tighter">Profile <span class="text-blue-600">Settings</span></h3>
-                    <p class="text-gray-400 font-bold text-sm mb-10">Update your personal information and contact details.</p>
-                    
-                    <form id="edit-profile-form" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Full Name</label>
-                            <input type="text" id="edit-name" class="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 p-5 rounded-3xl outline-none focus:border-blue-500 transition-all font-bold placeholder:text-gray-300 dark:placeholder:text-gray-600">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Email Address</label>
-                            <input type="email" id="edit-email" class="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 p-5 rounded-3xl outline-none focus:border-blue-500 transition-all font-bold placeholder:text-gray-300 dark:placeholder:text-gray-600">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Phone Number</label>
-                            <input type="text" id="edit-phone" class="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 p-5 rounded-3xl outline-none focus:border-blue-500 transition-all font-bold placeholder:text-gray-300 dark:placeholder:text-gray-600">
-                        </div>
-                        <div class="md:col-span-2 pt-4">
-                            <button type="submit" class="w-full py-5 bg-blue-600 text-white rounded-3xl font-black uppercase text-xs tracking-widest hover:bg-blue-700 transition-all shadow-2xl shadow-blue-500/30 active:scale-[0.98]">Save Changes Across Platform</button>
-                        </div>
-                    </form>
+            <!-- Right Side: Recent Bookings -->
+            <div class="glass-panel panel-bookings">
+                <div class="section-header">
+                    <div class="section-icon icon-green">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h2>Recent Bookings</h2>
                 </div>
 
-                <div class="glass-card p-10 rounded-[3rem] border-dashed border-2 border-red-100 dark:border-red-900/30 flex items-center justify-between">
-                    <div>
-                        <h4 class="text-lg font-black text-red-500 tracking-tight">Danger Zone</h4>
-                        <p class="text-xs font-bold text-gray-400">Permanently delete your account and history.</p>
+                <div class="bookings-list" id="bookingsList">
+                    <!-- Static aesthetic placeholders for the SaaS look -->
+                    <div class="booking-item">
+                        <div class="booking-date">
+                            <span class="day">12</span>
+                            <span class="month">Oct</span>
+                        </div>
+                        <div class="booking-details">
+                            <h4>Downtown Plaza Hub</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> 124 Main St, City Center</p>
+                        </div>
+                        <div class="booking-cost">
+                            <span class="amount">$14.00</span>
+                            <span class="status status-completed">Completed</span>
+                        </div>
                     </div>
-                    <button class="px-8 py-3 bg-red-50 dark:bg-red-500/10 text-red-500 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">Delete Account</button>
+
+                    <div class="booking-item">
+                        <div class="booking-date">
+                            <span class="day">28</span>
+                            <span class="month">Sep</span>
+                        </div>
+                        <div class="booking-details">
+                            <h4>Airport Terminal A</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> Level 2, Spot 42</p>
+                        </div>
+                        <div class="booking-cost">
+                            <span class="amount">$35.00</span>
+                            <span class="status status-upcoming">Upcoming</span>
+                        </div>
+                    </div>
+
+                    <div class="booking-item">
+                        <div class="booking-date">
+                            <span class="day">15</span>
+                            <span class="month">Sep</span>
+                        </div>
+                        <div class="booking-details">
+                            <h4>Tech District Garage</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> 800 Innovation Way</p>
+                        </div>
+                        <div class="booking-cost">
+                            <span class="amount">$22.50</span>
+                            <span class="status status-completed">Completed</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
         </div>
-    </main>
+    </div>
 
-    <script src="js/config.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/three-bg.js"></script>
-    <script>
-        const user = JSON.parse(localStorage.getItem('user'));
-
-        function initProfile() {
-            if (!user) return;
-            document.getElementById('profile-name').innerText = user.name;
-            document.getElementById('profile-initials').innerText = (user.name.substring(0, 2) || "US").toUpperCase();
-            document.getElementById('edit-name').value = user.name || "";
-            document.getElementById('edit-email').value = user.email || "";
-            document.getElementById('edit-phone').value = user.phone || "";
-            
-            // Stats Sync
-            const token = localStorage.getItem("token");
-            fetch(`${CONFIG.API_BASE}/booking?userId=${user.id}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            }).then(r => r.json()).then(data => {
-                document.getElementById('stat-bookings').innerText = data.length || "0";
-            });
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if(user && user.name) {
+            const firstName = user.name.split(" ")[0];
+            document.getElementById("welcomeTitle").innerText = `Welcome back, ${firstName}.`;
         }
+    });
 
-        document.getElementById('edit-profile-form').onsubmit = (e) => {
-            e.preventDefault();
-            const updated = {
-                ...user,
-                name: document.getElementById('edit-name').value,
-                email: document.getElementById('edit-email').value,
-                phone: document.getElementById('edit-phone').value
-            };
-            localStorage.setItem('user', JSON.stringify(updated));
-            alert("Changes saved locally! Real-time sync achieved.");
-            location.reload();
-        }
-
-        // Theme Linkage
-        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
-        document.getElementById('themeToggle').onclick = () => {
-            const isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    // Make sure logout exists in case it is absent in auth.js
+    if (typeof logout !== "function") {
+        window.logout = function() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.href = "login.html";
         };
-
-        initProfile();
-    </script>
+    }
+</script>
 </body>
 </html>

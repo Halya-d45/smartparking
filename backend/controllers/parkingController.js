@@ -171,3 +171,23 @@ exports.getParkingById = async (req, res) => {
         res.status(500).json({ error: "Fetch failed" });
     }
 };
+
+exports.getSuggestions = async (req, res) => {
+    try {
+        const query = req.query.q;
+        if (!query || query.length < 2) return res.json([]);
+
+        // Search for names or locations matching the query (case-insensitive)
+        const results = await Parking.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { location: { $regex: query, $options: 'i' } }
+            ]
+        }).select('name location latitude longitude').limit(8);
+
+        res.json(results);
+    } catch (err) {
+        console.error("Suggestions Error:", err);
+        res.status(500).json({ error: "Failed to fetch suggestions" });
+    }
+};

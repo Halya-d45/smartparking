@@ -251,28 +251,115 @@ async function handleSearch() {
     if (!query) return;
     mapLoader.classList.remove('hidden');
     mapLoader.classList.add('flex');
+    hideSuggestions();
+
     try {
+        // Try Nominatim with case-insensitivity (native)
         const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
         const data = await response.json();
+        
         if (data && data.length > 0) {
             const result = data[0];
             const lat = parseFloat(result.lat);
             const lon = parseFloat(result.lon);
             const cityName = result.display_name.split(',')[0];
+            
             map.flyTo([lat, lon], 14);
             currentHubs = await fetchRealParkingHubs(lat, lon, cityName);
+            
             setTimeout(() => {
                 mapLoader.classList.add('hidden');
                 mapLoader.classList.remove('flex');
                 showResults(cityName, currentHubs);
                 showToast(`Found ${currentHubs.length} hubs in ${cityName}`, 'success');
             }, 1000);
+        } else {
+            // Fallback: If map search yields nothing, search our database directly by name
+            const res = await fetch(`${API_BASE}/parking/suggestions?q=${encodeURIComponent(query)}`);
+            const dbData = await res.json();
+            if (dbData.length > 0) {
+                const p = dbData[0];
+                selectSuggestion(p.name, p.latitude, p.longitude, p.location);
+            } else {
+                throw new Error("Location not found");
+            }
         }
     } catch (err) {
         mapLoader.classList.add('hidden');
         mapLoader.classList.remove('flex');
         showToast('Location not found.', 'error');
     }
+}
+
+// Search Suggestions Logic
+if (mapSearch) {
+    mapSearch.addEventListener('input', debounce(() => fetchSuggestions(), 300));
+}
+
+async function fetchSuggestions() {
+    const query = mapSearch.value.trim();
+    const list = document.getElementById('suggestions-list');
+    const dropdown = document.getElementById('search-suggestions');
+    
+    if (query.length < 2) {
+        hideSuggestions();
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/parking/suggestions?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        
+        if (!data || data.length === 0) {
+            hideSuggestions();
+            return;
+        }
+
+        list.innerHTML = data.map(s => `
+            <button onclick="selectSuggestion('${s.name.replace(/'/g, "\\'")}', ${s.latitude}, ${s.longitude}, '${s.location.replace(/'/g, "\\'")}')" class="w-full text-left px-4 py-3 hover:bg-blue-50 dark:hover:bg-white/5 transition-all mb-1 border-b border-gray-50 dark:border-white/5 last:border-0">
+                <p class="text-sm font-black text-slate-800 dark:text-white">${s.name}</p>
+                <p class="text-[10px] text-gray-400 font-bold uppercase">${s.location}</p>
+            </button>
+        `).join('');
+        
+        dropdown.classList.remove('hidden');
+    } catch (e) { console.error(e); }
+}
+
+function selectSuggestion(name, lat, lon, location) {
+    mapSearch.value = name;
+    hideSuggestions();
+    
+    mapLoader.classList.remove('hidden');
+    mapLoader.classList.add('flex');
+    
+    map.flyTo([lat, lon], 14);
+    
+    // Trigger the discovery flow
+    setTimeout(async () => {
+        currentHubs = await fetchRealParkingHubs(lat, lon, location.split(',')[0]);
+        mapLoader.classList.add('hidden');
+        mapLoader.classList.remove('flex');
+        showResults(name, currentHubs);
+        showToast(`Navigated to ${name}`, 'success');
+    }, 1000);
+}
+
+function hideSuggestions() {
+    const dropdown = document.getElementById('search-suggestions');
+    if (dropdown) dropdown.classList.add('hidden');
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
 async function fetchRealParkingHubs(lat, lon, city) {

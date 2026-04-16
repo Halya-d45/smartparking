@@ -1,21 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Parking - Premium Dashboard</title>
-    
+
     <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
+
     <!-- Custom Styles -->
     <link rel="stylesheet" href="css/premium.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <style>
+        #dashboard-3d-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -10;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .dark #dashboard-3d-bg {
+            opacity: 0.2;
+        }
+    </style>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -37,13 +57,16 @@
         }
     </script>
 </head>
+
 <body class="bg-background">
     <!-- Premium Top Navigation -->
-    <nav class="fixed top-0 left-0 right-0 h-24 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl border-b border-black/5 dark:border-white/5 z-[60] transition-all duration-300">
+    <nav
+        class="fixed top-0 left-0 right-0 h-24 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl border-b border-black/5 dark:border-white/5 z-[60] transition-all duration-300">
         <div class="max-w-[1700px] mx-auto h-full px-8 flex items-center justify-between">
             <div class="flex items-center space-x-12">
                 <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-600/30">
+                    <div
+                        class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-600/30">
                         <i class="fas fa-parking text-white text-xl"></i>
                     </div>
                     <div class="hidden sm:block">
@@ -52,39 +75,48 @@
                     </div>
                 </div>
 
-                <div class="hidden lg:flex items-center space-x-2 bg-gray-100/50 dark:bg-white/5 p-1.5 rounded-2xl border border-black/5 dark:border-white/5">
-                    <button class="px-6 py-3 rounded-xl transition-all nav-link active flex items-center gap-3" data-tab="map-view">
+                <div
+                    class="hidden lg:flex items-center space-x-2 bg-gray-100/50 dark:bg-white/5 p-1.5 rounded-2xl border border-black/5 dark:border-white/5">
+                    <button class="px-6 py-3 rounded-xl transition-all nav-link active flex items-center gap-3"
+                        data-tab="map-view">
                         <i class="fas fa-map-location-dot"></i> <span class="font-bold text-sm">Explore</span>
                     </button>
-                    <button class="px-6 py-3 rounded-xl transition-all nav-link flex items-center gap-3" data-tab="my-bookings">
+                    <button class="px-6 py-3 rounded-xl transition-all nav-link flex items-center gap-3"
+                        data-tab="my-bookings">
                         <i class="fas fa-calendar-check"></i> <span class="font-bold text-sm">Bookings</span>
                     </button>
-                    <button class="px-6 py-3 rounded-xl transition-all nav-link flex items-center gap-3" data-tab="saved-slots">
+                    <button class="px-6 py-3 rounded-xl transition-all nav-link flex items-center gap-3"
+                        data-tab="saved-slots">
                         <i class="fas fa-bookmark"></i> <span class="font-bold text-sm">Saved</span>
                     </button>
-                    <button class="px-6 py-3 rounded-xl transition-all nav-link flex items-center gap-3" data-tab="payments">
+                    <button class="px-6 py-3 rounded-xl transition-all nav-link flex items-center gap-3"
+                        data-tab="payments">
                         <i class="fas fa-wallet"></i> <span class="font-bold text-sm">Wallet</span>
                     </button>
-                    <button class="px-6 py-3 rounded-xl transition-all nav-link flex items-center gap-3" data-tab="profile">
+                    <button class="px-6 py-3 rounded-xl transition-all nav-link flex items-center gap-3"
+                        data-tab="profile">
                         <i class="fas fa-user-circle"></i> <span class="font-bold text-sm">Profile</span>
                     </button>
                 </div>
             </div>
 
             <div class="flex items-center space-x-6">
-                <button id="theme-toggle" class="w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-2xl text-slate-400 font-bold transition-all hover:text-blue-500">
+                <button id="theme-toggle"
+                    class="w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-2xl text-slate-400 font-bold transition-all hover:text-blue-500">
                     <i class="fas fa-moon dark:hidden"></i>
                     <i class="fas fa-sun hidden dark:block"></i>
                 </button>
-                
+
                 <div class="h-8 w-px bg-gray-200 dark:bg-white/10 hidden sm:block"></div>
-                
+
                 <div class="flex items-center space-x-4">
                     <div class="text-right hidden sm:block">
                         <p id="nav-user-name" class="text-xs font-black text-slate-800 dark:text-white">User Name</p>
-                        <button onclick="window.location.href='login.html'" class="text-[10px] font-bold text-red-500 uppercase tracking-widest hover:opacity-70 transition-opacity">Logout</button>
+                        <button onclick="window.location.href='login.html'"
+                            class="text-[10px] font-bold text-red-500 uppercase tracking-widest hover:opacity-70 transition-opacity">Logout</button>
                     </div>
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
                         <i class="fas fa-user-astronaut text-xl"></i>
                     </div>
                 </div>
@@ -93,7 +125,8 @@
     </nav>
 
     <!-- Mobile Navigation Bar (Bottom) -->
-    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-t border-black/5 dark:border-white/5 z-50 lg:hidden flex items-center justify-around px-4">
+    <nav
+        class="fixed bottom-0 left-0 right-0 h-20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-t border-black/5 dark:border-white/5 z-50 lg:hidden flex items-center justify-around px-4">
         <button class="flex flex-col items-center gap-1 nav-link active" data-tab="map-view">
             <i class="fas fa-map-location-dot text-lg"></i>
             <span class="text-[10px] font-black uppercase">Explore</span>
@@ -114,7 +147,7 @@
 
     <!-- Content Area -->
     <main class="pt-32 px-8 max-w-[1700px] mx-auto pb-12">
-        
+
         <!-- Tab: Map View -->
         <div id="map-view" class="tab-content active animate-fade-in">
             <div class="flex flex-col xl:flex-row gap-8">
@@ -124,15 +157,19 @@
                         <h3 class="stats-card-title !mb-6 dark:text-gray-400">Hub Discovery</h3>
                         <div class="space-y-4">
                             <div class="relative">
-                                <div class="relative flex items-center bg-white dark:bg-slate-700/50 rounded-2xl overflow-hidden border border-gray-100 dark:border-white/5 shadow-sm focus-within:shadow-xl transition-all">
+                                <div
+                                    class="relative flex items-center bg-white dark:bg-slate-700/50 rounded-2xl overflow-hidden border border-gray-100 dark:border-white/5 shadow-sm focus-within:shadow-xl transition-all">
                                     <div class="w-12 flex items-center justify-center text-gray-400">
                                         <i class="fas fa-magnifying-glass text-sm"></i>
                                     </div>
-                                    <input type="text" id="map-search" placeholder="Search City or Area..." class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 dark:text-white placeholder:text-gray-400">
-                                    <button id="search-btn" class="bg-blue-600 text-white px-5 py-3 m-1 rounded-xl hover:bg-blue-700 transition-colors font-black text-xs uppercase tracking-tight">Search</button>
+                                    <input type="text" id="map-search" placeholder="Search City or Area..."
+                                        class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 dark:text-white placeholder:text-gray-400">
+                                    <button id="search-btn"
+                                        class="bg-blue-600 text-white px-5 py-3 m-1 rounded-xl hover:bg-blue-700 transition-colors font-black text-xs uppercase tracking-tight">Search</button>
                                 </div>
                                 <!-- Suggestions Dropdown -->
-                                <div id="search-suggestions" class="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl z-[100] hidden overflow-hidden backdrop-blur-xl">
+                                <div id="search-suggestions"
+                                    class="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl z-[100] hidden overflow-hidden backdrop-blur-xl">
                                     <div class="py-2" id="suggestions-list">
                                         <!-- Items like: 
                                         <button class="w-full text-left px-4 py-3 hover:bg-blue-50 dark:hover:bg-white/5 transition-all mb-1">
@@ -147,20 +184,24 @@
                             <!-- Search Filters -->
                             <div class="grid grid-cols-2 gap-3 pt-2">
                                 <div class="relative group">
-                                    <select id="filter-vehicle" class="w-full appearance-none bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-4 py-3 text-xs font-black text-slate-600 dark:text-gray-300 outline-none focus:border-blue-500 transition-all">
+                                    <select id="filter-vehicle"
+                                        class="w-full appearance-none bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-4 py-3 text-xs font-black text-slate-600 dark:text-gray-300 outline-none focus:border-blue-500 transition-all">
                                         <option value="car">Sedan/SUV</option>
                                         <option value="bike">Bike</option>
                                         <option value="truck">Truck</option>
                                     </select>
-                                    <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none"></i>
+                                    <i
+                                        class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none"></i>
                                 </div>
                                 <div class="relative group">
-                                    <select id="filter-price" class="w-full appearance-none bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-4 py-3 text-xs font-black text-slate-600 dark:text-gray-300 outline-none focus:border-blue-500 transition-all">
+                                    <select id="filter-price"
+                                        class="w-full appearance-none bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-4 py-3 text-xs font-black text-slate-600 dark:text-gray-300 outline-none focus:border-blue-500 transition-all">
                                         <option value="any">Any Price</option>
                                         <option value="low">Under $5/h</option>
                                         <option value="mid">$5 - $10/h</option>
                                     </select>
-                                    <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none"></i>
+                                    <i
+                                        class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none"></i>
                                 </div>
                             </div>
                         </div>
@@ -172,7 +213,8 @@
                             <div>
                                 <div class="flex justify-between items-end mb-3">
                                     <p class="text-4xl font-black text-slate-900" id="total-slots">500</p>
-                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em]">Total Slots</p>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em]">Total
+                                        Slots</p>
                                 </div>
                                 <div class="w-full bg-[#e8e2d6] h-2 rounded-full overflow-hidden">
                                     <div class="bg-gradient-to-r from-blue-400 to-cyan-400 h-full w-[70%]"></div>
@@ -181,38 +223,48 @@
                             <div>
                                 <div class="flex justify-between items-end mb-1">
                                     <p class="text-4xl font-black text-blue-600" id="available-slots">124</p>
-                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em]">Available Now</p>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em]">Available
+                                        Now</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div id="results-panel" class="stats-card flex-1 hidden">
-                        <h3 class="stats-card-title !mb-6 uppercase tracking-widest text-[#1a1a1a]" id="results-title">Parking in Chennai</h3>
+                        <h3 class="stats-card-title !mb-6 uppercase tracking-widest text-[#1a1a1a]" id="results-title">
+                            Parking in Chennai</h3>
                         <div class="space-y-4" id="results-list">
                             <!-- Dynamic content -->
                         </div>
-                        <button id="clear-search" class="w-full mt-6 pt-4 border-t border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-slate-900 transition-colors">Clear Results</button>
+                        <button id="clear-search"
+                            class="w-full mt-6 pt-4 border-t border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-slate-900 transition-colors">Clear
+                            Results</button>
                     </div>
                 </div>
 
                 <!-- Map Area -->
-                <div class="flex-1 relative bg-slate-100 dark:bg-slate-900 border border-black/5 dark:border-white/5 rounded-[3rem] h-[680px] overflow-hidden group shadow-2xl shadow-black/5">
+                <div
+                    class="flex-1 relative bg-slate-100 dark:bg-slate-900 border border-black/5 dark:border-white/5 rounded-[3rem] h-[680px] overflow-hidden group shadow-2xl shadow-black/5">
                     <div id="map" class="absolute inset-0 z-0"></div>
-                    
-                    <div id="map-loader" class="absolute inset-0 z-10 bg-white/60 backdrop-blur-md hidden flex-col items-center justify-center gap-4">
-                        <div class="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+
+                    <div id="map-loader"
+                        class="absolute inset-0 z-10 bg-white/60 backdrop-blur-md hidden flex-col items-center justify-center gap-4">
+                        <div class="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin">
+                        </div>
                         <p class="text-blue-600 font-black text-xl animate-pulse">Scanning City Hubs...</p>
                     </div>
 
                     <div class="absolute top-6 right-6 z-20 flex flex-col gap-3">
-                        <button onclick="map.zoomIn()" class="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-all border border-black/5">
+                        <button onclick="map.zoomIn()"
+                            class="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-all border border-black/5">
                             <i class="fas fa-plus"></i>
                         </button>
-                        <button onclick="map.zoomOut()" class="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-all border border-black/5">
+                        <button onclick="map.zoomOut()"
+                            class="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-all border border-black/5">
                             <i class="fas fa-minus"></i>
                         </button>
-                        <button id="recenter-btn" class="w-12 h-12 bg-blue-600 rounded-2xl shadow-xl flex items-center justify-center text-white hover:bg-blue-700 transition-all mt-4 shadow-blue-500/20">
+                        <button id="recenter-btn"
+                            class="w-12 h-12 bg-blue-600 rounded-2xl shadow-xl flex items-center justify-center text-white hover:bg-blue-700 transition-all mt-4 shadow-blue-500/20">
                             <i class="fas fa-location-arrow"></i>
                         </button>
                     </div>
@@ -224,13 +276,17 @@
         <div id="my-bookings" class="tab-content animate-fade-in max-w-5xl mx-auto">
             <div class="flex items-center justify-between mb-10">
                 <div>
-                    <h1 class="text-4xl font-black text-slate-900 mb-2">My <span class="text-primary italic">Bookings</span></h1>
+                    <h1 class="text-4xl font-black text-slate-900 mb-2">My <span
+                            class="text-primary italic">Bookings</span></h1>
                     <p class="text-gray-500 font-medium">Manage your active and completed parking reservations.</p>
                 </div>
                 <div class="flex bg-[#f2ede4] rounded-2xl p-1 gap-1">
-                    <button class="px-8 py-2.5 bg-white rounded-xl shadow-sm text-sm font-black text-slate-800">All</button>
-                    <button class="px-8 py-2.5 text-sm font-bold text-gray-500 hover:text-slate-800 transition-colors">Upcoming</button>
-                    <button class="px-8 py-2.5 text-sm font-bold text-gray-500 hover:text-slate-800 transition-colors">History</button>
+                    <button
+                        class="px-8 py-2.5 bg-white rounded-xl shadow-sm text-sm font-black text-slate-800">All</button>
+                    <button
+                        class="px-8 py-2.5 text-sm font-bold text-gray-500 hover:text-slate-800 transition-colors">Upcoming</button>
+                    <button
+                        class="px-8 py-2.5 text-sm font-bold text-gray-500 hover:text-slate-800 transition-colors">History</button>
                 </div>
             </div>
             <div class="space-y-6" id="bookings-list">
@@ -242,48 +298,56 @@
         <div id="profile" class="tab-content animate-fade-in max-w-6xl mx-auto">
             <div class="glass-card mb-12 flex items-center justify-between !p-12">
                 <div>
-                    <h1 class="text-5xl font-black text-slate-900 mb-3 tracking-tighter">Welcome back, <span id="profile-name-span">Guest</span>.</h1>
-                    <p class="text-gray-500 font-semibold text-xl mb-6">Manage your profile, fleet and track your parking activity.</p>
-                    <button onclick="document.getElementById('edit-profile-modal').classList.remove('hidden')" class="px-6 py-2.5 bg-slate-900 text-white rounded-xl font-bold shadow hover:bg-slate-800 transition-colors text-sm">
+                    <h1 class="text-5xl font-black text-slate-900 mb-3 tracking-tighter">Welcome back, <span
+                            id="profile-name-span">Guest</span>.</h1>
+                    <p class="text-gray-500 font-semibold text-xl mb-6">Manage your profile, fleet and track your
+                        parking activity.</p>
+                    <button onclick="document.getElementById('edit-profile-modal').classList.remove('hidden')"
+                        class="px-6 py-2.5 bg-slate-900 text-white rounded-xl font-bold shadow hover:bg-slate-800 transition-colors text-sm">
                         <i class="fas fa-edit mr-2"></i> Edit Profile
                     </button>
                 </div>
-                <div class="w-32 h-32 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white shadow-2xl shadow-blue-600/30">
+                <div
+                    class="w-32 h-32 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white shadow-2xl shadow-blue-600/30">
                     <i class="fas fa-user-circle text-6xl"></i>
                 </div>
             </div>
-            
+
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-10">
                 <div class="lg:col-span-2">
                     <div class="flex items-center justify-between mb-8">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 shadow-inner">
+                            <div
+                                class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 shadow-inner">
                                 <i class="fas fa-car-side text-lg"></i>
                             </div>
                             <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">My Vehicles</h2>
                         </div>
-                        <button onclick="document.getElementById('add-vehicle-modal').classList.remove('hidden')" class="w-10 h-10 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/20 flex items-center justify-center hover:bg-blue-700 transition-all">
+                        <button onclick="document.getElementById('add-vehicle-modal').classList.remove('hidden')"
+                            class="w-10 h-10 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/20 flex items-center justify-center hover:bg-blue-700 transition-all">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
                     <div class="space-y-4" id="vehicles-list">
                         <!-- Dynamic Content -->
-                        <div class="text-center py-20 bg-gray-50/50 rounded-[2rem] border-2 border-dashed border-gray-100">
-                             <p class="text-gray-400 font-bold">No vehicles in fleet</p>
+                        <div
+                            class="text-center py-20 bg-gray-50/50 rounded-[2rem] border-2 border-dashed border-gray-100">
+                            <p class="text-gray-400 font-bold">No vehicles in fleet</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="lg:col-span-3">
                     <div class="flex items-center gap-4 mb-8">
-                        <div class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 shadow-inner">
+                        <div
+                            class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 shadow-inner">
                             <i class="fas fa-history text-lg"></i>
                         </div>
                         <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Recent Glance</h2>
                     </div>
                     <div class="glass-card !p-8 space-y-4 bg-white/40" id="recent-glance-list">
-                         <!-- Dynamic Content -->
-                         <div class="text-center py-20 text-gray-400 font-bold">No recent activity detected</div>
+                        <!-- Dynamic Content -->
+                        <div class="text-center py-20 text-gray-400 font-bold">No recent activity detected</div>
                     </div>
                 </div>
             </div>
@@ -291,12 +355,16 @@
 
         <!-- Tab: Saved Slots -->
         <div id="saved-slots" class="tab-content animate-fade-in">
-            <h1 class="text-4xl font-black text-slate-900 mb-2 tracking-tighter">Your <span class="text-primary">Saved Places</span></h1>
+            <h1 class="text-4xl font-black text-slate-900 mb-2 tracking-tighter">Your <span class="text-primary">Saved
+                    Places</span></h1>
             <p class="text-gray-500 font-medium mb-12">Quick access to your most used parking spots.</p>
-            
-            <div class="flex items-center justify-center h-80 border-4 border-dashed border-gray-100 rounded-[3rem] bg-white/30">
+
+            <div
+                class="flex items-center justify-center h-80 border-4 border-dashed border-gray-100 rounded-[3rem] bg-white/30">
                 <div class="text-center">
-                    <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+                    <div
+                        class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6">
+                    </div>
                     <p class="text-gray-400 font-bold uppercase tracking-widest text-sm">Loading your favorites...</p>
                 </div>
             </div>
@@ -306,7 +374,8 @@
         <div id="payments" class="tab-content text-center py-40">
             <div class="animate-pulse">
                 <i class="fas fa-credit-card text-6xl text-gray-200 mb-6"></i>
-                <h2 class="text-xl font-bold text-gray-400 uppercase tracking-widest italic tracking-tight">Payments Screen Coming Soon</h2>
+                <h2 class="text-xl font-bold text-gray-400 uppercase tracking-widest italic tracking-tight">Payments
+                    Screen Coming Soon</h2>
             </div>
         </div>
     </main>
@@ -315,48 +384,71 @@
     <div id="toast-container"></div>
 
     <!-- Edit Profile Modal -->
-    <div id="edit-profile-modal" class="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div id="edit-profile-modal"
+        class="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] w-full max-w-lg p-8 shadow-2xl relative">
-            <button onclick="document.getElementById('edit-profile-modal').classList.add('hidden')" class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors">
+            <button onclick="document.getElementById('edit-profile-modal').classList.add('hidden')"
+                class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors">
                 <i class="fas fa-times"></i>
             </button>
             <h2 class="text-2xl font-black text-slate-900 mb-6">Edit Profile</h2>
             <form id="edit-profile-form" class="space-y-5">
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Full Name</label>
-                    <input type="text" id="edit-name" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:outline-none focus:border-blue-500" required>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Full
+                        Name</label>
+                    <input type="text" id="edit-name"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:outline-none focus:border-blue-500"
+                        required>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Email Address</label>
-                    <input type="email" id="edit-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:outline-none focus:border-blue-500" required>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Email
+                        Address</label>
+                    <input type="email" id="edit-email"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:outline-none focus:border-blue-500"
+                        required>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Phone Number</label>
-                    <input type="text" id="edit-phone" placeholder="Optional" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Phone
+                        Number</label>
+                    <input type="text" id="edit-phone" placeholder="Optional"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
                 </div>
-                <button type="submit" class="w-full py-4 mt-4 bg-blue-600 text-white rounded-xl font-black text-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30">Save Changes</button>
+                <button type="submit"
+                    class="w-full py-4 mt-4 bg-blue-600 text-white rounded-xl font-black text-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30">Save
+                    Changes</button>
             </form>
         </div>
     </div>
 
     <!-- Add Vehicle Modal -->
     <div id="add-vehicle-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onclick="this.parentElement.classList.add('hidden')"></div>
-        <div class="relative bg-white dark:bg-slate-800 w-full max-w-lg rounded-[2.5rem] shadow-2xl p-10 animate-scale-in">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+            onclick="this.parentElement.classList.add('hidden')"></div>
+        <div
+            class="relative bg-white dark:bg-slate-800 w-full max-w-lg rounded-[2.5rem] shadow-2xl p-10 animate-scale-in">
             <h3 class="text-3xl font-black text-slate-900 dark:text-white mb-2">Add Vehicle</h3>
             <p class="text-gray-500 mb-8 font-medium">Add a new vehicle to your fleet.</p>
             <form id="add-vehicle-form" class="space-y-6">
                 <div>
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Vehicle Model</label>
-                    <input type="text" id="veh-model" placeholder="e.g. Tesla Model 3" class="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 transition-all font-bold" required>
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Vehicle
+                        Model</label>
+                    <input type="text" id="veh-model" placeholder="e.g. Tesla Model 3"
+                        class="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 transition-all font-bold"
+                        required>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">License Plate</label>
-                    <input type="text" id="veh-plate" placeholder="e.g. CA 9XDL204" class="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 transition-all font-bold" required>
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">License
+                        Plate</label>
+                    <input type="text" id="veh-plate" placeholder="e.g. CA 9XDL204"
+                        class="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 transition-all font-bold"
+                        required>
                 </div>
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="this.closest('#add-vehicle-modal').classList.add('hidden')" class="flex-1 py-4 bg-gray-100 dark:bg-white/5 text-slate-800 dark:text-white rounded-2xl font-black text-sm uppercase tracking-widest">Cancel</button>
-                    <button type="submit" class="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-500/20">Add Fleet</button>
+                    <button type="button" onclick="this.closest('#add-vehicle-modal').classList.add('hidden')"
+                        class="flex-1 py-4 bg-gray-100 dark:bg-white/5 text-slate-800 dark:text-white rounded-2xl font-black text-sm uppercase tracking-widest">Cancel</button>
+                    <button type="submit"
+                        class="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-500/20">Add
+                        Fleet</button>
                 </div>
             </form>
         </div>
@@ -367,4 +459,5 @@
     <!-- Custom Logic -->
     <script src="js/premium-logic.js"></script>
 </body>
+
 </html>

@@ -260,7 +260,7 @@ async function handleSearch() {
             const lon = parseFloat(result.lon);
             const cityName = result.display_name.split(',')[0];
             map.flyTo([lat, lon], 14);
-            currentHubs = await fetchRealParkingHubs(lat, lon);
+            currentHubs = await fetchRealParkingHubs(lat, lon, cityName);
             setTimeout(() => {
                 mapLoader.classList.add('hidden');
                 mapLoader.classList.remove('flex');
@@ -275,22 +275,35 @@ async function handleSearch() {
     }
 }
 
-async function fetchRealParkingHubs(lat, lon) {
+async function fetchRealParkingHubs(lat, lon, city) {
     try {
-        const query = `[out:json];node["amenity"="parking"](around:3000,${lat},${lon});out 15;`;
-        const res = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
+        console.log(`Searching DB for ${city} at ${lat}, ${lon}...`);
+        const res = await fetch(`${API_BASE}/parking/discover`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lat, lon, city })
+        });
+        
+        if (!res.ok) throw new Error(`Backend returned ${res.status}`);
+        
         const data = await res.json();
-        if (!data.elements || data.elements.length === 0) return PARKING_HUBS;
-        return data.elements.map(el => ({
-            id: el.id,
-            name: el.tags.name || 'Public Parking',
-            price: `$${(Math.random() * 5 + 3).toFixed(2)}/hr`,
-            slots: Math.floor(Math.random() * 30),
-            lat: el.lat,
-            lng: el.lon,
-            addr: el.tags['addr:street'] || 'City Center'
+        console.log(`Received ${data.length} hubs from server.`);
+        
+        if (!data || data.length === 0) return PARKING_HUBS;
+        
+        return data.map(p => ({
+            id: p.overpassId || p._id,
+            name: p.name,
+            price: `$${p.pricePerHour.toFixed(2)}/hr`,
+            slots: p.availableSlots,
+            lat: p.latitude,
+            lng: p.longitude,
+            addr: p.location
         }));
-    } catch (err) { return PARKING_HUBS; }
+    } catch (err) { 
+        console.error("Discovery API Error:", err);
+        return PARKING_HUBS; 
+    }
 }
 
 function showResults(city, hubs) {

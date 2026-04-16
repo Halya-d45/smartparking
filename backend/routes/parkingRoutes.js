@@ -5,5 +5,6 @@ const parkingController = require("../controllers/parkingController");
 router.get("/", parkingController.getAllParking);
 router.get("/:id", parkingController.getParkingById);
 router.post("/sync", parkingController.syncWithOverpass);
+router.post("/discover", parkingController.discoverNearby);
 
 module.exports = router;

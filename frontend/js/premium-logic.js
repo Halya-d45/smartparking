@@ -800,87 +800,10 @@ function initUI() {
     }
 }
 
-function init3DBackground() {
-    const container = document.getElementById('dashboard-3d-bg');
-    if (!container) return;
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    container.appendChild(renderer.domElement);
-
-    // Dynamic car-like cubes
-    const cars = [];
-    const carGroup = new THREE.Group();
-    scene.add(carGroup);
-
-    const colors = [0x3b82f6, 0x6366f1, 0xec4899, 0x14b8a6];
-
-    for (let i = 0; i < 40; i++) {
-        const geometry = new THREE.BoxGeometry(0.8, 0.4, 0.4);
-        const material = new THREE.MeshPhongMaterial({ 
-            color: colors[Math.floor(Math.random() * colors.length)],
-            transparent: true,
-            opacity: 0.8
-        });
-        const car = new THREE.Mesh(geometry, material);
-        
-        // Random start pos
-        car.position.set(
-            (Math.random() - 0.5) * 40,
-            (Math.random() - 0.5) * 40,
-            (Math.random() - 0.5) * 10 - 20
-        );
-        
-        // Speed and lane
-        car.userData = {
-            speed: 0.05 + Math.random() * 0.1,
-            direction: Math.random() > 0.5 ? 1 : -1
-        };
-        
-        carGroup.add(car);
-        cars.push(car);
-    }
-
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(1, 1, 2);
-    scene.add(light);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-
-    camera.position.z = 5;
-
-    function animate() {
-        requestAnimationFrame(animate);
-        
-        cars.forEach(car => {
-            car.position.x += car.userData.speed * car.userData.direction;
-            
-            // Boundary reset
-            if (car.position.x > 25) car.position.x = -25;
-            if (car.position.x < -25) car.position.x = 25;
-            
-            // Subtle hover
-            car.position.y += Math.sin(Date.now() * 0.001 + car.position.x) * 0.005;
-        });
-
-        carGroup.rotation.y += 0.001;
-        renderer.render(scene, camera);
-    }
-
-    animate();
-
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-}
 
 window.addEventListener('DOMContentLoaded', () => { 
     initTabs(); 
     initMap(); 
     initProfile(); 
     initUI();
-    init3DBackground();
 });

@@ -16,10 +16,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="css/premium.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <style>
+        #dashboard-3d-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -10;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+    </style>
 </head>
 
 <body class="bg-background min-h-screen flex items-center justify-center p-6">
-    <div class="max-w-5xl w-full flex flex-col md:flex-row gap-12 animate-fade-in">
+    <div id="dashboard-3d-bg"></div>
+    <div class="relative z-10 max-w-5xl w-full flex flex-col md:flex-row gap-12 animate-fade-in">
         <!-- Left: Summary -->
         <div class="flex-1">
             <div class="flex items-center gap-4 mb-10">
@@ -295,6 +309,8 @@
             }
         });
     </script>
+    </div>
+    <script src="js/three-bg.js"></script>
 </body>
 
 </html>

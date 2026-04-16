@@ -10,6 +10,7 @@ const parkingRoutes = require("./routes/parkingRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const savedRoutes = require("./routes/savedRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/api/parking", parkingRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/saved", savedRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/user", userRoutes);
 
 app.get("/health", (req, res) => res.status(200).send("OK"));
 app.use(express.static(path.join(__dirname,"../frontend")));

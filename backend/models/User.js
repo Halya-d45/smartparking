@@ -10,6 +10,11 @@ required:true
 email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     phone: { type: String },
+    vehicles: [{
+        model: String,
+        plate: String,
+        type: { type: String, default: 'car' }
+    }],
     role: { type: String, enum: ["user", "admin"], default: "user" },
     createdAt: { type: Date, default: Date.now }
 

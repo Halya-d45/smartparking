@@ -62,7 +62,7 @@ function initTabs() {
 
             if (target === 'map-view') {
                 if (!map) initMap();
-                else map.invalidateSize();
+                setTimeout(() => map.invalidateSize(), 300);
             }
             if (target === 'my-bookings') fetchBookings();
             if (target === 'saved-slots') fetchSavedSlots();

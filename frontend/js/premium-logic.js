@@ -475,11 +475,9 @@ if (editProfileForm) {
     });
 }
 
-// UI Enhancements: Sidebar & Theme
+// UI Enhancements: Top Nav & Mobile Bottom Bar
 function initUI() {
     const themeToggle = document.getElementById('theme-toggle');
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    const sidebar = document.getElementById('sidebar');
 
     // Theme Logic
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -491,21 +489,9 @@ function initUI() {
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             showToast(`Switched to ${isDark ? 'Dark' : 'Light'} Mode`, 'info');
             if (map) {
-                // Leaflet doesn't automatically invert tiles, but our CSS filter does.
-                // We just trigger a resize to ensure it looks good.
-                setTimeout(() => map.invalidateSize(), 500);
+                setTimeout(() => map.invalidateSize(), 300);
             }
         };
-    }
-
-    // Mobile Sidebar
-    if (sidebarToggle && sidebar) {
-        sidebarToggle.onclick = (e) => {
-            e.stopPropagation();
-            sidebar.classList.toggle('sidebar-open');
-        };
-        document.addEventListener('click', () => sidebar.classList.remove('sidebar-open'));
-        sidebar.onclick = (e) => e.stopPropagation();
     }
 }
 

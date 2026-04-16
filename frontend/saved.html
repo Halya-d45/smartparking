@@ -3,151 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saved Slots | Smart Parking</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/design-system.css">
-    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
+    <title>Saved Places | Smart Parking Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        background: { light: "#f8fafc", dark: "#0f172a" },
+                        primary: "#3b82f6"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        #dashboard-3d-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -10; opacity: 0.15; pointer-events: none; }
+        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4); }
+        .dark .glass-card { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
 </head>
-<body class="dashboard-page gradient-bg">
+<body class="bg-white dark:bg-[#0f172a] min-h-screen text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div id="dashboard-3d-bg"></div>
 
-<nav class="navbar glass-card">
-    <div class="logo" onclick="window.location.href='dashboard.html'" style="cursor:pointer">
-        <div class="logo-icon"><i class="fas fa-parking"></i></div>
-        <span class="gradient-text">Smart Parking</span>
-    </div>
-    <div class="nav-links">
-        <a href="dashboard.html">Map View</a>
-        <a href="bookings.html">My Bookings</a>
-        <a href="saved.html" class="active">Saved Slots</a>
-        <a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a>
-        <button class="btn-premium btn-sm" onclick="logout()">Logout</button>
-    </div>
-</nav>
-
-<div class="app-container">
-    <header class="dashboard-header animate-fade">
-        <div class="welcome-text">
-            <h1>Your <span class="gradient-text">Saved Places</span></h1>
-            <p>Quick access to your most used parking spots.</p>
-        </div>
-    </header>
-
-    <main class="saved-grid animate-fade" id="savedContainer">
-        <div class="loader">Loading your favorites...</div>
-    </main>
-</div>
-
-<style>
-.saved-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 24px;
-    margin-top: 20px;
-}
-.navbar {
-    margin: 0;
-    border-radius: 0;
-    padding: 12px 60px;
-}
-.dashboard-header {
-    margin: 40px 0;
-}
-</style>
-
-<script src="js/config.js"></script>
-<script src="js/auth.js"></script>
-<script>
-    async function loadSaved() {
-        const container = document.getElementById("savedContainer");
-        const token = localStorage.getItem("token");
-        
-        let apiData = [];
-        let guestData = JSON.parse(localStorage.getItem("guest_saved") || "[]");
-
-        if (token) {
-            try {
-                const res = await fetch(`${CONFIG.API_BASE}/saved`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (res.ok) apiData = await res.json();
-            } catch (err) {
-                console.warn("API load failed, using local:", err);
-            }
-        }
-
-        // Merge unique
-        const combined = [...guestData];
-        apiData.forEach(p => {
-            if (!combined.find(c => c.parkingId === p.parkingId)) {
-                combined.push(p);
-            }
-        });
-        
-        if (combined.length === 0) {
-            container.innerHTML = `
-                <div class="glass-card empty-state-container w-100" style="grid-column: 1/-1; padding: 60px; text-align: center;">
-                    <i class="fas fa-bookmark" style="font-size: 48px; color: var(--text-muted); margin-bottom: 20px;"></i>
-                    <h3>No Saved Places Yet</h3>
-                    <p>Search for parking on the Map and click the heart icon to save it here.</p>
-                    <button class="btn-premium mt-4" onclick="window.location.href='dashboard.html'">Go to Map</button>
+    <!-- Premium Top Navigation -->
+    <nav class="fixed top-0 left-0 right-0 h-24 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl border-b border-black/5 dark:border-white/5 z-[60] transition-all duration-300">
+        <div class="max-w-[1700px] mx-auto h-full px-8 flex items-center justify-between">
+            <div class="flex items-center space-x-12">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-600/30">
+                        <i class="fas fa-parking text-white text-xl"></i>
+                    </div>
+                    <div class="hidden sm:block">
+                        <h1 class="text-xl font-black text-slate-800 dark:text-white leading-tight">SmartPark</h1>
+                        <p class="text-[10px] uppercase tracking-[0.2em] font-extrabold text-blue-500">Premium</p>
+                    </div>
                 </div>
-            `;
-            return;
-        }
-        
-        container.innerHTML = "";
-        combined.forEach(p => {
-            const card = document.createElement("div");
-            card.className = "glass-card parking-item animate-fade";
-            card.innerHTML = `
-                <div class="parking-info">
-                    <div class="item-header">
-                        <h4>${p.name}</h4>
-                        <button class="save-btn active" onclick="removeSaved('${p.parkingId}', this)">
+
+                <div class="hidden lg:flex items-center space-x-2 bg-gray-100/50 dark:bg-white/5 p-1.5 rounded-2xl border border-black/5 dark:border-white/5">
+                    <button onclick="location.href='dashboard.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-map-location-dot"></i> <span class="font-bold text-sm">Explore</span>
+                    </button>
+                    <button onclick="location.href='bookings.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-calendar-check"></i> <span class="font-bold text-sm">Bookings</span>
+                    </button>
+                    <button onclick="location.href='saved.html'" class="px-6 py-3 rounded-xl transition-all bg-blue-600 text-white shadow-xl shadow-blue-500/20 flex items-center gap-3">
+                        <i class="fas fa-bookmark"></i> <span class="font-bold text-sm">Saved</span>
+                    </button>
+                    <button onclick="location.href='wallet.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-wallet"></i> <span class="font-bold text-sm">Wallet</span>
+                    </button>
+                    <button onclick="location.href='profile.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-user-circle"></i> <span class="font-bold text-sm">Profile</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-6">
+                <button id="themeToggle" class="w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-2xl text-slate-400 font-bold transition-all hover:text-blue-500">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:block"></i>
+                </button>
+                <div class="flex items-center space-x-3 bg-slate-900 text-white px-5 py-2.5 rounded-2xl cursor-pointer hover:bg-slate-800 transition-all border border-white/5" id="user-pill-global">
+                    <div class="w-8 h-8 rounded-xl bg-blue-500 flex items-center justify-center font-black text-xs text-white" id="nav-user-initials">AJ</div>
+                    <span class="text-xs font-black tracking-tight" id="nav-user-name">Alex Johnson</span>
+                    <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-[1700px] mx-auto pt-40 px-8 relative z-10">
+        <header class="mb-12">
+            <h1 class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">Your <span class="text-blue-600">Saved Places</span></h1>
+            <p class="text-gray-500 dark:text-gray-400 font-bold mt-2">Quick access to your preferred parking hubs.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="savedContainer">
+            <!-- Dynamically Loaded -->
+            <div class="col-span-full py-20 text-center text-gray-400 animate-pulse font-black uppercase text-xs tracking-widest">
+                Syncing your favorites...
+            </div>
+        </div>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/three-bg.js"></script>
+    <script>
+        async function loadSaved() {
+            const container = document.getElementById("savedContainer");
+            const token = localStorage.getItem("token");
+            
+            let apiData = [];
+            let guestData = JSON.parse(localStorage.getItem("guest_saved") || "[]");
+
+            if (token) {
+                try {
+                    const res = await fetch(`${CONFIG.API_BASE}/saved`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.ok) apiData = await res.json();
+                } catch (err) {}
+            }
+
+            const combined = [...guestData];
+            apiData.forEach(p => {
+                if (!combined.find(c => (c.parkingId === p.parkingId || c.id === p.id))) {
+                    combined.push(p);
+                }
+            });
+            
+            if (combined.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full glass-card p-20 rounded-[3rem] text-center border-dashed border-2 border-slate-200 dark:border-white/10">
+                        <i class="fas fa-bookmark text-6xl text-slate-100 dark:text-slate-800 mb-8 block"></i>
+                        <h2 class="text-2xl font-black text-slate-900 dark:text-white mb-2">No Saved Places Yet</h2>
+                        <p class="text-gray-500 mb-8 max-w-sm mx-auto">Click the heart icon on any parking hub in the Map view to save it here for fast access.</p>
+                        <button class="px-8 py-4 bg-blue-600 text-white rounded-2xl font-black tracking-widest uppercase text-xs shadow-xl shadow-blue-600/20" onclick="window.location.href='dashboard.html'">Go to Map View</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = combined.map(p => `
+                <div class="glass-card p-8 rounded-[2.5rem] relative group hover:scale-[1.02] transition-all duration-500 overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-blue-500/10 transition-colors"></div>
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/40 text-blue-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+                            <i class="fas fa-parking"></i>
+                        </div>
+                        <button onclick="removeSaved('${p.parkingId || p.id}', this, event)" class="w-10 h-10 rounded-full glass-card flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm">
                             <i class="fas fa-heart"></i>
                         </button>
                     </div>
-                    <p><i class="fas fa-map-marker-alt"></i> ${p.location}</p>
-                    <div class="parking-meta">
-                        <span class="slots-count">Lat: ${p.latitude.toFixed(4)}, Lon: ${p.longitude.toFixed(4)}</span>
-                    </div>
-                    <button class="btn-premium btn-sm w-100 mt-2" onclick="window.location.href='parking-details.html?id=${p.parkingId}'">Book Now</button>
+                    <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2">${p.name}</h3>
+                    <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-6 flex items-center gap-2">
+                        <i class="fas fa-map-marker-alt text-blue-500"></i> ${p.location}
+                    </p>
+                    <button class="w-full py-4 bg-slate-900 dark:bg-blue-600 text-white font-black rounded-2xl text-xs uppercase tracking-widest hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20" onclick="window.location.href='dashboard.html'">Book This Slot</button>
                 </div>
-            `;
-            container.appendChild(card);
-        });
-    }
-
-    async function removeSaved(id, btn) {
-        const token = localStorage.getItem("token");
-        
-        // Local removal
-        let localSaved = JSON.parse(localStorage.getItem("guest_saved") || "[]");
-        localSaved = localSaved.filter(s => s.parkingId !== id);
-        localStorage.setItem("guest_saved", JSON.stringify(localSaved));
-
-        // API removal
-        if (token) {
-            try {
-                await fetch(`${CONFIG.API_BASE}/saved/toggle`, {
-                    method: "POST",
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ parkingId: id })
-                });
-            } catch (err) {
-                console.warn("API removal failed, but removed locally.");
-            }
+            `).join('');
         }
-        
-        btn.closest(".parking-item").classList.add("fade-out");
-        setTimeout(loadSaved, 300);
-    }
 
-    loadSaved();
-</script>
+        async function removeSaved(id, btn, e) {
+            e.stopPropagation();
+            const token = localStorage.getItem("token");
+            let localSaved = JSON.parse(localStorage.getItem("guest_saved") || "[]");
+            localSaved = localSaved.filter(s => (s.parkingId !== id && s.id !== id));
+            localStorage.setItem("guest_saved", JSON.stringify(localSaved));
+
+            if (token) {
+                try {
+                    await fetch(`${CONFIG.API_BASE}/saved/toggle`, {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ parkingId: id })
+                    });
+                } catch (err) {}
+            }
+            
+            btn.closest(".glass-card").style.opacity = '0';
+            btn.closest(".glass-card").style.transform = 'scale(0.9)';
+            setTimeout(loadSaved, 400);
+        }
+
+        // Theme Linkage
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+        document.getElementById('themeToggle').onclick = () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        };
+
+        // UI Initialization
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user && user.name) {
+            document.getElementById('nav-user-name').innerText = user.name.split(' ')[0];
+            document.getElementById('nav-user-initials').innerText = (user.name.substring(0, 2) || "US").toUpperCase();
+        }
+
+        loadSaved();
+    </script>
 </body>
 </html>

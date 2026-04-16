@@ -1,19 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Slot - SmartPark Premium</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<style>
+    body { font-family: 'Inter', sans-serif; background: #0f172a; }
+    #dashboard-3d-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -10; opacity: 0.15; pointer-events: none; }
+</style>
+</head>
+<body class="bg-[#0f172a] min-h-screen text-slate-100">
+    <div id="dashboard-3d-bg"></div>
 
-    <!-- Global Styles & Fonts -->
-    <link rel="stylesheet" href="css/style.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Premium Top Navigation -->
+    <nav class="fixed top-0 left-0 right-0 h-24 bg-slate-900/60 backdrop-blur-2xl border-b border-white/5 z-[60] transition-all duration-300">
+        <div class="max-w-[1700px] mx-auto h-full px-8 flex items-center justify-between">
+            <div class="flex items-center space-x-12">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-600/30">
+                        <i class="fas fa-parking text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-black text-white leading-tight">SmartPark</h1>
+                        <p class="text-[10px] uppercase tracking-[0.2em] font-extrabold text-blue-500">Premium</p>
+                    </div>
+                </div>
+                <div class="hidden lg:flex items-center space-x-2 bg-white/5 p-1.5 rounded-2xl border border-white/5">
+                    <button onclick="location.href='dashboard.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-map-location-dot"></i> <span class="font-bold text-sm">Explore</span>
+                    </button>
+                    <button onclick="location.href='bookings.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-calendar-check"></i> <span class="font-bold text-sm">Bookings</span>
+                    </button>
+                    <button onclick="location.href='saved.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-bookmark"></i> <span class="font-bold text-sm">Saved</span>
+                    </button>
+                    <button onclick="location.href='wallet.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-wallet"></i> <span class="font-bold text-sm">Wallet</span>
+                    </button>
+                    <button onclick="location.href='profile.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-user-circle"></i> <span class="font-bold text-sm">Profile</span>
+                    </button>
+                </div>
+            </div>
+            <button onclick="window.history.back()" class="px-6 py-3 bg-white/5 border border-white/10 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-white/20 transition-all">Back to Hubs</button>
+        </div>
+    </nav>
 
-    <style>
-        body {
-            background: var(--bg-deep);
-            padding-bottom: 40px;
-        }
+    <div class="selection-container pt-32">
 
         .selection-container {
             max-width: 1000px;

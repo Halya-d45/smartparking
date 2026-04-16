@@ -60,27 +60,48 @@
 <body class="bg-white dark:bg-darkBg min-h-screen text-slate-900 dark:text-slate-100">
     <div id="dashboard-3d-bg"></div>
 
-    <!-- Top Nav -->
-    <nav class="fixed top-0 left-0 right-0 h-20 glass-card z-50 flex items-center justify-between px-8">
-        <div class="flex items-center gap-3 cursor-pointer" onclick="location.href='dashboard.html'">
-            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-                <i class="fas fa-parking"></i>
-            </div>
-            <span class="text-xl font-black tracking-tighter">Smart<span class="text-blue-600">Wallet</span></span>
-        </div>
-
-        <div class="flex items-center gap-6">
-            <button id="themeToggle" class="w-12 h-12 rounded-2xl glass-card flex items-center justify-center hover:scale-110 transition-all">
-                <i class="fas fa-moon dark:hidden"></i>
-                <i class="fas fa-sun hidden dark:block text-yellow-500"></i>
-            </button>
-            <div class="flex items-center gap-3">
-                <div class="text-right">
-                    <p class="text-[10px] font-black uppercase text-gray-400">Total Balance</p>
-                    <p class="text-sm font-black text-blue-600">$452.80</p>
+    <!-- Premium Top Navigation -->
+    <nav class="fixed top-0 left-0 right-0 h-24 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl border-b border-black/5 dark:border-white/5 z-[60] transition-all duration-300">
+        <div class="max-w-[1700px] mx-auto h-full px-8 flex items-center justify-between">
+            <div class="flex items-center space-x-12">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-600/30">
+                        <i class="fas fa-parking text-white text-xl"></i>
+                    </div>
+                    <div class="hidden sm:block">
+                        <h1 class="text-xl font-black text-slate-800 dark:text-white leading-tight">SmartPark</h1>
+                        <p class="text-[10px] uppercase tracking-[0.2em] font-extrabold text-blue-500">Premium</p>
+                    </div>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-700">
-                    <i class="fas fa-user text-slate-400"></i>
+
+                <div class="hidden lg:flex items-center space-x-2 bg-gray-100/50 dark:bg-white/5 p-1.5 rounded-2xl border border-black/5 dark:border-white/5">
+                    <button onclick="location.href='dashboard.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-map-location-dot"></i> <span class="font-bold text-sm">Explore</span>
+                    </button>
+                    <button onclick="location.href='bookings.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-calendar-check"></i> <span class="font-bold text-sm">Bookings</span>
+                    </button>
+                    <button onclick="location.href='saved.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-bookmark"></i> <span class="font-bold text-sm">Saved</span>
+                    </button>
+                    <button onclick="location.href='wallet.html'" class="px-6 py-3 rounded-xl transition-all bg-blue-600 text-white shadow-xl shadow-blue-500/20 flex items-center gap-3">
+                        <i class="fas fa-wallet"></i> <span class="font-bold text-sm">Wallet</span>
+                    </button>
+                    <button onclick="location.href='profile.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-user-circle"></i> <span class="font-bold text-sm">Profile</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-6">
+                <button id="themeToggle" class="w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-2xl text-slate-400 font-bold transition-all hover:text-blue-500">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:block"></i>
+                </button>
+                <div id="user-pill" class="flex items-center space-x-3 bg-slate-900 text-white px-5 py-2.5 rounded-2xl cursor-pointer hover:bg-slate-800 transition-all border border-white/5 shadow-2xl">
+                    <div class="w-8 h-8 rounded-xl bg-blue-500 flex items-center justify-center font-black text-xs text-white" id="nav-user-initials">AJ</div>
+                    <span class="text-xs font-black tracking-tight" id="nav-user-name">Alex Johnson</span>
+                    <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
                 </div>
             </div>
         </div>
@@ -216,6 +237,8 @@
         const user = JSON.parse(localStorage.getItem('user'));
         if (user && user.name) {
             document.getElementById('cardHolder').innerText = user.name;
+            document.getElementById('nav-user-name').innerText = user.name.split(' ')[0];
+            document.getElementById('nav-user-initials').innerText = (user.name.substring(0, 2) || "US").toUpperCase();
         }
     </script>
 </body>

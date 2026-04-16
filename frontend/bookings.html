@@ -1,102 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Bookings | Smart Parking</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/design-system.css">
-    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
+    <title>My Bookings | Smart Parking Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-    <style>
-        #dashboard-3d-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -10;
-            opacity: 0.15;
-            pointer-events: none;
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        background: { light: "#f8fafc", dark: "#0f172a" },
+                        primary: "#3b82f6"
+                    }
+                }
+            }
         }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        #dashboard-3d-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -10; opacity: 0.15; pointer-events: none; }
+        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4); }
+        .dark .glass-card { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-
-<body class="bookings-page gradient-bg">
+<body class="bg-white dark:bg-[#0f172a] min-h-screen text-slate-900 dark:text-slate-100 transition-colors duration-300">
     <div id="dashboard-3d-bg"></div>
-    <div class="relative z-10">
 
-    <nav class="navbar glass-card">
-        <div class="logo logo-clickable" onclick="window.location.href='dashboard.html'" style="cursor:pointer">
-            <div class="logo-icon"><i class="fas fa-parking"></i></div>
-            <span class="gradient-text">Smart Parking</span>
-        </div>
-        <div class="nav-links">
-            <a href="dashboard.html">Map View</a>
-            <a href="bookings.html" class="active">My Bookings</a>
-            <a href="saved.html">Saved Slots</a>
-            <a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a>
-            <button class="btn-premium btn-sm" onclick="logout()">Logout</button>
+    <!-- Premium Top Navigation -->
+    <nav class="fixed top-0 left-0 right-0 h-24 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl border-b border-black/5 dark:border-white/5 z-[60] transition-all duration-300">
+        <div class="max-w-[1700px] mx-auto h-full px-8 flex items-center justify-between">
+            <div class="flex items-center space-x-12">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-600/30">
+                        <i class="fas fa-parking text-white text-xl"></i>
+                    </div>
+                    <div class="hidden sm:block">
+                        <h1 class="text-xl font-black text-slate-800 dark:text-white leading-tight">SmartPark</h1>
+                        <p class="text-[10px] uppercase tracking-[0.2em] font-extrabold text-blue-500">Premium</p>
+                    </div>
+                </div>
+
+                <div class="hidden lg:flex items-center space-x-2 bg-gray-100/50 dark:bg-white/5 p-1.5 rounded-2xl border border-black/5 dark:border-white/5">
+                    <button onclick="location.href='dashboard.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-map-location-dot"></i> <span class="font-bold text-sm">Explore</span>
+                    </button>
+                    <button onclick="location.href='bookings.html'" class="px-6 py-3 rounded-xl transition-all bg-blue-600 text-white shadow-xl shadow-blue-500/20 flex items-center gap-3">
+                        <i class="fas fa-calendar-check"></i> <span class="font-bold text-sm">Bookings</span>
+                    </button>
+                    <button onclick="location.href='saved.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-bookmark"></i> <span class="font-bold text-sm">Saved</span>
+                    </button>
+                    <button onclick="location.href='wallet.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-wallet"></i> <span class="font-bold text-sm">Wallet</span>
+                    </button>
+                    <button onclick="location.href='profile.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
+                        <i class="fas fa-user-circle"></i> <span class="font-bold text-sm">Profile</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-6">
+                <button id="themeToggle" class="w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-2xl text-slate-400 font-bold transition-all hover:text-blue-500">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:block"></i>
+                </button>
+                <div class="flex items-center space-x-3 bg-slate-900 text-white px-5 py-2.5 rounded-2xl cursor-pointer hover:bg-slate-800 transition-all border border-white/5" id="user-pill-global">
+                    <div class="w-8 h-8 rounded-xl bg-blue-500 flex items-center justify-center font-black text-xs text-white" id="nav-user-initials">AJ</div>
+                    <span class="text-xs font-black tracking-tight" id="nav-user-name">Alex Johnson</span>
+                    <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <div class="app-container content-section animate-fade">
-        <header class="section-header">
-            <h1>My <span class="gradient-text">Bookings</span></h1>
-            <p>Manage your active and past parking sessions</p>
+    <main class="max-w-[1700px] mx-auto pt-40 px-8 relative z-10">
+        <header class="mb-12">
+            <h1 class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">My <span class="text-blue-600">Reservations</span></h1>
+            <p class="text-gray-500 dark:text-gray-400 font-bold mt-2">Manage your active and completed parking history.</p>
         </header>
 
-        <div class="glass-card table-card">
-            <table class="premium-table">
+        <div class="glass-card rounded-[3rem] overflow-hidden border border-black/5 dark:border-white/5">
+            <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr>
-                        <th>Parking Lot</th>
-                        <th>Slot No.</th>
-                        <th>Date</th>
-                        <th>Duration</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                    <tr class="bg-gray-50 dark:bg-white/5 border-b border-black/5 dark:border-white/5">
+                        <th class="px-10 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Hub Name</th>
+                        <th class="px-10 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Spot</th>
+                        <th class="px-10 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Date</th>
+                        <th class="px-10 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Amount</th>
+                        <th class="px-10 py-6 text-xs font-black text-gray-400 uppercase tracking-widest text-center">Receipt</th>
                     </tr>
                 </thead>
                 <tbody id="bookingsTable">
-                    </tbody>
+                    <tr class="animate-pulse">
+                        <td colspan="5" class="px-10 py-20 text-center text-gray-400 font-black uppercase text-xs tracking-widest">Fetching your parking history...</td>
+                    </tr>
+                </tbody>
             </table>
-            <div id="emptyState" class="empty-state-full" style="display: none;">
-                <i class="fas fa-calendar-times"></i>
-                <h3>No Bookings Found</h3>
-                <p>You haven't made any bookings yet. Find a spot and book it!</p>
-                <a href="dashboard.html" class="btn-premium mt-4">Find Parking</a>
-            </div>
         </div>
-    </div>
+    </main>
 
-    <style>
-        .content-section { margin-top: 40px; }
-        .section-header { margin-bottom: 30px; }
-        .section-header h1 { font-size: 32px; margin-bottom: 8px; }
-        .table-card { padding: 0; overflow: hidden; }
-        .premium-table { width: 100%; border-collapse: collapse; }
-        .premium-table th {
-            text-align: left; padding: 20px;
-            background: rgba(255, 255, 255, 0.03);
-            font-size: 13px; color: var(--text-muted);
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        .premium-table td { padding: 20px; border-bottom: 1px solid var(--line-soft); font-size: 14px; }
-        .status-badge { padding: 6px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; }
-        .status-confirmed { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-        .status-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
-        .status-failed { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-        .empty-state-full { text-align: center; padding: 60px; color: var(--text-muted); }
-        .empty-state-full i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
-    </style>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/three-bg.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         const user = JSON.parse(localStorage.getItem("user"));
 
@@ -109,46 +120,31 @@
                 });
                 const bookings = await res.json();
                 const table = document.getElementById("bookingsTable");
-                const empty = document.getElementById("emptyState");
 
                 if (bookings.length === 0) {
-                    empty.style.display = "block";
-                    table.parentElement.style.display = "none";
+                    table.innerHTML = `<tr><td colspan="5" class="px-10 py-20 text-center text-gray-500 font-bold uppercase text-xs">No bookings found in your history.</td></tr>`;
                     return;
                 }
 
-                table.innerHTML = bookings.map(b => {
-                    const isPaid = b.isPaid || b.paymentStatus === 'Confirmed';
-                    const status = b.paymentStatus || (isPaid ? 'Confirmed' : 'Pending');
-                    const statusClass = isPaid ? 'status-confirmed' : (status === 'Failed' ? 'status-failed' : 'status-pending');
-
-                    return `
-                        <tr class="animate-fade">
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <div class="logo-icon" style="width: 32px; height: 32px; font-size: 14px;"><i class="fas fa-parking"></i></div>
-                                    <strong>${b.parkingId}</strong>
-                                </div>
-                            </td>
-                            <td><span class="badge-custom" style="background: rgba(59, 130, 246, 0.1); padding: 4px 12px; border-radius: 6px; color: var(--accent-blue); font-weight: 700;">${b.slot}</span></td>
-                            <td>${new Date(b.date).toLocaleDateString()}</td>
-                            <td>${b.duration} Hours</td>
-                            <td>₹ ${b.totalAmount?.toFixed(2) || '0.00'}</td>
-                            <td><span class="status-badge ${statusClass}"><i class="fas fa-${isPaid ? 'check-circle' : (status === 'Failed' ? 'times-circle' : 'clock')}"></i> ${status}</span></td>
-                            <td>
-                                ${isPaid ? '' : `<button class="btn-premium btn-sm" onclick='goToPayment("${b._id}", "${b.parkingId}", "${b.slot}", "${b.duration}", "${b.date}", "${b.ratePerHour}", "${b.totalAmount}")'><i class="fas fa-credit-card"></i> Pay</button>`}
-                                <button class="btn-premium btn-sm" ${isPaid ? '' : 'disabled'} onclick='generateReceipt(${JSON.stringify(b)})'>
-                                    <i class="fas fa-file-download"></i> Receipt
-                                </button>
-                            </td>
-                        </tr>`;
-                }).join('');
+                table.innerHTML = bookings.map(b => `
+                    <tr class="border-b border-black/5 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors duration-300">
+                        <td class="px-10 py-8 font-black text-slate-800 dark:text-white flex items-center gap-4">
+                            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 text-blue-600 rounded-xl flex items-center justify-center text-sm">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            ${b.parkingId}
+                        </td>
+                        <td class="px-10 py-8"><span class="px-4 py-2 bg-blue-500/10 text-blue-600 font-black text-xs rounded-lg">${b.slot}</span></td>
+                        <td class="px-10 py-8 text-sm font-bold text-gray-500 dark:text-gray-400">${new Date(b.date).toLocaleDateString()}</td>
+                        <td class="px-10 py-8"><span class="text-lg font-black text-slate-900 dark:text-white">$${b.totalAmount?.toFixed(2) || '0.00'}</span></td>
+                        <td class="px-10 py-8 text-center">
+                            <button onclick='generateReceipt(${JSON.stringify(b)})' class="w-12 h-12 bg-slate-900 dark:bg-white dark:text-slate-900 text-white rounded-2xl hover:bg-blue-600 hover:text-white transition-all shadow-lg active:scale-95">
+                                <i class="fas fa-file-download"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
             } catch (err) { console.error(err); }
-        }
-
-        function goToPayment(bookingId, parkingLot, slotNumber, duration, date, ratePerHour, totalAmount) {
-            const params = new URLSearchParams({ bookingId, parkingLot, slotNumber, duration, date, ratePerHour, totalAmount });
-            window.location.href = `payment.html?${params.toString()}`;
         }
 
         async function generateReceipt(b) {
@@ -164,23 +160,28 @@
             doc.setTextColor(15, 23, 42);
             doc.setFontSize(12);
             doc.text(`Booking ID: ${b._id}`, 20, 60);
-            doc.text(`User: ${user.name}`, 20, 70);
-            doc.text(`Date: ${new Date(b.date).toLocaleString()}`, 20, 80);
+            doc.text(`User Name: ${user.name}`, 20, 70);
+            doc.text(`Date of Booking: ${new Date(b.date).toLocaleString()}`, 20, 80);
             doc.line(20, 90, 190, 90);
-            doc.setFont("helvetica", "bold");
-            doc.text("Parking Details", 20, 105);
-            doc.setFont("helvetica", "normal");
-            doc.text(`Parking Lot ID: ${b.parkingId}`, 20, 120);
-            doc.text(`Slot Number: ${b.slot}`, 20, 130);
-            doc.text(`Duration: ${b.duration} Hours`, 20, 140);
-            doc.setTextColor(16, 185, 129);
-            doc.text(`Status: CONFIRMED`, 20, 150);
+            doc.text(`Parking Hub: ${b.parkingId}`, 20, 120);
+            doc.text(`Selected Slot: ${b.slot}`, 20, 130);
+            doc.text(`Total Duration: ${b.duration} Hours`, 20, 140);
             doc.save(`Receipt_${b.slot}.pdf`);
+        }
+
+        // UI Linkage
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+        document.getElementById('themeToggle').onclick = () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        };
+
+        if (user && user.name) {
+            document.getElementById('nav-user-name').innerText = user.name.split(' ')[0];
+            document.getElementById('nav-user-initials').innerText = (user.name.substring(0, 2) || "US").toUpperCase();
         }
 
         loadBookings();
     </script>
-    </div>
-    <script src="js/three-bg.js"></script>
 </body>
 </html>

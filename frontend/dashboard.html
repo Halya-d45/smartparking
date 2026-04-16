@@ -21,6 +21,11 @@
     <link rel="stylesheet" href="css/premium.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <style>
+        .dark .text-slate-800 { color: #f8fafc !important; }
+        .dark .text-slate-900 { color: #ffffff !important; }
+        .dark .bg-white { background-color: #1e293b !important; }
+        .dark .glass-card { background: rgba(15, 23, 42, 0.7) !important; color: white !important; }
+        
         #dashboard-3d-bg {
             position: fixed;
             top: 0;
@@ -90,8 +95,7 @@
                         data-tab="saved-slots">
                         <i class="fas fa-bookmark"></i> <span class="font-bold text-sm">Saved</span>
                     </button>
-                    <button class="px-6 py-3 rounded-xl transition-all nav-link flex items-center gap-3"
-                        data-tab="payments">
+                    <button onclick="location.href='wallet.html'" class="px-6 py-3 rounded-xl transition-all nav-link flex items-center gap-3">
                         <i class="fas fa-wallet"></i> <span class="font-bold text-sm">Wallet</span>
                     </button>
                     <button class="px-6 py-3 rounded-xl transition-all nav-link flex items-center gap-3"

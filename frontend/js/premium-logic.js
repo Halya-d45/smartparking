@@ -792,10 +792,15 @@ function initUI() {
         themeToggle.onclick = () => {
             const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            showToast(`Switched to ${isDark ? 'Dark' : 'Light'} Mode`, 'info');
-            if (map) {
-                setTimeout(() => map.invalidateSize(), 300);
-            }
+            
+            // Force a repaint for complex overlays
+            document.body.style.opacity = '0.99';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+                if (map) map.invalidateSize();
+            }, 50);
+
+            showToast(`Theme: ${isDark ? 'Cyber Night' : 'Premium Day'}`, 'info');
         };
     }
 }

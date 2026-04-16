@@ -98,7 +98,18 @@ async function fetchBookings() {
         if (!token) throw new Error();
         const res = await fetch(`${API_BASE}/booking`, { headers: { 'Authorization': `Bearer ${token}` } });
         const data = await res.json();
-        userBookings = [...(data.bookings || []), ...localMockBookings];
+        
+        // Map backend fields to frontend format
+        const bookingsFromDB = (data.bookings || []).map(b => ({
+            id: b._id || b.id || "N/A",
+            hub: b.parkingHubName || "Public Hub",
+            addr: b.location || "City Center",
+            price: `$${(b.totalAmount || 0).toFixed(2)}`,
+            slot: b.slot,
+            status: b.isPaid ? 'CONFIRMED' : 'PENDING'
+        }));
+
+        userBookings = [...bookingsFromDB, ...localMockBookings];
         renderBookings(userBookings);
     } catch (err) {
         userBookings = localMockBookings;
@@ -364,7 +375,7 @@ function renderBookings(data) {
 }
 
 function downloadReceipt(bookingId) {
-    const booking = currentBookings.find(b => b.id === bookingId);
+    const booking = userBookings.find(b => b.id === bookingId);
     if (!booking) return;
 
     const receiptContent = `

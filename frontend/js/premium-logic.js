@@ -117,8 +117,17 @@ async function fetchSavedSlots() {
         const res = await fetch(`${API_BASE}/saved`, { headers: { 'Authorization': `Bearer ${token}` } });
         const data = await res.json();
         
+        // Map backend fields to frontend format
+        const savedFromDB = (data.saved || []).map(s => ({
+            id: s.parkingId,
+            name: s.name,
+            addr: s.location,
+            lat: s.latitude,
+            lng: s.longitude
+        }));
+
         // Merge backend and frontend mock saves without duplicates
-        const combined = [...data.saved];
+        const combined = [...savedFromDB];
         localSaved.forEach(ls => {
             if (!combined.some(s => s.id == ls.id || s.name === ls.name)) {
                 combined.push(ls);
@@ -182,13 +191,25 @@ async function saveSlot(hubId, e) {
     }
 
     try {
+        const hub = currentHubs.find(h => h.id == hubId) || PARKING_HUBS.find(h => h.id == hubId);
+        if (!hub) {
+            showToast("Hub details missing", "error");
+            return;
+        }
+
         const res = await fetch(`${API_BASE}/saved/toggle`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}` 
             },
-            body: JSON.stringify({ hubId })
+            body: JSON.stringify({ 
+                parkingId: String(hubId),
+                name: hub.name,
+                location: hub.addr || "City Center",
+                latitude: hub.lat,
+                longitude: hub.lng
+            })
         });
 
         if (res.ok) {
@@ -198,7 +219,7 @@ async function saveSlot(hubId, e) {
             icon.classList.toggle('text-red-500');
             showToast(isSaved ? "Removed from favorites" : "Saved to favorites", 'success');
         } else {
-            showToast("Failed to sync with database", "error");
+            showToast("Sync Error: " + res.status, "error");
         }
     } catch (err) {
         console.error(err);

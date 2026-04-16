@@ -37,6 +37,8 @@ exports.createBooking = async (req, res) => {
         const booking = new Booking({
             userId,
             parkingId: parking.overpassId || parkingId, // Use the ID from the created/found parking record
+            parkingHubName: parkingName || parking.name || "Public Parking",
+            location: location || parking.location || "City Center",
             slot: slot || "A-1",
             duration: parseInt(duration) || 2,
             ratePerHour,
@@ -61,8 +63,8 @@ exports.createBooking = async (req, res) => {
 
 exports.getUserBookings = async (req, res) => {
     try {
-        const bookings = await Booking.find({ userId: req.user.id });
-        res.json(bookings);
+        const bookings = await Booking.find({ userId: req.user.id }).sort({ date: -1 });
+        res.json({ bookings });
     } catch (err) {
         res.status(500).json({ error: "Fetch failed" });
     }

@@ -10,6 +10,8 @@ const bookingSchema = new mongoose.Schema({
         type: String, // Overpass ID
         required: true
     },
+    parkingHubName: String,
+    location: String,
     slot: String,
     duration: Number,
     ratePerHour: {

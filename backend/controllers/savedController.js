@@ -33,7 +33,7 @@ exports.toggleSave = async (req, res) => {
 exports.getSaved = async (req, res) => {
     try {
         const saved = await SavedParking.find({ userId: req.user.id }).sort({ createdAt: -1 });
-        res.json(saved);
+        res.json({ saved });
     } catch (err) {
         res.status(500).json({ error: "Failed to fetch saved places" });
     }

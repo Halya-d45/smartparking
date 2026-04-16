@@ -1,53 +1,111 @@
 /**
- * Smart Parking - Cinematic Video Background
- * Replaces procedural models with high-fidelity urban motion
+ * Smart Parking - Neon Pulse 3D Engine (Ver 4.0)
+ * Modern Cyber-City Automotive Animation
  */
 
-function initPremiumBackground() {
+function initNeonNight() {
     const container = document.getElementById('dashboard-3d-bg');
     if (!container) return;
 
-    // 1. Create Video Element
-    const video = document.createElement('video');
-    video.autoplay = true;
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
-    
-    // High-quality urban traffic loop (Pexels / Public Assets)
-    video.src = 'https://assets.mixkit.co/videos/preview/mixkit-car-lights-moving-on-a-busy-street-42283-large.mp4';
-    
-    video.style.position = 'fixed';
-    video.style.top = '50%';
-    video.style.left = '50%';
-    video.style.width = '100vw';
-    video.style.height = '100vh';
-    video.style.objectFit = 'cover';
-    video.style.transform = 'translate(-50%, -50%)';
-    video.style.zIndex = '-10';
-    video.style.opacity = '0.15'; // Subtle background
-    video.style.filter = 'grayscale(30%) contrast(120%)';
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
 
-    // 2. Add Dark/Themed Overlay
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100vw';
-    overlay.style.height = '100vh';
-    overlay.style.background = 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), transparent)';
-    overlay.style.zIndex = '-9';
-    overlay.style.pointerEvents = 'none';
+    // 1. Digital Road Grid (Blue Bloom)
+    const gridHelper = new THREE.GridHelper(300, 60, 0x1e40af, 0x0f172a);
+    gridHelper.position.y = -8;
+    gridHelper.material.opacity = 0.2;
+    gridHelper.material.transparent = true;
+    scene.add(gridHelper);
 
-    container.appendChild(video);
-    container.appendChild(overlay);
+    // 2. Glowing City Pillars
+    for (let i = 0; i < 50; i++) {
+        const height = 5 + Math.random() * 30;
+        const box = new THREE.Mesh(
+            new THREE.BoxGeometry(2, height, 2),
+            new THREE.MeshPhongMaterial({ 
+                color: 0x1e3a8a, 
+                transparent: true, 
+                opacity: 0.1,
+                emissive: 0x3b82f6,
+                emissiveIntensity: 0.2
+            })
+        );
+        box.position.set((Math.random() - 0.5) * 150, (height / 2) - 8, (Math.random() - 0.5) * 150);
+        scene.add(box);
+    }
 
-    // 3. Fallback to Image if Video Fails
-    video.onerror = () => {
-        container.style.backgroundImage = 'url("https://images.pexels.com/photos/307008/pexels-photo-307008.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2")';
-        container.style.backgroundSize = 'cover';
-        container.style.opacity = '0.1';
-    };
+    // 3. Neon Cars (Streamlined glowing shapes)
+    const cars = [];
+    const carColors = [0x3b82f6, 0x8b5cf6, 0xec4899, 0x10b981];
+
+    for (let i = 0; i < 60; i++) {
+        const car = new THREE.Group();
+        const color = carColors[Math.floor(Math.random() * carColors.length)];
+
+        // Main Glow Body
+        const body = new THREE.Mesh(
+            new THREE.CapsuleGeometry(0.3, 1.2, 4, 8),
+            new THREE.MeshStandardMaterial({ 
+                color: color, 
+                emissive: color, 
+                emissiveIntensity: 2,
+                metalness: 1,
+                roughness: 0
+            })
+        );
+        body.rotation.z = Math.PI / 2;
+        car.add(body);
+
+        // Headlight Beams
+        const light = new THREE.PointLight(0xffffff, 0.5, 10);
+        light.position.set(1, 0, 0);
+        car.add(light);
+
+        car.position.set(
+            (Math.random() - 0.5) * 150,
+            -7.5,
+            (Math.random() - 0.5) * 100
+        );
+
+        car.userData = {
+            speed: 0.2 + Math.random() * 0.4,
+            dir: Math.random() > 0.5 ? 1 : -1
+        };
+
+        if (car.userData.dir === -1) car.rotation.y = Math.PI;
+
+        scene.add(car);
+        cars.push(car);
+    }
+
+    // Camera & Lighting
+    scene.add(new THREE.AmbientLight(0xffffff, 0.2));
+    camera.position.set(0, 15, 60);
+    camera.lookAt(0, 0, 0);
+
+    function animate() {
+        requestAnimationFrame(animate);
+        
+        cars.forEach(car => {
+            car.position.x += car.userData.speed * car.userData.dir;
+            if (car.position.x > 80) car.position.x = -80;
+            if (car.position.x < -80) car.position.x = 80;
+        });
+
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
 }
 
-document.addEventListener('DOMContentLoaded', initPremiumBackground);
+document.addEventListener('DOMContentLoaded', initNeonNight);

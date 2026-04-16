@@ -108,17 +108,7 @@
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script>
-        document.getElementById('login-btn').addEventListener('click', () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            if (email && password) {
-                // Mock redirect to the new dashboard
-                window.location.href = 'dashboard.html';
-            } else {
-                alert('Please enter your credentials');
-            }
-        });
+        document.getElementById('login-btn').addEventListener('click', login);
     </script>
 </body>
 

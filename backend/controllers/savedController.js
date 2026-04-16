@@ -13,6 +13,10 @@ exports.toggleSave = async (req, res) => {
             return res.json({ saved: false, message: "Removed from saved places" });
         }
 
+        if (!name || !location || latitude === undefined || longitude === undefined) {
+            return res.status(400).json({ error: "Missing metadata (coordinates/name) to save new place" });
+        }
+
         const newSaved = new SavedParking({
             userId,
             parkingId,
@@ -25,8 +29,8 @@ exports.toggleSave = async (req, res) => {
         await newSaved.save();
         res.status(201).json({ saved: true, message: "Added to saved places" });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Failed to toggle save" });
+        console.error("Toggle Save Error:", err);
+        res.status(500).json({ error: "Failed to toggle save: " + err.message });
     }
 };
 
@@ -35,7 +39,8 @@ exports.getSaved = async (req, res) => {
         const saved = await SavedParking.find({ userId: req.user.id }).sort({ createdAt: -1 });
         res.json({ saved });
     } catch (err) {
-        res.status(500).json({ error: "Failed to fetch saved places" });
+        console.error("Fetch Saved Error:", err);
+        res.status(500).json({ error: "Failed to fetch saved places: " + err.message });
     }
 };
 
@@ -63,6 +68,7 @@ exports.getStats = async (req, res) => {
             savedPlaces: savedPlaces || 0
         });
     } catch (err) {
-        res.status(500).json({ error: "Failed to fetch stats" });
+        console.error("Stats Error:", err);
+        res.status(500).json({ error: "Failed to fetch stats: " + err.message });
     }
 };

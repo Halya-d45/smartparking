@@ -9,9 +9,24 @@
     <link rel="stylesheet" href="css/design-system.css">
     <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <style>
+        #dashboard-3d-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -10;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+    </style>
 </head>
 
 <body class="bookings-page gradient-bg">
+    <div id="dashboard-3d-bg"></div>
+    <div class="relative z-10">
 
     <nav class="navbar glass-card">
         <div class="logo logo-clickable" onclick="window.location.href='dashboard.html'" style="cursor:pointer">
@@ -165,5 +180,7 @@
 
         loadBookings();
     </script>
+    </div>
+    <script src="js/three-bg.js"></script>
 </body>
 </html>

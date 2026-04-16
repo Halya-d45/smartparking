@@ -1,6 +1,6 @@
 /**
- * Smart Parking - 3D Traffic Background Engine
- * Uses Three.js to create a procedural smart city traffic flow
+ * Smart Parking - Cyber City 3D Engine (Ver 2.0)
+ * High-end digital traffic simulation with neon aesthetics
  */
 
 function init3DBackground() {
@@ -8,96 +8,116 @@ function init3DBackground() {
     if (!container) return;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     container.appendChild(renderer.domElement);
 
-    // Dynamic car-like cubes
-    const cars = [];
-    const carGroup = new THREE.Group();
-    scene.add(carGroup);
+    // 1. Digital Ground Grid
+    const gridColor = 0x3b82f6;
+    const gridHelper = new THREE.GridHelper(200, 40, gridColor, gridColor);
+    gridHelper.position.y = -10;
+    gridHelper.material.opacity = 0.1;
+    gridHelper.material.transparent = true;
+    scene.add(gridHelper);
 
-    // Premium Color Palette (Smart Tech Blues/Purples)
-    const colors = [0x3b82f6, 0x6366f1, 0x8b5cf6, 0x0ea5e9];
-
-    for (let i = 0; i < 45; i++) {
-        // Create a car body
-        const geometry = new THREE.BoxGeometry(1.2, 0.5, 0.6);
-        const material = new THREE.MeshPhongMaterial({ 
-            color: colors[Math.floor(Math.random() * colors.length)],
-            transparent: true,
-            opacity: 0.7,
-            shininess: 100
+    // 2. City Buildings (Ghost columns)
+    const buildingGroup = new THREE.Group();
+    for (let i = 0; i < 40; i++) {
+        const h = 5 + Math.random() * 20;
+        const geo = new THREE.BoxGeometry(2, h, 2);
+        const mat = new THREE.MeshPhongMaterial({ 
+            color: 0x1e293b, 
+            transparent: true, 
+            opacity: 0.05,
+            wireframe: true 
         });
-        const car = new THREE.Mesh(geometry, material);
+        const b = new THREE.Mesh(geo, mat);
+        b.position.set((Math.random() - 0.5) * 100, h/2 - 10, (Math.random() - 0.5) * 100);
+        buildingGroup.add(b);
+    }
+    scene.add(buildingGroup);
+
+    // 3. Smart Traffic (Cars with Neon Trails)
+    const cars = [];
+    const carColors = [0x3b82f6, 0x60a5fa, 0x93c5fd];
+    
+    for (let i = 0; i < 60; i++) {
+        const carGroup = new THREE.Group();
         
-        // Add "headlights" (small bright boxes)
-        const lightGeo = new THREE.BoxGeometry(0.1, 0.2, 0.1);
+        // Car Body
+        const bodyGeo = new THREE.BoxGeometry(1.4, 0.4, 0.6);
+        const bodyMat = new THREE.MeshPhongMaterial({ 
+            color: carColors[Math.floor(Math.random() * carColors.length)],
+            emissive: 0x1e3a8a,
+            emissiveIntensity: 0.5
+        });
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        carGroup.add(body);
+
+        // Headlights (Neon White)
+        const lightGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
         const lightMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
         const h1 = new THREE.Mesh(lightGeo, lightMat);
         const h2 = new THREE.Mesh(lightGeo, lightMat);
-        h1.position.set(0.6, 0, 0.2);
-        h2.position.set(0.6, 0, -0.2);
-        car.add(h1);
-        car.add(h2);
+        h1.position.set(0.7, 0, 0.2);
+        h2.position.set(0.7, 0, -0.2);
+        carGroup.add(h1);
+        carGroup.add(h2);
 
-        // Random starting volume
-        car.position.set(
-            (Math.random() - 0.5) * 60,
-            (Math.random() - 0.5) * 40,
-            (Math.random() - 0.5) * 15 - 25
-        );
+        // Tail Lights (Neon Red)
+        const tailMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+        const t1 = new THREE.Mesh(lightGeo, tailMat);
+        const t2 = new THREE.Mesh(lightGeo, tailMat);
+        t1.position.set(-0.7, 0, 0.2);
+        t2.position.set(-0.7, 0, -0.2);
+        carGroup.add(t1);
+        carGroup.add(t2);
+
+        // Initial Position
+        const zPos = (Math.random() - 0.5) * 60;
+        const xPos = (Math.random() - 0.5) * 100;
+        carGroup.position.set(xPos, -9.6, zPos);
         
-        // Motion metadata
-        car.userData = {
-            speed: 0.04 + Math.random() * 0.12,
-            direction: Math.random() > 0.5 ? 1 : -1,
-            floatOffset: Math.random() * Math.PI * 2
+        carGroup.userData = {
+            speed: 0.1 + Math.random() * 0.2,
+            dir: Math.random() > 0.5 ? 1 : -1
         };
-
-        // Align car to direction
-        if (car.userData.direction === -1) car.rotation.y = Math.PI;
         
-        carGroup.add(car);
-        cars.push(car);
+        if (carGroup.userData.dir === -1) carGroup.rotation.y = Math.PI;
+
+        scene.add(carGroup);
+        cars.push(carGroup);
     }
 
-    // Set up lighting for the 3D scene
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    mainLight.position.set(5, 5, 10);
-    scene.add(mainLight);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    // Lighting
+    const amb = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(amb);
+    const point = new THREE.PointLight(0x3b82f6, 1, 100);
+    point.position.set(10, 10, 10);
+    scene.add(point);
 
-    camera.position.z = 8;
+    camera.position.set(0, 5, 30);
+    camera.lookAt(0, 0, 0);
 
     function animate() {
         requestAnimationFrame(animate);
         
         cars.forEach(car => {
-            // Forward movement
-            car.position.x += car.userData.speed * car.userData.direction;
-            
-            // Loop navigation (Smart City continuous flow)
-            if (car.position.x > 35) car.position.x = -35;
-            if (car.position.x < -35) car.position.x = 35;
-            
-            // Subtle digital "hover" effect
-            car.position.y += Math.sin(Date.now() * 0.0015 + car.userData.floatOffset) * 0.008;
-            car.rotation.z = Math.sin(Date.now() * 0.001 + car.userData.floatOffset) * 0.05;
+            car.position.x += car.userData.speed * car.userData.dir;
+            if (car.position.x > 60) car.position.x = -60;
+            if (car.position.x < -60) car.position.x = 60;
         });
 
-        // Slow cinematic camera rotation
-        carGroup.rotation.y += 0.0003;
-        carGroup.rotation.x += 0.0001;
-        
+        gridHelper.position.z += 0.05;
+        if (gridHelper.position.z > 5) gridHelper.position.z = 0;
+
         renderer.render(scene, camera);
     }
 
     animate();
 
-    // Handle viewport changes
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -105,9 +125,4 @@ function init3DBackground() {
     });
 }
 
-// Global invocation if container exists
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init3DBackground);
-} else {
-    init3DBackground();
-}
+document.addEventListener('DOMContentLoaded', init3DBackground);

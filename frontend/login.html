@@ -16,6 +16,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/premium.css">
 
+    <!-- 3D Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -28,9 +32,21 @@
             }
         }
     </script>
+    <style>
+        #vanta-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+    </style>
 </head>
 
-<body class="bg-background min-h-screen flex items-center justify-center p-6">
+<body class="bg-background min-h-screen flex items-center justify-center p-6 overflow-hidden">
+    <div id="vanta-canvas"></div>
     <div class="w-full max-w-[460px] animate-fade-in text-center">
         <!-- Logo Section -->
         <div class="mb-10">
@@ -109,6 +125,23 @@
     <script src="js/auth.js"></script>
     <script>
         document.getElementById('login-btn').addEventListener('click', login);
+
+        // Initialize 3D Background
+        VANTA.NET({
+            el: "#vanta-canvas",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0x3b82f6,
+            backgroundColor: 0xf9f7f2,
+            points: 12.00,
+            maxDistance: 22.00,
+            spacing: 16.00
+        });
     </script>
 </body>
 

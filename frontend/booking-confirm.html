@@ -3,254 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirm Booking - SmartPark Premium</title>
-
-    <!-- Global Styles & Fonts -->
-    <link rel="stylesheet" href="css/style.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
-    <style>
-        body {
-            background: var(--bg-deep);
-            padding-bottom: 40px;
-        }
-
-        .confirm-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 24px 20px;
-        }
-
-        .confirm-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        .summary-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 24px;
-        }
-
-        .summary-header i {
-            font-size: 32px;
-            color: var(--primary);
-        }
-
-        .receipt-card {
-            padding: 30px;
-        }
-
-        .receipt-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .receipt-label {
-            color: var(--text-dim);
-            font-size: 14px;
-        }
-
-        .receipt-value {
-            font-weight: 600;
-            text-align: right;
-        }
-
-        .payment-method-card {
-            padding: 16px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-width: 2px;
-        }
-
-        .payment-method-card.active {
-            border-color: var(--primary);
-            background: rgba(45, 99, 255, 0.05);
-        }
-
-        .payment-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .payment-info i {
-            font-size: 24px;
-            color: var(--text-dim);
-        }
-
-        .payment-method-card.active i {
-            color: var(--primary);
-        }
-
-        @media (max-width: 768px) {
-            .confirm-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <title>Secure Checkout - Smart Parking Premium</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- External Libs -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="css/premium.css">
 </head>
-
-<body>
-
-    <header class="navbar">
-        <div class="logo">
-            <i class='bx bx-left-arrow-alt' style="cursor: pointer; font-size: 24px;" onclick="history.back()"></i>
-            SmartPark
-        </div>
-        <div style="font-weight: 600;">Final Confirmation</div>
-        <div style="width: 40px;"></div>
-    </header>
-
-    <main class="confirm-container">
-        <div class="confirm-grid">
-            <!-- Left: Bill Summary -->
-            <div>
-                <div class="summary-header">
-                    <i class='bx bxs-check-shield'></i>
-                    <div>
-                        <h2 style="margin: 0;">Secure Checkout</h2>
-                        <p style="color: var(--text-dim); font-size: 13px; margin: 0;">Your data is encrypted and secure</p>
-                    </div>
-                </div>
-
-                <div class="card receipt-card">
-                    <h3 class="mb-4">Booking Details</h3>
-                    
-                    <div class="receipt-item">
-                        <span class="receipt-label">Parking Location</span>
-                        <span class="receipt-value" id="res-place">---</span>
-                    </div>
-                    <div class="receipt-item">
-                        <span class="receipt-label">Selected Slot</span>
-                        <span class="receipt-value" id="res-slot">---</span>
-                    </div>
-                    <div class="receipt-item">
-                        <span class="receipt-label">Duration</span>
-                        <span class="receipt-value" id="res-duration">---</span>
-                    </div>
-                    <div class="receipt-item">
-                        <span class="receipt-label">Booking Date</span>
-                        <span class="receipt-value" id="res-date">Today</span>
-                    </div>
-
-                    <hr style="border: none; border-top: 1px solid var(--border-color); margin: 20px 0;">
-
-                    <div class="receipt-item" style="margin-bottom: 0;">
-                        <span style="font-weight: 700;">Grand Total</span>
-                        <span style="font-size: 24px; font-weight: 700; color: var(--accent);">$<span id="res-total">0.00</span></span>
-                    </div>
-                </div>
+<body class="bg-background min-h-screen flex items-center justify-center p-6">
+    <div class="max-w-5xl w-full flex flex-col md:flex-row gap-12 animate-fade-in">
+        <!-- Left: Summary -->
+        <div class="flex-1">
+            <div class="flex items-center gap-4 mb-10">
+                <button onclick="history.back()" class="w-12 h-12 rounded-2xl bg-white border border-black/5 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-all">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <h1 class="text-3xl font-black text-slate-900 tracking-tighter">Booking <span class="text-blue-600">Summary</span></h1>
             </div>
 
-            <!-- Right: Payment Methods -->
-            <div>
-                <h3 class="mb-4">Select Payment Method</h3>
+            <div class="glass-card !p-10 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16"></div>
                 
-                <div class="card payment-method-card active" onclick="selectPayment(this)">
-                    <div class="payment-info">
-                        <i class='bx bxl-apple'></i>
+                <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-8">Reservation Details</h3>
+                
+                <div class="space-y-6">
+                    <div class="flex justify-between items-end pb-4 border-b border-black/5">
                         <div>
-                            <div style="font-weight: 600;">Apple Pay</div>
-                            <div style="font-size: 11px; color: var(--text-dim);">Fast and secure payment</div>
+                            <p class="text-[10px] font-black text-gray-400 uppercase mb-1">Parking Hub</p>
+                            <h4 class="text-xl font-black text-slate-900" id="res-hub">Premium Hub Alpha</h4>
+                        </div>
+                        <i class="fas fa-building text-blue-100 text-2xl"></i>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-8 py-4 border-b border-black/5">
+                        <div class="relative">
+                            <p class="text-[10px] font-black text-gray-400 uppercase mb-1">Select Slot</p>
+                            <select id="res-slot" class="text-lg w-full font-black text-slate-900 bg-transparent outline-none cursor-pointer border-b-2 border-transparent hover:border-blue-200 focus:border-blue-500 transition-all font-['Plus_Jakarta_Sans'] pb-1">
+                                <option value="HUB-A24">Slot: HUB-A24</option>
+                                <option value="HUB-A25">Slot: HUB-A25</option>
+                                <option value="VIP-1">Slot: VIP-1 (Covered)</option>
+                                <option value="B-08">Slot: B-08</option>
+                            </select>
+                        </div>
+                        <div class="relative">
+                            <p class="text-[10px] font-black text-gray-400 uppercase mb-1">Duration</p>
+                            <select id="res-duration" class="text-lg w-full font-black text-slate-900 bg-transparent outline-none cursor-pointer border-b-2 border-transparent hover:border-blue-200 focus:border-blue-500 transition-all font-['Plus_Jakarta_Sans'] pb-1">
+                                <option value="1">1 Hour</option>
+                                <option value="2">2 Hours</option>
+                                <option value="3">3 Hours</option>
+                                <option value="4">4 Hours</option>
+                                <option value="8">8 Hours</option>
+                                <option value="24">Full Day (24 hrs)</option>
+                            </select>
                         </div>
                     </div>
-                    <i class='bx bxs-check-circle' style="color: var(--primary);"></i>
-                </div>
 
-                <div class="card payment-method-card" onclick="selectPayment(this)">
-                    <div class="payment-info">
-                        <i class='bx bxl-google-cloud'></i>
-                        <div>
-                            <div style="font-weight: 600;">Google Pay</div>
-                            <div style="font-size: 11px; color: var(--text-dim);">Quick checkout with Google</div>
+                    <div class="pt-8">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-bold text-gray-500">Subtotal</span>
+                            <span class="text-sm font-black text-slate-900" id="res-subtotal">$14.00</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="text-sm font-bold text-gray-500">Service Fee</span>
+                            <span class="text-sm font-black text-slate-900">$0.50</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-6 border-t-2 border-dashed border-black/10">
+                            <span class="text-xl font-black text-slate-900">Grand Total</span>
+                            <span class="text-3xl font-black text-blue-600" id="res-total">$14.50</span>
                         </div>
                     </div>
-                    <i class='bx bx-circle' style="color: var(--border-color);"></i>
-                </div>
-
-                <div class="card payment-method-card" onclick="selectPayment(this)">
-                    <div class="payment-info">
-                        <i class='bx bx-credit-card-front'></i>
-                        <div>
-                            <div style="font-weight: 600;">Credit / Debit Card</div>
-                            <div style="font-size: 11px; color: var(--text-dim);">Visa, Mastercard, Amex</div>
-                        </div>
-                    </div>
-                    <i class='bx bx-circle' style="color: var(--border-color);"></i>
-                </div>
-
-                <div class="mt-8">
-                    <button class="btn btn-primary w-100" style="padding: 18px; font-size: 16px;" onclick="processPayment()">
-                        Confirm & Pay Securely
-                    </button>
-                    <p style="text-align: center; color: var(--text-dim); font-size: 12px; margin-top: 15px;">
-                        By clicking confirm, you agree to our <a href="#" style="color: var(--primary);">Terms of Service</a>
-                    </p>
                 </div>
             </div>
         </div>
-    </main>
+
+        <!-- Right: Payment -->
+        <div class="w-full md:w-[400px] flex flex-col gap-8">
+            <div class="stats-card !p-10 !border-none bg-slate-900">
+                <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-8">Choose Payment</h3>
+                
+                <div class="space-y-4 mb-10">
+                    <button class="pay-method active w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-blue-500/50 transition-all text-white">
+                        <div class="flex items-center gap-4">
+                            <i class="fab fa-apple text-2xl"></i>
+                            <span class="text-sm font-bold">Apple Pay</span>
+                        </div>
+                        <i class="fas fa-check-circle text-blue-500"></i>
+                    </button>
+                    
+                    <button class="pay-method w-full flex items-center justify-between p-4 rounded-2xl bg-transparent border border-white/5 hover:border-white/10 transition-all text-gray-400">
+                        <div class="flex items-center gap-4">
+                            <i class="fab fa-google-pay text-2xl"></i>
+                            <span class="text-sm font-bold">Google Pay</span>
+                        </div>
+                        <i class="far fa-circle"></i>
+                    </button>
+
+                    <button class="pay-method w-full flex items-center justify-between p-4 rounded-2xl bg-transparent border border-white/5 hover:border-white/10 transition-all text-gray-400">
+                        <div class="flex items-center gap-4">
+                            <i class="fas fa-credit-card"></i>
+                            <span class="text-sm font-bold">Credit Card</span>
+                        </div>
+                        <i class="far fa-circle"></i>
+                    </button>
+                </div>
+
+                <button id="save-hub-btn" class="w-full py-3 mb-4 bg-transparent border border-white/10 hover:border-white/20 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-2 group text-sm">
+                    <i id="save-hub-icon" class="far fa-heart group-hover:text-red-500 transition-colors"></i>
+                    <span id="save-hub-text">Save Hub to Favorites</span>
+                </button>
+
+                <button id="pay-btn" class="w-full py-5 bg-blue-600 text-white font-black rounded-3xl shadow-2xl shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-3 active:scale-95 group">
+                    <span id="btn-text">Confirm & Pay</span>
+                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
+
+            <div id="success-view" class="hidden glass-card !p-10 border-emerald-100 flex-col items-center text-center">
+                <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mb-6">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h2 class="text-2xl font-black text-slate-900 mb-2">Payment Successful!</h2>
+                <p class="text-gray-400 font-bold text-sm mb-8">Scan your entry ticket below</p>
+                <div id="qrcode" class="p-4 bg-white rounded-3xl shadow-sm inline-block"></div>
+                <button onclick="window.location.href='dashboard.html'" class="w-full mt-8 py-4 bg-slate-900 text-white font-black rounded-2xl text-xs uppercase tracking-widest">Back to Dashboard</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Load data from localStorage
-        const duration = localStorage.getItem("booking_duration") || "1";
-        const slot = localStorage.getItem("selected_slot") || "A-01";
-        const place = localStorage.getItem("booking_place") || "Skyline Parking";
-        const total = localStorage.getItem("total_amount") || "6.50";
-
-        document.getElementById("res-place").innerText = place;
-        document.getElementById("res-slot").innerText = slot;
-        document.getElementById("res-duration").innerText = duration + " hours";
-        document.getElementById("res-total").innerText = total;
-
-        function selectPayment(element) {
-            // Clear previous
-            document.querySelectorAll('.payment-method-card').forEach(el => {
-                el.classList.remove('active');
-                el.querySelector('.bxs-check-circle, .bx-circle').className = 'bx bx-circle';
-                el.querySelector('.bx-circle').style.color = 'var(--border-color)';
-            });
-
-            // Set active
-            element.classList.add('active');
-            const icon = element.querySelector('.bx-circle');
-            icon.className = 'bx bxs-check-circle';
-            icon.style.color = 'var(--primary)';
+        // Load Details
+        const hubName = localStorage.getItem('last_booking_hub') || 'Premium Hub Alpha';
+        const rawPriceString = localStorage.getItem('last_booking_price') || '$5.00';
+        const baseRate = parseFloat(rawPriceString.match(/[\d.]+/)?.[0] || '5.00');
+        const serviceFee = 0.50;
+        
+        document.getElementById('res-hub').innerText = hubName;
+        
+        function updatePricing() {
+            const durationEl = document.getElementById('res-duration');
+            const hours = parseInt(durationEl.value) || 1;
+            const subtotal = baseRate * hours;
+            const total = subtotal + serviceFee;
+            
+            document.getElementById('res-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById('res-total').innerText = `$${total.toFixed(2)}`;
         }
+        
+        // Listeners for dropdowns
+        document.getElementById('res-duration').addEventListener('change', updatePricing);
+        
+        // Initialize pricing
+        document.getElementById('res-duration').value = "1";
+        updatePricing();
 
-        function processPayment() {
-            const btn = document.querySelector('.btn-primary');
-            btn.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Processing...";
-            btn.disabled = true;
+        const payBtn = document.getElementById('pay-btn');
+        const btnText = document.getElementById('btn-text');
+        const successView = document.getElementById('success-view');
+        const saveHubBtn = document.getElementById('save-hub-btn');
+        const saveHubIcon = document.getElementById('save-hub-icon');
+        const saveHubText = document.getElementById('save-hub-text');
 
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5000/api' 
+            : 'https://backend-api-uhdp.onrender.com/api';
+
+        saveHubBtn.addEventListener('click', async () => {
+            const token = localStorage.getItem('token');
+            const hubId = localStorage.getItem('last_booking_hub_id') || hubName;
+            
+            saveHubIcon.classList.remove('fa-heart', 'far', 'fas');
+            saveHubIcon.classList.add('fa-spinner', 'fas', 'animate-spin');
+
+            const isCurrentlySaved = saveHubText.innerText.includes("Saved");
+            let reqSuccessful = false;
+
+            // Attempt backend if token exists (Fail silently on error)
+            if (token) {
+                try {
+                    const res = await fetch(`${API_BASE}/saved/toggle`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` 
+                        },
+                        body: JSON.stringify({ 
+                            parkingId: hubId,
+                            name: hubName, 
+                            location: "City Center Hub"
+                        })
+                    });
+                    if (res.ok) reqSuccessful = true;
+                } catch (err) {}
+            }
+
+            // Always succeed visually after a short realistic delay (Frontend Demo Mode)
             setTimeout(() => {
-                // Save to bookings list
-                let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-                bookings.unshift({
-                    place: place,
-                    address: "450 Downtown Avenue",
-                    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                    time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-                    status: "Confirmed",
-                    slot: slot,
-                    price: "$" + total
-                });
-                localStorage.setItem("bookings", JSON.stringify(bookings));
+                saveHubIcon.classList.remove('fa-spinner', 'animate-spin');
+                
+                // Track in local storage memory for demo purposes scoped to user
+                let usrStr = localStorage.getItem('user');
+                let usrId = usrStr ? (JSON.parse(usrStr).id || 'guest') : 'guest';
+                let localSaved = JSON.parse(localStorage.getItem('local_saved_hubs_' + usrId) || '[]');
+                if (isCurrentlySaved) {
+                    localSaved = localSaved.filter(h => h.id !== hubId && h.name !== hubName);
+                    saveHubIcon.classList.add('far', 'fa-heart');
+                    saveHubIcon.classList.remove('text-red-500');
+                    saveHubText.innerText = "Save Hub to Favorites";
+                } else {
+                    if (!localSaved.some(h => h.id === hubId || h.name === hubName)) {
+                        localSaved.push({ id: hubId, name: hubName, addr: "Select Address", price: "$5.00/hr" });
+                    }
+                    saveHubIcon.classList.add('fas', 'fa-heart', 'text-red-500');
+                    saveHubText.innerText = "Saved to Favorites!";
+                }
+                localStorage.setItem('local_saved_hubs_' + usrId, JSON.stringify(localSaved));
+            }, 500);
+        });
 
-                // Redirect to success
-                alert("Booking Confirmed Successfully!");
-                window.location.href = "bookings.html";
-            }, 2000);
-        }
+        payBtn.addEventListener('click', async () => {
+            const token = localStorage.getItem('token');
+            // Mock flow permitted without strict redirects
+
+            payBtn.disabled = true;
+            btnText.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Processing...';
+            
+            try {
+                const finalPrice = document.getElementById('res-total').innerText;
+                const finalDuration = document.getElementById('res-duration').value;
+                const finalSlot = document.getElementById('res-slot').value;
+                
+                let reqSuccessful = false;
+                if (token) {
+                    try {
+                        const res = await fetch(`${API_BASE}/booking/create`, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}` 
+                            },
+                            body: JSON.stringify({ 
+                                parkingHubName: hubName,
+                                location: 'City Center Hub',
+                                price: finalPrice,
+                                date: new Date().toLocaleDateString(),
+                                timer: '0' + finalDuration + ':00',
+                                status: 'UPCOMING',
+                                slot: finalSlot
+                            })
+                        });
+                        if (res.ok) reqSuccessful = true;
+                    } catch(err){}
+                }
+
+                // Simulate success & persist locally mapped to active user
+                let usrStr = localStorage.getItem('user');
+                let usrId = usrStr ? (JSON.parse(usrStr).id || 'guest') : 'guest';
+                let mocks = JSON.parse(localStorage.getItem('local_mock_bookings_' + usrId) || '[]');
+                mocks.push({ hub: hubName, addr: 'City Center Hub', date: new Date().toLocaleDateString(), time: finalDuration + ' Hours', price: finalPrice, status: 'UPCOMING', icon: 'fa-check-circle', slot: finalSlot });
+                localStorage.setItem('local_mock_bookings_' + usrId, JSON.stringify(mocks));
+
+                setTimeout(() => {
+                    payBtn.parentElement.classList.add('hidden');
+                    successView.classList.remove('hidden');
+                    successView.classList.add('flex');
+                    
+                    // Generate QR Code
+                    new QRCode(document.getElementById("qrcode"), {
+                        text: `BOOKING-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+                        width: 128,
+                        height: 128,
+                        colorDark : "#0f172a",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+                }, 1500);
+
+            } catch (err) {
+                alert("Database Error: " + err.message);
+                payBtn.disabled = false;
+                btnText.innerText = 'Confirm & Pay';
+            }
+        });
     </script>
-
 </body>
 </html>
-```

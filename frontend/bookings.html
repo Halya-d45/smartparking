@@ -14,7 +14,7 @@
 <body class="bookings-page gradient-bg">
 
     <nav class="navbar glass-card">
-        <div class="logo" onclick="window.location.href='dashboard.html'" style="cursor:pointer">
+        <div class="logo logo-clickable" onclick="window.location.href='dashboard.html'" style="cursor:pointer">
             <div class="logo-icon"><i class="fas fa-parking"></i></div>
             <span class="gradient-text">Smart Parking</span>
         </div>
@@ -23,7 +23,7 @@
             <a href="bookings.html" class="active">My Bookings</a>
             <a href="saved.html">Saved Slots</a>
             <a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a>
-
+            <button class="btn-premium btn-sm" onclick="logout()">Logout</button>
         </div>
     </nav>
 
@@ -41,13 +41,13 @@
                         <th>Slot No.</th>
                         <th>Date</th>
                         <th>Duration</th>
+                        <th>Amount</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="bookingsTable">
-                    <!-- Data dynamic -->
-                </tbody>
+                    </tbody>
             </table>
             <div id="emptyState" class="empty-state-full" style="display: none;">
                 <i class="fas fa-calendar-times"></i>
@@ -59,72 +59,24 @@
     </div>
 
     <style>
-        .content-section {
-            margin-top: 40px;
-        }
-
-        .section-header {
-            margin-bottom: 30px;
-        }
-
-        .section-header h1 {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-
-        .table-card {
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .premium-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
+        .content-section { margin-top: 40px; }
+        .section-header { margin-bottom: 30px; }
+        .section-header h1 { font-size: 32px; margin-bottom: 8px; }
+        .table-card { padding: 0; overflow: hidden; }
+        .premium-table { width: 100%; border-collapse: collapse; }
         .premium-table th {
-            text-align: left;
-            padding: 20px;
+            text-align: left; padding: 20px;
             background: rgba(255, 255, 255, 0.03);
-            font-size: 13px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 13px; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1px;
         }
-
-        .premium-table td {
-            padding: 20px;
-            border-bottom: 1px solid var(--line-soft);
-            font-size: 14px;
-        }
-
-        .premium-table tr:last-child td {
-            border: none;
-        }
-
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 50px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .status-confirmed {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-        }
-
-        .empty-state-full {
-            text-align: center;
-            padding: 60px;
-            color: var(--text-muted);
-        }
-
-        .empty-state-full i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
+        .premium-table td { padding: 20px; border-bottom: 1px solid var(--line-soft); font-size: 14px; }
+        .status-badge { padding: 6px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; }
+        .status-confirmed { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .status-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .status-failed { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        .empty-state-full { text-align: center; padding: 60px; color: var(--text-muted); }
+        .empty-state-full i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -135,14 +87,12 @@
 
         async function loadBookings() {
             if (!user) return;
-
             try {
                 const token = localStorage.getItem("token");
                 const res = await fetch(`${CONFIG.API_BASE}/booking?userId=${user.id}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const bookings = await res.json();
-
                 const table = document.getElementById("bookingsTable");
                 const empty = document.getElementById("emptyState");
 
@@ -152,87 +102,68 @@
                     return;
                 }
 
-                table.innerHTML = bookings.map(b => `
-                <tr class="animate-fade">
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div class="logo-icon" style="width: 32px; height: 32px; font-size: 14px;"><i class="fas fa-parking"></i></div>
-                            <strong>${b.parkingId}</strong>
-                        </div>
-                    </td>
-                    <td><span class="badge-custom" style="background: rgba(59, 130, 246, 0.1); padding: 4px 12px; border-radius: 6px; color: var(--accent-blue); font-weight: 700;">${b.slot}</span></td>
-                    <td>${new Date(b.date).toLocaleDateString()}</td>
-                    <td>${b.duration} Hours</td>
-                    <td><span class="status-badge status-confirmed"><i class="fas fa-check-circle"></i> Confirmed</span></td>
-                    <td>
-                        <button class="btn-premium btn-sm" onclick='generateReceipt(${JSON.stringify(b)})'>
-                            <i class="fas fa-file-download"></i> Receipt
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+                table.innerHTML = bookings.map(b => {
+                    const isPaid = b.isPaid || b.paymentStatus === 'Confirmed';
+                    const status = b.paymentStatus || (isPaid ? 'Confirmed' : 'Pending');
+                    const statusClass = isPaid ? 'status-confirmed' : (status === 'Failed' ? 'status-failed' : 'status-pending');
 
-            } catch (err) {
-                console.error(err);
-            }
+                    return `
+                        <tr class="animate-fade">
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="logo-icon" style="width: 32px; height: 32px; font-size: 14px;"><i class="fas fa-parking"></i></div>
+                                    <strong>${b.parkingId}</strong>
+                                </div>
+                            </td>
+                            <td><span class="badge-custom" style="background: rgba(59, 130, 246, 0.1); padding: 4px 12px; border-radius: 6px; color: var(--accent-blue); font-weight: 700;">${b.slot}</span></td>
+                            <td>${new Date(b.date).toLocaleDateString()}</td>
+                            <td>${b.duration} Hours</td>
+                            <td>₹ ${b.totalAmount?.toFixed(2) || '0.00'}</td>
+                            <td><span class="status-badge ${statusClass}"><i class="fas fa-${isPaid ? 'check-circle' : (status === 'Failed' ? 'times-circle' : 'clock')}"></i> ${status}</span></td>
+                            <td>
+                                ${isPaid ? '' : `<button class="btn-premium btn-sm" onclick='goToPayment("${b._id}", "${b.parkingId}", "${b.slot}", "${b.duration}", "${b.date}", "${b.ratePerHour}", "${b.totalAmount}")'><i class="fas fa-credit-card"></i> Pay</button>`}
+                                <button class="btn-premium btn-sm" ${isPaid ? '' : 'disabled'} onclick='generateReceipt(${JSON.stringify(b)})'>
+                                    <i class="fas fa-file-download"></i> Receipt
+                                </button>
+                            </td>
+                        </tr>`;
+                }).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        function goToPayment(bookingId, parkingLot, slotNumber, duration, date, ratePerHour, totalAmount) {
+            const params = new URLSearchParams({ bookingId, parkingLot, slotNumber, duration, date, ratePerHour, totalAmount });
+            window.location.href = `payment.html?${params.toString()}`;
         }
 
         async function generateReceipt(b) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
-            // Header
-            doc.setFillColor(15, 23, 42); // --bg-surface
+            doc.setFillColor(15, 23, 42);
             doc.rect(0, 0, 210, 40, 'F');
-
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(24);
             doc.text("SMART PARKING", 20, 25);
             doc.setFontSize(10);
             doc.text("OFFICIAL BOOKING RECEIPT", 140, 25);
-
-            // Body
             doc.setTextColor(15, 23, 42);
             doc.setFontSize(12);
             doc.text(`Booking ID: ${b._id}`, 20, 60);
             doc.text(`User: ${user.name}`, 20, 70);
             doc.text(`Date: ${new Date(b.date).toLocaleString()}`, 20, 80);
-
             doc.line(20, 90, 190, 90);
-
-            doc.setFontSize(14);
             doc.setFont("helvetica", "bold");
             doc.text("Parking Details", 20, 105);
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(12);
-
-            doc.text(`Parking Lot ID:`, 20, 120);
-            doc.text(`${b.parkingId}`, 100, 120);
-
-            doc.text(`Slot Number:`, 20, 130);
-            doc.text(`${b.slot}`, 100, 130);
-
-            doc.text(`Duration:`, 20, 140);
-            doc.text(`${b.duration} Hours`, 100, 140);
-
-            doc.text(`Status:`, 20, 150);
-            doc.setTextColor(16, 185, 129); // --success
-            doc.text(`CONFIRMED`, 100, 150);
-
-            doc.line(20, 165, 190, 165);
-
-            doc.setTextColor(100, 100, 100);
-            doc.setFontSize(10);
-            doc.text("Thank you for choosing Smart Parking. Have a safe journey!", 20, 180);
-
-            // Footer
-            doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 280);
-
-            doc.save(`Receipt_Booking_${b.slot}.pdf`);
+            doc.text(`Parking Lot ID: ${b.parkingId}`, 20, 120);
+            doc.text(`Slot Number: ${b.slot}`, 20, 130);
+            doc.text(`Duration: ${b.duration} Hours`, 20, 140);
+            doc.setTextColor(16, 185, 129);
+            doc.text(`Status: CONFIRMED`, 20, 150);
+            doc.save(`Receipt_${b.slot}.pdf`);
         }
 
         loadBookings();
     </script>
 </body>
-
 </html>

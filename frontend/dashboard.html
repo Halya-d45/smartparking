@@ -3,103 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Smart Parking</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
+    <title>Smart Parking - Premium Dashboard</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        #map { width: 100%; height: 100%; }
-    </style>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/premium.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: "#f9f7f2",
+                        primary: "#3b82f6",
+                        cream: { 200: '#eee9e0' }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="dashboard-page gradient-bg">
-
-<nav class="navbar glass-card">
-    <div class="logo">
-        <div class="logo-icon"><i class="fas fa-parking"></i></div>
-        <span class="gradient-text">Smart Parking</span>
-    </div>
-    <div class="nav-links">
-        <a href="dashboard.html" class="active">Map View</a>
-        <a href="bookings.html">My Bookings</a>
-        <a href="saved.html">Saved Slots</a>
-        <a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a>
-        <button class="btn-premium btn-sm" onclick="logout()">Logout</button>
-    </div>
-</nav>
-
-<div class="dashboard-main-v2">
-    <header class="top-bar glass-card">
-        <div class="search-engine">
-            <i class="fas fa-search"></i>
-            <input type="text" id="placeSearch" placeholder="Find near location (e.g. London, Chennai)">
-            <button class="btn-premium btn-glow" onclick="searchPlace()">Locate Now</button>
-        </div>
-        <div class="header-stats">
-            <div class="mini-stat"><i class="fas fa-bolt color-blue"></i> <span id="activeBookingsCount">0</span> Active</div>
-            <div class="mini-stat"><i class="fas fa-bookmark color-cyan"></i> <span id="savedPlacesCount">0</span> Saved</div>
-        </div>
-    </header>
-
-    <section class="main-workspace">
-        <div class="map-container glass-card shadow-premium">
-            <div id="map"></div>
-        </div>
-        
-        <div class="results-panel glass-card shadow-premium">
-            <div class="panel-header">
-                <h3>Nearby Hubs</h3>
-                <span class="hub-count" id="hubCount">Scanning...</span>
+<body class="bg-background">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-2xl border-b border-black/5 h-20 flex items-center">
+        <div class="max-w-[1700px] mx-auto w-full px-8 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30">
+                    <i class="fas fa-parking text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-black text-blue-600 leading-tight">Smart Parking</h1>
+                    <p class="text-[10px] uppercase tracking-[0.2em] font-extrabold text-gray-400 -mt-1">System</p>
+                </div>
             </div>
-            
-            <div class="recent-hubs-container mb-4" id="recentHubs">
-                <!-- Data injected via script.js -->
+
+            <div class="hidden lg:flex items-center bg-[#f0ede4] rounded-full p-1.5 shadow-inner" id="nav-group">
+                <button class="nav-link active" data-tab="map-view">
+                    <i class="fas fa-map"></i><span>Map View</span>
+                </button>
+                <button class="nav-link" data-tab="my-bookings">
+                    <i class="fas fa-calendar-alt"></i><span>My Bookings</span>
+                </button>
+                <button class="nav-link" data-tab="saved-slots">
+                    <i class="fas fa-heart"></i><span>Saved Slots</span>
+                </button>
+                <button class="nav-link" data-tab="payments">
+                    <i class="fas fa-credit-card"></i><span>Payments</span>
+                </button>
+                <button class="nav-link" data-tab="profile">
+                    <i class="fas fa-user"></i><span>Profile</span>
+                </button>
             </div>
-            <div id="parkingList" class="parking-list-optimized">
-                <div class="empty-state-v2">
-                    <i class="fas fa-search-location"></i>
-                    <p>Initiate a search to discover<br>premium parking slots.</p>
+
+            <div class="flex items-center space-x-6">
+                <button class="relative p-2 text-gray-400 hover:text-slate-800 transition-colors">
+                    <i class="fas fa-bell text-xl"></i>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                </button>
+                <div class="relative">
+                    <div id="user-pill" class="bg-[#1e293b] rounded-full pl-2 pr-4 py-1.5 flex items-center space-x-3 cursor-pointer hover:scale-105 transition-all shadow-xl shadow-slate-900/20">
+                        <div id="nav-user-initials" class="w-8 h-8 rounded-full bg-slate-400 border border-slate-600 flex items-center justify-center text-slate-800 text-xs font-bold font-['Plus_Jakarta_Sans']">US</div>
+                        <div class="flex items-center space-x-2">
+                            <span id="nav-user-name" class="text-xs font-extrabold text-white">User</span>
+                            <i class="fas fa-chevron-down text-[10px] text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="user-dropdown" class="user-dropdown-menu">
+                        <button class="dropdown-item" onclick="setActiveTab('profile')">
+                            <i class="fas fa-user-circle"></i> Profile
+                        </button>
+                        <button class="dropdown-item">
+                            <i class="fas fa-cog"></i> Settings
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item text-red-400" onclick="window.location.href='login.html'">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
-</div>
+    </nav>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="js/config.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/script.js"></script>
-<script>
-    // Set user name and stats from localStorage/API
-    const user = JSON.parse(localStorage.getItem("user"));
-    const token = localStorage.getItem("token");
+    <!-- Content Area -->
+    <main class="pt-32 px-8 max-w-[1700px] mx-auto pb-12">
+        
+        <!-- Tab: Map View -->
+        <div id="map-view" class="tab-content active animate-fade-in">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Sidebar -->
+                <div class="w-full lg:w-1/3 flex flex-col gap-6">
+                    <div class="stats-card !py-8">
+                        <h3 class="stats-card-title !mb-6">Search Location</h3>
+                        <div class="relative flex items-center bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm focus-within:shadow-xl transition-all">
+                            <div class="w-14 flex items-center justify-center text-gray-400">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <input type="text" id="map-search" placeholder="Search city..." class="flex-1 py-5 bg-transparent border-none outline-none font-bold text-slate-800">
+                            <button id="search-btn" class="bg-blue-600 text-white px-6 py-4 m-1.5 rounded-2xl hover:bg-blue-700 transition-colors font-black text-sm">Search</button>
+                        </div>
+                    </div>
 
-    if(!user || !token) {
-        window.location.href = "login.html";
-    } else {
-        const nameLabel = document.getElementById("userNameHeader");
-        if(nameLabel) nameLabel.innerText = user.name;
-        loadStats();
-    }
+                    <div id="stats-panel" class="stats-card flex-1">
+                        <h3 class="stats-card-title !mb-4">Quick Stats</h3>
+                        <div class="space-y-8">
+                            <div>
+                                <div class="flex justify-between items-end mb-3">
+                                    <p class="text-4xl font-black text-slate-900" id="total-slots">500</p>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em]">Total Slots</p>
+                                </div>
+                                <div class="w-full bg-[#e8e2d6] h-2 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-blue-400 to-cyan-400 h-full w-[70%]"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-end mb-1">
+                                    <p class="text-4xl font-black text-blue-600" id="available-slots">124</p>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em]">Available Now</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    async function loadStats() {
-        try {
-            const token = localStorage.getItem("token");
-            const res = await fetch(`${CONFIG.API_BASE}/saved/stats`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const stats = await res.json();
+                    <div id="results-panel" class="stats-card flex-1 hidden">
+                        <h3 class="stats-card-title !mb-6 uppercase tracking-widest text-[#1a1a1a]" id="results-title">Parking in Chennai</h3>
+                        <div class="space-y-4" id="results-list">
+                            <!-- Dynamic content -->
+                        </div>
+                        <button id="clear-search" class="w-full mt-6 pt-4 border-t border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-slate-900 transition-colors">Clear Results</button>
+                    </div>
+                </div>
+
+                <!-- Map Area -->
+                <div class="flex-1 relative bg-white/40 backdrop-blur-sm border border-black/5 rounded-[3rem] h-[680px] overflow-hidden group shadow-2xl shadow-black/5">
+                    <div id="map" class="absolute inset-0"></div>
+                    
+                    <div id="map-loader" class="absolute inset-0 z-10 bg-white/60 backdrop-blur-md hidden flex-col items-center justify-center gap-4">
+                        <div class="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <p class="text-blue-600 font-black text-xl animate-pulse">Scanning City Hubs...</p>
+                    </div>
+
+                    <div class="absolute top-6 right-6 z-20 flex flex-col gap-3">
+                        <button onclick="map.zoomIn()" class="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-all border border-black/5">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button onclick="map.zoomOut()" class="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-50 transition-all border border-black/5">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button id="recenter-btn" class="w-12 h-12 bg-blue-600 rounded-2xl shadow-xl flex items-center justify-center text-white hover:bg-blue-700 transition-all mt-4 shadow-blue-500/20">
+                            <i class="fas fa-location-arrow"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: My Bookings -->
+        <div id="my-bookings" class="tab-content animate-fade-in max-w-5xl mx-auto">
+            <div class="flex items-center justify-between mb-10">
+                <div>
+                    <h1 class="text-4xl font-black text-slate-900 mb-2">My <span class="text-primary italic">Bookings</span></h1>
+                    <p class="text-gray-500 font-medium">Manage your active and completed parking reservations.</p>
+                </div>
+                <div class="flex bg-[#f2ede4] rounded-2xl p-1 gap-1">
+                    <button class="px-8 py-2.5 bg-white rounded-xl shadow-sm text-sm font-black text-slate-800">All</button>
+                    <button class="px-8 py-2.5 text-sm font-bold text-gray-500 hover:text-slate-800 transition-colors">Upcoming</button>
+                    <button class="px-8 py-2.5 text-sm font-bold text-gray-500 hover:text-slate-800 transition-colors">History</button>
+                </div>
+            </div>
+            <div class="space-y-6" id="bookings-list">
+                <!-- Dynamic Content -->
+            </div>
+        </div>
+
+        <!-- Tab: Profile -->
+        <div id="profile" class="tab-content animate-fade-in max-w-6xl mx-auto">
+            <div class="glass-card mb-12 flex items-center justify-between !p-12">
+                <div>
+                    <h1 class="text-5xl font-black text-slate-900 mb-3 tracking-tighter">Welcome back, <span id="profile-name-span">Guest</span>.</h1>
+                    <p class="text-gray-500 font-semibold text-xl mb-6">Manage your profile, fleet and track your parking activity.</p>
+                    <button onclick="document.getElementById('edit-profile-modal').classList.remove('hidden')" class="px-6 py-2.5 bg-slate-900 text-white rounded-xl font-bold shadow hover:bg-slate-800 transition-colors text-sm">
+                        <i class="fas fa-edit mr-2"></i> Edit Profile
+                    </button>
+                </div>
+                <div class="w-32 h-32 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white shadow-2xl shadow-blue-600/30">
+                    <i class="fas fa-user-circle text-6xl"></i>
+                </div>
+            </div>
             
-            // Update the new mini-stats in top-bar
-            const bookingsEl = document.getElementById("activeBookingsCount");
-            const savedEl = document.getElementById("savedPlacesCount");
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-10">
+                <div class="lg:col-span-2">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 shadow-inner">
+                            <i class="fas fa-car-side"></i>
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">My Vehicles</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="item-card">
+                            <div class="w-14 h-14 bg-orange-100 text-orange-500 rounded-2xl flex items-center justify-center text-2xl">
+                                <i class="fas fa-car"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-black text-slate-900">Tesla Model 3</h4>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">CA • 9XDL204</p>
+                            </div>
+                        </div>
+                        <div class="item-card">
+                            <div class="w-14 h-14 bg-indigo-100 text-indigo-500 rounded-2xl flex items-center justify-center text-2xl">
+                                <i class="fas fa-truck-pickup"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-black text-slate-900">Ford F-150</h4>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">TX • M29 BKW</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-3">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 shadow-inner">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Recent Glance</h2>
+                    </div>
+                    <div class="glass-card !p-8 space-y-4 bg-white/40">
+                         <div class="flex items-center justify-between p-5 bg-white/60 hover:bg-white rounded-[2rem] transition-all cursor-pointer border border-transparent hover:border-blue-100">
+                             <div class="flex items-center gap-6">
+                                 <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400"><i class="fas fa-building"></i></div>
+                                 <h5 class="text-lg font-black text-slate-900">Downtown Plaza Hub</h5>
+                             </div>
+                             <div class="text-right">
+                                 <p class="text-xl font-black text-slate-800 mb-1">$14.00</p>
+                                 <span class="status-badge status-completed">Completed</span>
+                             </div>
+                         </div>
+                         <div class="flex items-center justify-between p-5 bg-white/60 hover:bg-white rounded-[2rem] transition-all cursor-pointer border border-transparent hover:border-blue-100">
+                             <div class="flex items-center gap-6">
+                                 <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400"><i class="fas fa-building"></i></div>
+                                 <h5 class="text-lg font-black text-slate-900">Airport Terminal A</h5>
+                             </div>
+                             <div class="text-right">
+                                 <p class="text-xl font-black text-slate-800 mb-1">$35.00</p>
+                                 <span class="status-badge status-upcoming">Upcoming</span>
+                             </div>
+                         </div>
+                         <button class="w-full py-4 text-sm font-black text-blue-600 bg-blue-50/50 hover:bg-blue-100 rounded-2xl transition-all mt-4">View All Activity</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Saved Slots -->
+        <div id="saved-slots" class="tab-content animate-fade-in">
+            <h1 class="text-4xl font-black text-slate-900 mb-2 tracking-tighter">Your <span class="text-primary">Saved Places</span></h1>
+            <p class="text-gray-500 font-medium mb-12">Quick access to your most used parking spots.</p>
             
-            if(bookingsEl) bookingsEl.innerText = stats.activeBookings || 0;
-            if(savedEl) savedEl.innerText = stats.savedPlaces || 0;
-        } catch (err) {
-            console.error("Stats Error:", err);
-        }
-    }
-</script>
+            <div class="flex items-center justify-center h-80 border-4 border-dashed border-gray-100 rounded-[3rem] bg-white/30">
+                <div class="text-center">
+                    <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+                    <p class="text-gray-400 font-bold uppercase tracking-widest text-sm">Loading your favorites...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Payments -->
+        <div id="payments" class="tab-content text-center py-40">
+            <div class="animate-pulse">
+                <i class="fas fa-credit-card text-6xl text-gray-200 mb-6"></i>
+                <h2 class="text-xl font-bold text-gray-400 uppercase tracking-widest italic tracking-tight">Payments Screen Coming Soon</h2>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast System -->
+    <div id="toast-container"></div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] w-full max-w-lg p-8 shadow-2xl relative">
+            <button onclick="document.getElementById('edit-profile-modal').classList.add('hidden')" class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="text-2xl font-black text-slate-900 mb-6">Edit Profile</h2>
+            <form id="edit-profile-form" class="space-y-5">
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Full Name</label>
+                    <input type="text" id="edit-name" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:outline-none focus:border-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Email Address</label>
+                    <input type="email" id="edit-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:outline-none focus:border-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Phone Number</label>
+                    <input type="text" id="edit-phone" placeholder="Optional" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+                </div>
+                <button type="submit" class="w-full py-4 mt-4 bg-blue-600 text-white rounded-xl font-black text-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Custom Logic -->
+    <script src="js/premium-logic.js"></script>
 </body>
 </html>

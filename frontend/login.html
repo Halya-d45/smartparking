@@ -3,135 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Smart Parking</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/design-system.css">
-    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="gradient-bg">
-
-<div class="app-wrapper">
-    <div class="auth-visual-bg"></div>
+    <title>Login | Smart Parking Premium</title>
     
-    <div class="auth-container animate-fade">
-        <div class="glass-card auth-card">
-            <div class="logo-section">
-                <div class="logo-icon"><i class="fas fa-parking"></i></div>
-                <h1 class="gradient-text">Smart Parking</h1>
-                <p>Enterprise Slot Management</p>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/premium.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: "#f9f7f2",
+                        primary: "#3b82f6",
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-[460px] animate-fade-in text-center">
+        <!-- Logo Section -->
+        <div class="mb-10">
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-600/20 mx-auto mb-6">
+                <i class="fas fa-parking text-white text-3xl"></i>
             </div>
+            <h1 class="text-4xl font-black text-slate-900 tracking-tighter mb-2">Welcome Back</h1>
+            <p class="text-gray-500 font-semibold uppercase text-[10px] tracking-[0.2em]">Secure Access to your hub</p>
+        </div>
 
-            <div class="form-section">
-                <div class="form-group mb-4">
-                    <label class="detail-label mb-2">Email Address</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="email" class="premium-input" placeholder="name@company.com">
+        <!-- Auth Card -->
+        <div class="bg-white/70 backdrop-blur-3xl border border-black/5 rounded-[3rem] p-10 shadow-2xl shadow-black/5 text-left">
+            <div class="space-y-6">
+                <!-- Email -->
+                <div>
+                    <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Email Address</label>
+                    <div class="relative flex items-center bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-inner focus-within:border-blue-200 transition-all">
+                        <div class="w-12 flex items-center justify-center text-gray-300">
+                            <i class="fas fa-envelope text-sm"></i>
+                        </div>
+                        <input type="email" id="email" placeholder="mike@example.com" class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 placeholder:text-gray-300">
                     </div>
                 </div>
 
-                <div class="form-group mb-4">
-                    <div class="flex-between mb-2">
-                        <label class="detail-label">Password</label>
-                        <a href="#" class="forgot-link">Forgot?</a>
+                <!-- Password -->
+                <div>
+                    <div class="flex justify-between items-center mb-3 ml-1">
+                        <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest">Password</label>
+                        <a href="#" class="text-[10px] font-black text-blue-600 hover:underline">Forgot?</a>
                     </div>
-                    <div class="input-wrapper">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="password" class="premium-input" placeholder="••••••••">
+                    <div class="relative flex items-center bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-inner focus-within:border-blue-200 transition-all">
+                        <div class="w-12 flex items-center justify-center text-gray-300">
+                            <i class="fas fa-shield-halved text-sm"></i>
+                        </div>
+                        <input type="password" id="password" placeholder="••••••••" class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 placeholder:text-gray-300">
                     </div>
                 </div>
 
-                <button class="btn-premium btn-glow" style="width: 100%; margin-top: 10px;" onclick="login()">
-                    <span>Sign In</span>
-                    <i class="fas fa-arrow-right"></i>
+                <div class="pt-4">
+                    <button id="login-btn" class="w-full py-5 bg-blue-600 text-white font-black text-sm rounded-[1.5rem] shadow-xl shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-3 group">
+                        Sign In
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-4 py-2">
+                    <div class="h-px flex-1 bg-gray-100"></div>
+                    <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">or</span>
+                    <div class="h-px flex-1 bg-gray-100"></div>
+                </div>
+
+                <button class="w-full py-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-3 text-slate-700 font-bold text-xs">
+                    <i class="fab fa-google text-red-500 text-sm"></i>
+                    Sign in with Google
                 </button>
             </div>
-
-            <div class="auth-footer">
-                <p>Don't have an account? <a href="signup.html">Create one for free</a></p>
-            </div>
         </div>
+
+        <p class="mt-8 text-gray-400 font-semibold text-sm">
+            New here? <a href="signup.html" class="text-blue-600 font-black hover:underline underline-offset-4">Create Account</a>
+        </p>
     </div>
-</div>
 
-<style>
-/* Page Specific Styles */
-.app-wrapper {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 40%),
-                radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.05), transparent 40%);
-}
-.auth-container {
-    width: 100%;
-    max-width: 440px;
-}
-.auth-card {
-    padding: 48px;
-    border-radius: 32px;
-}
-.logo-section {
-    text-align: center;
-    margin-bottom: 40px;
-}
-.logo-section h1 {
-    font-size: 32px;
-    margin: 16px 0 6px;
-    letter-spacing: -1px;
-}
-.logo-section p {
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-}
-.logo-icon {
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
-    border-radius: 20px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    color: white;
-    box-shadow: 0 15px 30px -5px var(--accent-blue-glow);
-}
-.mb-2 { margin-bottom: 8px; }
-.mb-4 { margin-bottom: 24px; }
-.flex-between { display: flex; justify-content: space-between; align-items: center; }
-
-.auth-footer {
-    margin-top: 40px;
-    text-align: center;
-    font-size: 14px;
-    color: var(--text-secondary);
-}
-.auth-footer a {
-    color: var(--accent-blue);
-    font-weight: 700;
-    text-decoration: none;
-    transition: var(--transition-base);
-}
-.auth-footer a:hover {
-    color: var(--accent-cyan);
-}
-.forgot-link {
-    font-size: 12px;
-    color: var(--text-muted) !important;
-    font-weight: 600;
-    text-decoration: none;
-}
-.forgot-link:hover {
-    color: var(--accent-blue) !important;
-}
-</style>
-
-<script src="js/config.js"></script>
-<script src="js/auth.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.getElementById('login-btn').addEventListener('click', login);
+    </script>
 </body>
 </html>

@@ -12,12 +12,19 @@ exports.createBooking = async (req, res) => {
             return res.status(400).json({ error: "No slots available" });
         }
 
+        const ratePerHour = parking.pricePerHour || 0;
+        const totalAmount = duration * ratePerHour;
+
         const booking = new Booking({
             userId,
             parkingId,
             slot,
             duration,
-            date: new Date()
+            ratePerHour,
+            totalAmount,
+            date: new Date(),
+            paymentStatus: 'Awaiting Payment',
+            isPaid: false
         });
 
         await booking.save();
@@ -39,5 +46,30 @@ exports.getUserBookings = async (req, res) => {
         res.json(bookings);
     } catch (err) {
         res.status(500).json({ error: "Fetch failed" });
+    }
+};
+
+exports.updatePaymentStatus = async (req, res) => {
+    try {
+        const { bookingId, paymentStatus, isPaid } = req.body;
+
+        if (!bookingId || typeof isPaid !== 'boolean') {
+            return res.status(400).json({ error: 'bookingId and isPaid are required' });
+        }
+
+        const booking = await Booking.findById(bookingId);
+        if (!booking) {
+            return res.status(404).json({ error: 'Booking not found' });
+        }
+
+        booking.paymentStatus = paymentStatus || (isPaid ? 'Confirmed' : 'Pending');
+        booking.isPaid = isPaid;
+
+        await booking.save();
+
+        res.json({ message: 'Booking payment status updated', booking });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Update payment status failed' });
     }
 };

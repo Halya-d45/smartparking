@@ -1,329 +1,190 @@
-// Initialize Map
+/* eslint-disable no-undef */
+/* global L, CONFIG, map, showToast, bootstrap */
+
+// Initialize Variables
 var map;
 var markers = [];
+var currentSavedIds = new Set();
+var lastFetchedParking = []; 
+var searchMarker = null;
+
+// Location state
+let lastKnownLocation = null;
+let locationCacheExpiry = 5 * 60 * 1000; 
+
+// 1. Initialize Dashboard
+async function initDashboard() {
+    initMap();
+    await loadSavedIds();
+    locateNow();
+}
 
 function initMap() {
+    if (!document.getElementById('map')) return;
     map = L.map('map').setView([16.3067, 80.4365], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap'
     }).addTo(map);
-    console.log("Map Initialized with Leaflet");
 }
 
-// Global state
-let currentSavedIds = new Set();
-let lastFetchedParking = []; // Global cache for current results
+// 2. Search Logic
+async function searchPlace() {
+    const query = document.getElementById("placeSearch").value.trim();
+    if (!query) return showToast("Please enter a location", "info");
 
-async function initDashboard() {
-    initMap();
-    await loadSavedIds();
+    const searchBtn = document.querySelector(".search-btn-gradient");
+    if (searchBtn) searchBtn.disabled = true;
+
+    try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            const { lat, lon, display_name } = data[0];
+            const latitude = parseFloat(lat);
+            const longitude = parseFloat(lon);
+
+            map.setView([latitude, longitude], 15);
+            if (searchMarker) map.removeLayer(searchMarker);
+            searchMarker = L.marker([latitude, longitude]).addTo(map)
+                .bindPopup(`<b>Search Result:</b><br>${query}`).openPopup();
+
+            await findParking(latitude, longitude, display_name);
+            showToast(`Found: ${query}`, "success");
+        } else {
+            showToast("Location not found", "error");
+        }
+    } catch (err) {
+        showToast("Search service unavailable", "error");
+    } finally {
+        if (searchBtn) searchBtn.disabled = false;
+    }
+}
+
+// 3. Geolocation Logic (Rectified)
+async function locateNow() {
+    const locateBtn = document.getElementById('locate-btn');
+    const originalText = locateBtn ? locateBtn.innerHTML : '';
+
+    if (locateBtn) {
+        locateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        locateBtn.disabled = true;
+    }
+
+    try {
+        const pos = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { 
+                enableHighAccuracy: true, 
+                timeout: 5000 
+            });
+        });
+
+        const { latitude, longitude } = pos.coords;
+        map.setView([latitude, longitude], 14);
+        saveLocationToCache(latitude, longitude);
+        await findParking(latitude, longitude, 'Your Location');
+        showToast('Location updated', 'success');
+
+    } catch (error) {
+        console.warn("Location access denied or timed out");
+        showToast("Using default location", "warning");
+    } finally {
+        if (locateBtn) {
+            locateBtn.innerHTML = originalText;
+            locateBtn.disabled = false;
+        }
+    }
+}
+
+// 4. Find and Render Parking
+async function findParking(lat, lon, city) {
+    const listContainer = document.getElementById("parkingList");
+    if (!listContainer) return;
+    
+    listContainer.innerHTML = '<div class="loader"><i class="fas fa-spinner fa-spin"></i> Scanning...</div>';
+
+    const query = `[out:json][timeout:30];(node["amenity"="parking"](around:5000,${lat},${lon});way["amenity"="parking"](around:5000,${lat},${lon}););out center;`;
+    
+    try {
+        const response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        if (!data.elements || data.elements.length === 0) {
+            listContainer.innerHTML = '<p class="text-center p-4">No parking found.</p>';
+            return;
+        }
+
+        lastFetchedParking = data.elements.slice(0, 20).map(p => ({
+            overpassId: p.id.toString(),
+            name: p.tags?.name || "Unnamed Hub",
+            location: city,
+            latitude: p.lat || p.center.lat,
+            longitude: p.lon || p.center.lon,
+            pricePerHour: 20,
+            availableSlots: Math.floor(Math.random() * 10),
+            totalSlots: 20
+        }));
+
+        renderParking(lastFetchedParking);
+    } catch (err) {
+        listContainer.innerHTML = '<p class="text-danger p-4">Error loading data.</p>';
+    }
+}
+
+function renderParking(parkingLots) {
+    const listContainer = document.getElementById("parkingList");
+    listContainer.innerHTML = "";
+    markers.forEach(m => m.remove());
+    markers = [];
+
+    parkingLots.forEach(p => {
+        const item = document.createElement("div");
+        item.className = "parking-card-modern";
+        item.innerHTML = `
+            <div class="card-header"><h4>${p.name}</h4></div>
+            <p><i class="fas fa-map-marker-alt"></i> ${p.location.substring(0, 25)}...</p>
+            <button class="btn-premium btn-sm w-100 mt-2" onclick="showDetails('${p.overpassId}')">Select Hub</button>
+        `;
+        listContainer.appendChild(item);
+        const marker = L.marker([p.latitude, p.longitude]).addTo(map);
+        markers.push(marker);
+    });
+}
+
+// 5. Utilities
+function saveLocationToCache(lat, lon) {
+    localStorage.setItem('last_lat', lat);
+    localStorage.setItem('last_lng', lon);
+    localStorage.setItem('lastLocation', JSON.stringify({ lat, lon, timestamp: Date.now() }));
 }
 
 async function loadSavedIds() {
     const token = localStorage.getItem("token");
     if (!token) return;
     try {
-        const res = await fetch(`${CONFIG.API_BASE}/saved`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const res = await fetch(`${CONFIG.API_BASE}/saved`, { headers: { 'Authorization': `Bearer ${token}` } });
         const saved = await res.json();
         currentSavedIds = new Set(saved.map(s => s.parkingId));
-    } catch (err) {
-        console.error("Load Saved Error:", err);
-    }
+    } catch (err) { console.error(err); }
 }
 
-async function searchPlace() {
-    let place = document.getElementById("placeSearch").value;
-    if (!place) return;
-
-    try {
-        let response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${place}`);
-        let data = await response.json();
-
-        if (data && data.length > 0) {
-            let lat = parseFloat(data[0].lat);
-            let lon = parseFloat(data[0].lon);
-            map.setView([lat, lon], 14);
-            findParking(lat, lon, place);
-        } else {
-            alert("Place not found");
-        }
-    } catch (err) {
-        console.error(err);
-    }
+function showToast(message, type = "info") {
+    const toast = document.createElement("div");
+    toast.className = `custom-toast toast-${type}`;
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.right = "20px";
+    toast.style.background = "#333";
+    toast.style.color = "#fff";
+    toast.style.padding = "10px 20px";
+    toast.style.borderRadius = "5px";
+    toast.style.zIndex = "1000";
+    toast.innerText = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
 }
 
-async function findParking(lat, lon, city) {
-    const listContainer = document.getElementById("parkingList");
-    listContainer.innerHTML = '<div class="loader">Scanning for slots...</div>';
-
-    let query = `[out:json][timeout:30];(node["amenity"="parking"](around:5000,${lat},${lon});way["amenity"="parking"](around:5000,${lat},${lon});relation["amenity"="parking"](around:5000,${lat},${lon});node["parking"](around:5000,${lat},${lon}););out center;`;
-    
-    // Multiple Overpass API mirrors for robustness
-    const mirrors = [
-        "https://overpass-api.de/api/interpreter",
-        "https://lz4.overpass-api.de/api/interpreter",
-        "https://z.overpass-api.de/api/interpreter"
-    ];
-
-    let data = null;
-    let success = false;
-
-    for (const mirror of mirrors) {
-        try {
-            console.log(`Trying Overpass mirror: ${mirror}`);
-            let response = await fetch(`${mirror}?data=${encodeURIComponent(query)}`);
-            
-            if (!response.ok) {
-                console.warn(`Mirror ${mirror} returned status ${response.status}`);
-                continue;
-            }
-            
-            data = await response.json();
-            if (data && data.elements) {
-                success = true;
-                break;
-            }
-        } catch (mirrorErr) {
-            console.warn(`Mirror ${mirror} failed:`, mirrorErr);
-        }
-    }
-
-    if (!success) {
-        console.error("All Overpass mirrors failed.");
-        listContainer.innerHTML = `
-            <div class="error-state">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>Failed to discover parking hubs.</p>
-                <small>The parking discovery service is temporarily overloaded. Please try again in a few moments.</small>
-                <button class="btn-premium btn-sm mt-4" onclick="findParking(${lat}, ${lon}, '${city}')">Retry Discovery</button>
-            </div>
-        `;
-        return;
-    }
-
-    try {
-        if (!data.elements || data.elements.length === 0) {
-            listContainer.innerHTML = '<div class="empty-state-v2"><i class="fas fa-search-location"></i><p>No parking slots found in this area.</p></div>';
-            return;
-        }
-
-        // Limit elements to 50 for syncing to prevent payload issues
-        const elementsToSync = data.elements.slice(0, 50);
-
-        try {
-            console.log(`Syncing ${elementsToSync.length} hubs with backend...`);
-            let syncRes = await fetch(`${CONFIG.API_BASE}/parking/sync`, {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ elements: elementsToSync, city: city })
-            });
-            
-            if (!syncRes.ok) throw new Error("Backend sync failed");
-            
-            lastFetchedParking = await syncRes.json();
-            console.log("Sync successful:", lastFetchedParking.length, "hubs loaded.");
-        } catch (syncErr) {
-            console.warn("Backend Sync Failed - Falling back to local Overpass data:", syncErr);
-            // Fallback: Convert Overpass elements to our Parking model format locally
-            lastFetchedParking = elementsToSync.map(p => {
-                const lat = p.lat || (p.center && p.center.lat);
-                const lon = p.lon || (p.center && p.center.lon);
-                const tags = p.tags || {};
-                const name = tags.name || (tags['addr:street'] ? `Parking at ${tags['addr:street']}` : `Unnamed Parking`);
-                
-                return {
-                    overpassId: p.id.toString(),
-                    name: name,
-                    location: tags['addr:full'] || tags['addr:street'] || city || "Unknown Location",
-                    latitude: lat,
-                    longitude: lon,
-                    totalSlots: 20,
-                    availableSlots: Math.floor(Math.random() * 10) + 2,
-                    pricePerHour: 2.50,
-                    isFallback: true // Flag to show it's local data
-                };
-            });
-        }
-
-        renderParking(lastFetchedParking);
-    } catch (err) {
-        console.error("Processing Error:", err);
-        listContainer.innerHTML = `
-            <div class="error-state">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>Failed to process parking data.</p>
-                <small>An error occurred while displaying the results. Please try refreshing.</small>
-            </div>
-        `;
-    }
-}
-
-function renderParking(parkingLots) {
-    const listContainer = document.getElementById("parkingList");
-    const countLabel = document.getElementById("hubCount");
-    listContainer.innerHTML = "";
-    
-    if (countLabel) countLabel.innerText = `${parkingLots.length} Hubs Detected`;
-
-    // Clear existing markers
-    if (markers.length > 0) {
-        markers.forEach(m => m.remove());
-        markers = [];
-    }
-
-    if (parkingLots.length === 0) {
-        listContainer.innerHTML = '<div class="empty-state-v2"><i class="fas fa-search-location"></i><p>No parking slots found.</p></div>';
-        return;
-    }
-
-    parkingLots.forEach(p => {
-        const isSaved = currentSavedIds.has(p.overpassId);
-        const availabilityPercent = Math.min(100, (p.availableSlots / p.totalSlots) * 100);
-
-        const item = document.createElement("div");
-        item.className = "parking-card-premium animate-fade";
-        item.innerHTML = `
-            <div class="card-header">
-                <div style="display: flex; flex-direction: column; gap: 4px;">
-                    <h4>${p.name || 'Unnamed Parking'}</h4>
-                    ${p.isFallback ? '<span class="badge-fallback"><i class="fas fa-plug-circle-xmark"></i> Live Sync Unavailable</span>' : ''}
-                </div>
-                <button class="save-btn ${isSaved ? 'active' : ''}" data-id="${p.overpassId}" onclick="handleSaveClick(this)">
-                    <i class="${isSaved ? 'fas' : 'far'} fa-heart"></i>
-                </button>
-            </div>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
-                <i class="fas fa-map-marker-alt"></i> ${p.location}
-            </p>
-            <div class="availability-bar">
-                <div class="progress-fill" style="${p.isFallback ? 'background: var(--text-muted);' : ''} width: ${availabilityPercent}%"></div>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
-                <span class="price-tag">$${p.pricePerHour}/hr</span>
-                <span style="font-size: 12px; color: ${p.availableSlots > 0 ? (p.isFallback ? 'var(--text-dim)' : 'var(--success)') : 'var(--error)'}; font-weight: 700;">
-                    ${p.availableSlots} slots free ${p.isFallback ? '(est.)' : ''}
-                </span>
-            </div>
-            <button class="btn-premium btn-sm w-100 mt-4 btn-glow" onclick="showDetails('${p.overpassId}')">Select Hub</button>
-        `;
-        listContainer.appendChild(item);
-
-        // Marker for Leaflet
-        const marker = L.marker([p.latitude, p.longitude])
-            .addTo(map)
-            .bindPopup(`
-                <div class="map-popup glass-card" style="padding: 10px; color: black;">
-                    <h4 style="margin-bottom: 5px;">${p.name || 'Unnamed Parking'}</h4>
-                    <p style="font-size: 12px; margin-bottom: 8px;">${p.availableSlots} slots available</p>
-                    <button class="btn-premium btn-sm" onclick="showDetails('${p.overpassId}')" style="background: #2d63ff; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Book Hub</button>
-                </div>
-            `);
-        markers.push(marker);
-    });
-}
-
-async function handleSaveClick(btn) {
-    const id = btn.getAttribute("data-id");
-    const parking = lastFetchedParking.find(p => p.overpassId === id);
-    if (!parking) return;
-
-    await toggleSave(id, parking.name, parking.location, parking.latitude, parking.longitude, btn);
-}
-
-async function toggleSave(id, name, location, lat, lon, btn) {
-    const token = localStorage.getItem("token");
-    
-    // Optimistic UI Update
-    const isSaving = !currentSavedIds.has(id);
-    
-    if (isSaving) {
-        currentSavedIds.add(id);
-        btn.classList.add("active");
-        btn.querySelector("i").className = "fas fa-heart";
-    } else {
-        currentSavedIds.delete(id);
-        btn.classList.remove("active");
-        btn.querySelector("i").className = "far fa-heart";
-    }
-    
-    // Local Persistence (Guest Mode)
-    let localSaved = JSON.parse(localStorage.getItem("guest_saved") || "[]");
-    if (isSaving) {
-        if (!localSaved.find(s => s.parkingId === id)) {
-            localSaved.push({ parkingId: id, name, location, latitude: lat, longitude: lon });
-        }
-    } else {
-        localSaved = localSaved.filter(s => s.parkingId !== id);
-    }
-    localStorage.setItem("guest_saved", JSON.stringify(localSaved));
-
-    // Silent Server Sync
-    if (token) {
-        try {
-            await fetch(`${CONFIG.API_BASE}/saved/toggle`, {
-                method: "POST",
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ 
-                    parkingId: id, 
-                    name: (name || 'Unnamed Parking').trim(), 
-                    location: (location || 'Unknown Location').trim(), 
-                    latitude: parseFloat(lat), 
-                    longitude: parseFloat(lon) 
-                })
-            });
-        } catch (err) {
-            console.warn("Sync failed, but saved locally:", err);
-        }
-    }
-    
-    if (typeof loadStats === "function") loadStats();
-}
-
-function showDetails(id) {
-    const parking = lastFetchedParking.find(p => p.overpassId === id);
-    if (parking) recordVisit(id, parking.name || 'Unnamed Hub');
-    window.location.href = `parking-details.html?id=${id}`;
-}
-
-document.getElementById("placeSearch")?.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") searchPlace();
-});
-
-function updateRecentHubs() {
-    const recent = JSON.parse(localStorage.getItem("recent_visits") || "[]").slice(0, 3);
-    const container = document.getElementById("recentHubs");
-    if (!container) return;
-
-    if (recent.length === 0) {
-        container.style.display = 'none';
-        return;
-    }
-
-    container.style.display = 'block';
-    container.innerHTML = `
-        <p style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; font-weight: 700;">Quick Access</p>
-        <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;">
-            ${recent.map(r => `
-                <div class="glass-card recent-hub-chip" onclick="showDetails('${r.id}')">
-                    <i class="fas fa-history"></i> ${r.name}
-                </div>
-            `).join('')}
-        </div>
-    `;
-}
-
-// Update visit on detail page or select
-function recordVisit(id, name) {
-    let recent = JSON.parse(localStorage.getItem("recent_visits") || "[]");
-    recent = recent.filter(r => r.id !== id);
-    recent.unshift({ id, name });
-    localStorage.setItem("recent_visits", JSON.stringify(recent.slice(0, 5)));
-    updateRecentHubs();
-}
+function showDetails(id) { window.location.href = `parking-details.html?id=${id}`; }
+function updateRecentHubs() {}
 
 initDashboard();

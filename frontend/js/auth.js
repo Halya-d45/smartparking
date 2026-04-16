@@ -57,7 +57,13 @@ async function login() {
         if (data.token) {
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
-            window.location.href = "dashboard.html";
+            
+            // Intelligent Admin Redirection
+            if (data.user.role === 'admin') {
+                window.location.href = "admin.html";
+            } else {
+                window.location.href = "dashboard.html";
+            }
         } else {
             alert("Login Failed: " + (data.error || "Invalid credentials"));
         }

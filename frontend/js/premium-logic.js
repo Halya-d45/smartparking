@@ -475,4 +475,43 @@ if (editProfileForm) {
     });
 }
 
-window.addEventListener('DOMContentLoaded', () => { initTabs(); initMap(); initProfile(); });
+// UI Enhancements: Sidebar & Theme
+function initUI() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+
+    // Theme Logic
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+
+    if (themeToggle) {
+        themeToggle.onclick = () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            showToast(`Switched to ${isDark ? 'Dark' : 'Light'} Mode`, 'info');
+            if (map) {
+                // Leaflet doesn't automatically invert tiles, but our CSS filter does.
+                // We just trigger a resize to ensure it looks good.
+                setTimeout(() => map.invalidateSize(), 500);
+            }
+        };
+    }
+
+    // Mobile Sidebar
+    if (sidebarToggle && sidebar) {
+        sidebarToggle.onclick = (e) => {
+            e.stopPropagation();
+            sidebar.classList.toggle('sidebar-open');
+        };
+        document.addEventListener('click', () => sidebar.classList.remove('sidebar-open'));
+        sidebar.onclick = (e) => e.stopPropagation();
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => { 
+    initTabs(); 
+    initMap(); 
+    initProfile(); 
+    initUI();
+});

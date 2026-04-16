@@ -18,12 +18,19 @@
     <link rel="stylesheet" href="css/premium.css">
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        background: "#f9f7f2",
+                        background: {
+                            light: "#f9f7f2",
+                            dark: "#0f172a"
+                        },
+                        card: {
+                            light: "#f2ede4",
+                            dark: "#1e293b"
+                        },
                         primary: "#3b82f6",
-                        cream: { 200: '#eee9e0' }
                     }
                 }
             }
@@ -31,85 +38,107 @@
     </script>
 </head>
 <body class="bg-background">
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-2xl border-b border-black/5 h-20 flex items-center">
-        <div class="max-w-[1700px] mx-auto w-full px-8 flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30">
-                    <i class="fas fa-parking text-white text-lg"></i>
+    <!-- Desktop Sidebar -->
+    <aside id="sidebar" class="fixed top-0 left-0 bottom-0 w-72 bg-card-light dark:bg-card-dark border-r border-black/5 dark:border-white/5 z-[60] transition-all duration-500 lg:translate-x-0 -translate-x-full">
+        <div class="h-full flex flex-col p-8">
+            <div class="flex items-center space-x-4 mb-12">
+                <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-600/30">
+                    <i class="fas fa-parking text-white text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg font-black text-blue-600 leading-tight">Smart Parking</h1>
-                    <p class="text-[10px] uppercase tracking-[0.2em] font-extrabold text-gray-400 -mt-1">System</p>
+                    <h1 class="text-xl font-black text-slate-800 dark:text-white leading-tight">SmartPark</h1>
+                    <p class="text-[10px] uppercase tracking-[0.2em] font-extrabold text-blue-500">Premium Hub</p>
                 </div>
             </div>
 
-            <div class="hidden lg:flex items-center bg-[#f0ede4] rounded-full p-1.5 shadow-inner" id="nav-group">
-                <button class="nav-link active" data-tab="map-view">
-                    <i class="fas fa-map"></i><span>Map View</span>
+            <nav class="flex-1 space-y-2">
+                <button class="w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all nav-link active" data-tab="map-view">
+                    <i class="fas fa-map-location-dot"></i> <span class="font-bold">Explore Hubs</span>
                 </button>
-                <button class="nav-link" data-tab="my-bookings">
-                    <i class="fas fa-calendar-alt"></i><span>My Bookings</span>
+                <button class="w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all nav-link" data-tab="my-bookings">
+                    <i class="fas fa-calendar-check"></i> <span class="font-bold">My Bookings</span>
                 </button>
-                <button class="nav-link" data-tab="saved-slots">
-                    <i class="fas fa-heart"></i><span>Saved Slots</span>
+                <button class="w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all nav-link" data-tab="saved-slots">
+                    <i class="fas fa-bookmark"></i> <span class="font-bold">Saved Places</span>
                 </button>
-                <button class="nav-link" data-tab="payments">
-                    <i class="fas fa-credit-card"></i><span>Payments</span>
+                <button class="w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all nav-link" data-tab="payments">
+                    <i class="fas fa-wallet"></i> <span class="font-bold">Wallet</span>
                 </button>
-                <button class="nav-link" data-tab="profile">
-                    <i class="fas fa-user"></i><span>Profile</span>
-                </button>
-            </div>
+            </nav>
 
-            <div class="flex items-center space-x-6">
-                <button class="relative p-2 text-gray-400 hover:text-slate-800 transition-colors">
-                    <i class="fas fa-bell text-xl"></i>
-                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                </button>
-                <div class="relative">
-                    <div id="user-pill" class="bg-[#1e293b] rounded-full pl-2 pr-4 py-1.5 flex items-center space-x-3 cursor-pointer hover:scale-105 transition-all shadow-xl shadow-slate-900/20">
-                        <div id="nav-user-initials" class="w-8 h-8 rounded-full bg-slate-400 border border-slate-600 flex items-center justify-center text-slate-800 text-xs font-bold font-['Plus_Jakarta_Sans']">US</div>
-                        <div class="flex items-center space-x-2">
-                            <span id="nav-user-name" class="text-xs font-extrabold text-white">User</span>
-                            <i class="fas fa-chevron-down text-[10px] text-gray-400"></i>
-                        </div>
+            <div class="mt-auto space-y-4">
+                <div class="p-6 bg-blue-600 rounded-[2rem] text-white shadow-xl shadow-blue-600/20 relative overflow-hidden group">
+                    <div class="z-10 relative">
+                        <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Active Hub</p>
+                        <h4 class="font-bold text-lg mb-4">No active booking</h4>
+                        <button class="text-xs font-black bg-white/20 px-4 py-2 rounded-xl backdrop-blur-md hover:bg-white/30 transition-all">Quick View</button>
                     </div>
-                    
-                    <!-- Dropdown Menu -->
-                    <div id="user-dropdown" class="user-dropdown-menu">
-                        <button class="dropdown-item" onclick="setActiveTab('profile')">
-                            <i class="fas fa-user-circle"></i> Profile
-                        </button>
-                        <button class="dropdown-item">
-                            <i class="fas fa-cog"></i> Settings
-                        </button>
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item text-red-400" onclick="window.location.href='login.html'">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
+                    <i class="fas fa-car-side absolute -bottom-4 -right-4 text-8xl opacity-10 group-hover:rotate-12 transition-transform duration-700"></i>
                 </div>
+                
+                <button id="theme-toggle" class="w-full flex items-center justify-center space-x-3 py-4 bg-white/50 dark:bg-white/5 rounded-2xl text-slate-400 font-bold transition-all hover:text-blue-500">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:block"></i>
+                    <span>Toggle Theme</span>
+                </button>
             </div>
         </div>
-    </nav>
+    </aside>
+
+    <!-- Mobile Header -->
+    <header class="fixed top-0 left-0 right-0 h-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl z-50 flex lg:hidden items-center justify-between px-6 border-b border-black/5 dark:border-white/5">
+        <button id="sidebar-toggle" class="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-white/5 text-slate-800 dark:text-white">
+            <i class="fas fa-bars-staggered"></i>
+        </button>
+        <div class="flex items-center space-x-4">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <i class="fas fa-parking text-white text-sm"></i>
+            </div>
+            <span class="font-black text-slate-800 dark:text-white tracking-tighter">SmartPark</span>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm">
+            <img src="https://ui-avatars.com/api/?name=User&background=3b82f6&color=fff" alt="User">
+        </div>
+    </header>
 
     <!-- Content Area -->
     <main class="pt-32 px-8 max-w-[1700px] mx-auto pb-12">
         
         <!-- Tab: Map View -->
-        <div id="map-view" class="tab-content active animate-fade-in">
-            <div class="flex flex-col lg:flex-row gap-8">
+        <div id="map-view" class="tab-content active animate-fade-in lg:ml-72">
+            <div class="flex flex-col xl:flex-row gap-8">
                 <!-- Sidebar -->
-                <div class="w-full lg:w-1/3 flex flex-col gap-6">
-                    <div class="stats-card !py-8">
-                        <h3 class="stats-card-title !mb-6">Search Location</h3>
-                        <div class="relative flex items-center bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm focus-within:shadow-xl transition-all">
-                            <div class="w-14 flex items-center justify-center text-gray-400">
-                                <i class="fas fa-search"></i>
+                <div class="w-full xl:w-[400px] flex flex-col gap-6">
+                    <div class="stats-card !p-8 dark:bg-slate-800 dark:border-white/5">
+                        <h3 class="stats-card-title !mb-6 dark:text-gray-400">Hub Discovery</h3>
+                        <div class="space-y-4">
+                            <div class="relative flex items-center bg-white dark:bg-slate-700/50 rounded-2xl overflow-hidden border border-gray-100 dark:border-white/5 shadow-sm focus-within:shadow-xl transition-all">
+                                <div class="w-12 flex items-center justify-center text-gray-400">
+                                    <i class="fas fa-magnifying-glass text-sm"></i>
+                                </div>
+                                <input type="text" id="map-search" placeholder="Where to?" class="flex-1 py-4 bg-transparent border-none outline-none font-bold text-slate-800 dark:text-white placeholder:text-gray-400">
+                                <button id="search-btn" class="bg-blue-600 text-white px-5 py-3 m-1 rounded-xl hover:bg-blue-700 transition-colors font-black text-xs uppercase tracking-tight">Search</button>
                             </div>
-                            <input type="text" id="map-search" placeholder="Search city..." class="flex-1 py-5 bg-transparent border-none outline-none font-bold text-slate-800">
-                            <button id="search-btn" class="bg-blue-600 text-white px-6 py-4 m-1.5 rounded-2xl hover:bg-blue-700 transition-colors font-black text-sm">Search</button>
+
+                            <!-- Search Filters -->
+                            <div class="grid grid-cols-2 gap-3 pt-2">
+                                <div class="relative group">
+                                    <select id="filter-vehicle" class="w-full appearance-none bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-4 py-3 text-xs font-black text-slate-600 dark:text-gray-300 outline-none focus:border-blue-500 transition-all">
+                                        <option value="car">Sedan/SUV</option>
+                                        <option value="bike">Bike</option>
+                                        <option value="truck">Truck</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none"></i>
+                                </div>
+                                <div class="relative group">
+                                    <select id="filter-price" class="w-full appearance-none bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-4 py-3 text-xs font-black text-slate-600 dark:text-gray-300 outline-none focus:border-blue-500 transition-all">
+                                        <option value="any">Any Price</option>
+                                        <option value="low">Under $5/h</option>
+                                        <option value="mid">$5 - $10/h</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

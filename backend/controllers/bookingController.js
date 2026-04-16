@@ -61,7 +61,7 @@ exports.createBooking = async (req, res) => {
 
 exports.getUserBookings = async (req, res) => {
     try {
-        const bookings = await Booking.find({ userId: req.query.userId });
+        const bookings = await Booking.find({ userId: req.user.id });
         res.json(bookings);
     } catch (err) {
         res.status(500).json({ error: "Fetch failed" });

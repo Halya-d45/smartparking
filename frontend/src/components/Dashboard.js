@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import SearchInput from './components/SearchInput';
+import SearchInput from './SearchInput';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({ activeBookings: 0, savedPlaces: 0 });

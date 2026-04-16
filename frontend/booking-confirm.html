@@ -247,6 +247,11 @@
             payBtn.disabled = true;
             btnText.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Processing...';
 
+            const slot = document.getElementById('res-slot').value;
+            const durationArr = document.getElementById('res-duration').value;
+            const finalTotalStr = document.getElementById('res-total').innerText;
+            const hubId = localStorage.getItem('last_booking_hub_id') || hubName;
+
             try {
                 const res = await fetch(`${API_BASE}/booking/create`, {
                     method: 'POST',
@@ -255,12 +260,12 @@
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        parkingHubName: hubName,
-                        location: 'City Center Hub', // fallback or fetch from LS
-                        price: price,
-                        date: new Date().toLocaleDateString(),
-                        timer: '02:00',
-                        status: 'UPCOMING'
+                        parkingId: hubId,
+                        slot: slot,
+                        duration: durationArr,
+                        parkingName: hubName,
+                        location: 'City Center Hub', 
+                        pricePerHour: baseRate
                     })
                 });
 

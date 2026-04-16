@@ -96,7 +96,7 @@ async function fetchBookings() {
     let localMockBookings = JSON.parse(localStorage.getItem(getLocalKey('local_mock_bookings')) || '[]');
     try {
         if (!token) throw new Error();
-        const res = await fetch(`${API_BASE}/bookings`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const res = await fetch(`${API_BASE}/booking`, { headers: { 'Authorization': `Bearer ${token}` } });
         const data = await res.json();
         userBookings = [...(data.bookings || []), ...localMockBookings];
         renderBookings(userBookings);
@@ -255,7 +255,7 @@ async function fetchRealParkingHubs(lat, lon) {
             price: `$${(Math.random() * 5 + 3).toFixed(2)}/hr`,
             slots: Math.floor(Math.random() * 30),
             lat: el.lat,
-            lon: el.lon,
+            lng: el.lon,
             addr: el.tags['addr:street'] || 'City Center'
         }));
     } catch (err) { return PARKING_HUBS; }
@@ -273,7 +273,7 @@ function updateMapMarkers(hubs) {
     markers.forEach(m => map.removeLayer(m));
     markers = [];
     hubs.forEach(hub => {
-        const marker = L.circleMarker([hub.lat, hub.lon], { radius: 10, fillColor: "#3b82f6", color: "#fff", weight: 3, opacity: 1, fillOpacity: 0.9 }).addTo(map);
+        const marker = L.circleMarker([hub.lat, hub.lng], { radius: 10, fillColor: "#3b82f6", color: "#fff", weight: 3, opacity: 1, fillOpacity: 0.9 }).addTo(map);
         marker.bindPopup(`
             <div class="font-['Plus_Jakarta_Sans'] font-bold text-slate-800">
                 ${hub.name}<br>

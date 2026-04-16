@@ -346,14 +346,89 @@ function renderBookings(data) {
                 <div>
                     <h4 class="font-black text-xl text-slate-900">${b.hub || b.parkingHubName}</h4>
                     <p class="text-gray-400 font-semibold text-sm">${b.addr || b.location}</p>
+                    <div class="flex items-center gap-3 mt-4">
+                        <button onclick="downloadReceipt('${b.id}')" class="text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-4 py-2 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
+                            <i class="fas fa-file-invoice mr-1"></i> Receipt
+                        </button>
+                        <span class="text-[10px] font-bold text-gray-300 uppercase">ID: ${b.id.slice(-6)}</span>
+                    </div>
                 </div>
             </div>
-            <div class="text-right">
+            <div class="text-right flex flex-col items-end">
                 <p class="text-2xl font-black text-slate-900 mb-1">${b.price}</p>
-                <span class="status-badge status-upcoming">${b.status || 'UPCOMING'}</span>
+                <span class="status-badge status-upcoming">${b.status || 'CONFIRMED'}</span>
+                <p class="text-[10px] font-bold text-gray-400 mt-2">Slot: ${b.slot || 'N/A'}</p>
             </div>
         </div>
     `).join('');
+}
+
+function downloadReceipt(bookingId) {
+    const booking = currentBookings.find(b => b.id === bookingId);
+    if (!booking) return;
+
+    const receiptContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>SmartPark Receipt - ${booking.id}</title>
+            <style>
+                body { font-family: sans-serif; padding: 40px; color: #333; }
+                .receipt-box { max-width: 600px; margin: auto; border: 1px solid #eee; padding: 30px; border-radius: 10px; }
+                .header { text-align: center; margin-bottom: 40px; }
+                .logo { font-size: 24px; font-weight: bold; color: #3b82f6; }
+                .row { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #f9f9f9; padding-bottom: 10px; }
+                .label { color: #999; font-weight: bold; font-size: 12px; text-transform: uppercase; }
+                .value { font-weight: bold; }
+                .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #ccc; }
+                @media print { .no-print { display: none; } }
+            </style>
+        </head>
+        <body>
+            <div class="receipt-box">
+                <div class="header">
+                    <div class="logo">SmartPark Premium Hub</div>
+                    <p>Official Booking Receipt</p>
+                </div>
+                <div class="row">
+                    <span class="label">Booking ID</span>
+                    <span class="value">${booking.id}</span>
+                </div>
+                <div class="row">
+                    <span class="label">Date</span>
+                    <span class="value">${new Date().toLocaleDateString()}</span>
+                </div>
+                <div class="row">
+                    <span class="label">Parking Hub</span>
+                    <span class="value">${booking.hub}</span>
+                </div>
+                <div class="row">
+                    <span class="label">Location</span>
+                    <span class="value">${booking.addr}</span>
+                </div>
+                <div class="row">
+                    <span class="label">Assigned Slot</span>
+                    <span class="value">${booking.slot || 'A-1'}</span>
+                </div>
+                <div class="row">
+                    <span class="label">Total Amount</span>
+                    <span class="value" style="font-size: 20px; color: #000;">${booking.price}</span>
+                </div>
+                <div class="footer">
+                    Thank you for choosing SmartPark. Have a safe drive!
+                </div>
+                <div class="no-print" style="margin-top: 20px; text-align: center;">
+                    <button onclick="window.print()" style="padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Click to Print / Save as PDF</button>
+                </div>
+            </div>
+            <script>window.onload = () => { setTimeout(() => window.print(), 500); }</script>
+        </body>
+        </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(receiptContent);
+    printWindow.document.close();
 }
 
 async function removeSavedSlot(hubId, hubName, e) {

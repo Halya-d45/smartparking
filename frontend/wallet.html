@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Wallet | Secure Payments</title>
+    <title>Smart Wallet | Premium Dashboard</title>
     
     <!-- External Libs -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -28,10 +27,6 @@
 
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.4s ease; }
-        #dashboard-3d-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -10; opacity: 0.15; pointer-events: none;
-        }
         .glass-card {
             background: rgba(255, 255, 255, 0.4) !important;
             backdrop-filter: blur(24px) !important;
@@ -59,8 +54,7 @@
     </style>
 </head>
 
-<body class="bg-white dark:bg-darkBg min-h-screen text-slate-900 dark:text-slate-100">
-    <div id="dashboard-3d-bg"></div>
+<body class="bg-[#f8fafc] dark:bg-[#0f172a] min-h-screen text-slate-900 dark:text-slate-100 transition-colors duration-300">
 
     <!-- Premium Top Navigation -->
     <nav class="fixed top-0 left-0 right-0 h-24 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl border-b border-black/5 dark:border-white/5 z-[60] transition-all duration-300">
@@ -214,7 +208,7 @@
         </div>
     </main>
 
-    <script src="js/three-bg.js"></script>
+    <script src="js/config.js"></script>
     <script>
         // Theme Logic
         const themeToggle = document.getElementById('themeToggle');

@@ -805,6 +805,26 @@ function initUI() {
     }
 }
 
+// Bookings Filter Logic
+function filterBookings(filterType) {
+    // 1. Update Buttons State
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        if(btn.dataset.filter === filterType) {
+            btn.className = "filter-btn px-8 py-2.5 bg-white rounded-xl shadow-sm text-sm font-black text-slate-800";
+        } else {
+            btn.className = "filter-btn px-8 py-2.5 text-sm font-bold text-gray-500 hover:text-slate-800 transition-colors";
+        }
+    });
+
+    // 2. Filter Data visually
+    if (filterType === 'ALL') {
+        renderBookings(userBookings);
+    } else if (filterType === 'UPCOMING') {
+        renderBookings(userBookings.filter(b => b.status === 'UPCOMING' || !b.status));
+    } else if (filterType === 'HISTORY') {
+        renderBookings(userBookings.filter(b => b.status === 'COMPLETED' || b.status === 'CANCELLED'));
+    }
+}
 
 window.addEventListener('DOMContentLoaded', () => { 
     initTabs(); 

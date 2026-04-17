@@ -300,13 +300,10 @@
                             class="text-primary italic">Bookings</span></h1>
                     <p class="text-gray-500 font-medium">Manage your active and completed parking reservations.</p>
                 </div>
-                <div class="flex bg-[#f2ede4] rounded-2xl p-1 gap-1">
-                    <button
-                        class="px-8 py-2.5 bg-white rounded-xl shadow-sm text-sm font-black text-slate-800">All</button>
-                    <button
-                        class="px-8 py-2.5 text-sm font-bold text-gray-500 hover:text-slate-800 transition-colors">Upcoming</button>
-                    <button
-                        class="px-8 py-2.5 text-sm font-bold text-gray-500 hover:text-slate-800 transition-colors">History</button>
+                <div id="booking-filters" class="flex bg-[#f2ede4] rounded-2xl p-1 gap-1">
+                    <button onclick="filterBookings('ALL')" class="filter-btn px-8 py-2.5 bg-white rounded-xl shadow-sm text-sm font-black text-slate-800" data-filter="ALL">All</button>
+                    <button onclick="filterBookings('UPCOMING')" class="filter-btn px-8 py-2.5 text-sm font-bold text-gray-500 hover:text-slate-800 transition-colors" data-filter="UPCOMING">Upcoming</button>
+                    <button onclick="filterBookings('HISTORY')" class="filter-btn px-8 py-2.5 text-sm font-bold text-gray-500 hover:text-slate-800 transition-colors" data-filter="HISTORY">History</button>
                 </div>
             </div>
             <div class="space-y-6" id="bookings-list">

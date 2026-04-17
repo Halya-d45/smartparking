@@ -187,6 +187,23 @@
         // Listeners for dropdowns
         document.getElementById('res-duration').addEventListener('change', updatePricing);
 
+        // Payment Method Selection
+        const payMethods = document.querySelectorAll('.pay-method');
+        payMethods.forEach(method => {
+            method.addEventListener('click', () => {
+                payMethods.forEach(m => {
+                    m.classList.remove('active', 'bg-white/5', 'border-white/10', 'text-white');
+                    m.classList.add('bg-transparent', 'border-white/5', 'text-gray-400');
+                    const icon = m.querySelectorAll('i')[1];
+                    if (icon) icon.className = 'far fa-circle';
+                });
+                method.classList.add('active', 'bg-white/5', 'border-white/10', 'text-white');
+                method.classList.remove('bg-transparent', 'border-white/5', 'text-gray-400');
+                const selectedIcon = method.querySelectorAll('i')[1];
+                if (selectedIcon) selectedIcon.className = 'fas fa-check-circle text-blue-500';
+            });
+        });
+
         // Initialize pricing
         document.getElementById('res-duration').value = "1";
         updatePricing();

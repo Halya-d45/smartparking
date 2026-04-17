@@ -191,3 +191,46 @@ exports.getSuggestions = async (req, res) => {
         res.status(500).json({ error: "Failed to fetch suggestions" });
     }
 };
+
+// Admin Functions
+exports.createHubAdmin = async (req, res) => {
+    try {
+        const { name, location, totalSlots, pricePerHour, latitude, longitude } = req.body;
+        
+        let parsedPrice = 5.0;
+        if (pricePerHour) {
+            parsedPrice = parseFloat(String(pricePerHour).replace(/[^\d.]/g, '')) || 5.0;
+        }
+
+        const parking = new Parking({
+            overpassId: "ADMIN-" + Math.random().toString(36).substr(2, 9).toUpperCase(),
+            name: name || "Admin Default Hub",
+            location: location || "Global Scope",
+            totalSlots: parseInt(totalSlots) || 100,
+            availableSlots: parseInt(totalSlots) || 100,
+            pricePerHour: parsedPrice,
+            latitude: parseFloat(latitude) || 17.3850,
+            longitude: parseFloat(longitude) || 78.4867
+        });
+
+        await parking.save();
+        res.status(201).json({ message: "Hub created successfully", parking });
+    } catch (err) {
+        console.error("Create Hub Error:", err);
+        res.status(500).json({ error: "Failed to create hub" });
+    }
+};
+
+exports.deleteHubAdmin = async (req, res) => {
+    try {
+        const deletedHub = await Parking.findByIdAndDelete(req.params.id);
+        if (!deletedHub) {
+            return res.status(404).json({ error: "Hub not found" });
+        }
+        res.json({ message: "Hub deleted successfully" });
+    } catch (err) {
+        console.error("Delete Hub Error:", err);
+        res.status(500).json({ error: "Failed to delete hub" });
+    }
+};
+

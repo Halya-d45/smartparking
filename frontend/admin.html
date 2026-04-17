@@ -35,17 +35,14 @@
         </div>
 
         <nav class="space-y-2">
-            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-xl font-bold text-sm">
+            <a href="#" id="nav-dashboard" onclick="switchTab('dashboard')" class="nav-link flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-xl font-bold text-sm text-white">
                 <i class="fas fa-chart-line"></i> Dashboard
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white transition-all font-bold text-sm">
+            <a href="#" id="nav-hubs" onclick="switchTab('hubs')" class="nav-link flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white transition-all font-bold text-sm">
                 <i class="fas fa-parking"></i> Manage Hubs
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white transition-all font-bold text-sm">
-                <i class="fas fa-users"></i> User Management
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white transition-all font-bold text-sm">
-                <i class="fas fa-file-invoice-dollar"></i> Revenue
+            <a href="#" id="nav-bookings" onclick="switchTab('bookings')" class="nav-link flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white transition-all font-bold text-sm">
+                <i class="fas fa-calendar-check"></i> Customer Bookings
             </a>
         </nav>
 
@@ -57,11 +54,11 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="ml-64 p-10">
+    <main class="ml-64 p-10 relative">
         <header class="flex justify-between items-center mb-10">
             <div>
-                <h2 class="text-3xl font-black text-slate-900 mb-1">System Overview</h2>
-                <p class="text-gray-500 font-bold">Manage global parking infrastructure and user activity.</p>
+                <h2 class="text-3xl font-black text-slate-900 mb-1" id="section-title">System Overview</h2>
+                <p class="text-gray-500 font-bold" id="section-desc">Manage global parking infrastructure and user activity.</p>
             </div>
             <div class="flex items-center gap-4">
                 <div class="text-right">
@@ -74,50 +71,117 @@
             </div>
         </header>
 
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-4 gap-6 mb-10">
-            <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4">
-                    <i class="fas fa-parking"></i>
+        <!-- Dashboard Section -->
+        <section id="section-dashboard" class="admin-section block">
+            <div class="grid grid-cols-4 gap-6 mb-10">
+                <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                    <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-parking"></i>
+                    </div>
+                    <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Total Hubs</p>
+                    <h4 class="text-2xl font-black text-slate-900" id="stats-hubs">0</h4>
                 </div>
-                <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Total Hubs</p>
-                <h4 class="text-2xl font-black text-slate-900">2,000</h4>
+                <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                    <div class="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Total Bookings</p>
+                    <h4 class="text-2xl font-black text-slate-900" id="stats-bookings">0</h4>
+                </div>
+                <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                    <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Estimated Revenue</p>
+                    <h4 class="text-2xl font-black text-slate-900" id="stats-revenue">$0</h4>
+                </div>
             </div>
-            <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-                <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-4">
-                    <i class="fas fa-users"></i>
-                </div>
-                <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Active Users</p>
-                <h4 class="text-2xl font-black text-slate-900">842</h4>
+            <div class="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm">
+                <h3 class="text-xl font-black text-slate-900 mb-8">System Status</h3>
+                <div class="text-center py-20 text-gray-300 font-bold italic">All systems fully operational.</div>
             </div>
-            <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-                <div class="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mb-4">
-                    <i class="fas fa-calendar-check"></i>
-                </div>
-                <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">New Bookings</p>
-                <h4 class="text-2xl font-black text-slate-900">128</h4>
+        </section>
+
+        <!-- Manage Hubs Section -->
+        <section id="section-hubs" class="admin-section hidden relative">
+            <div class="mb-6 flex justify-end">
+                <button onclick="toggleHubModal()" class="px-6 py-3 bg-blue-600 text-white font-black rounded-xl shadow-lg hover:bg-blue-700 transition">
+                    + Add New Hub
+                </button>
             </div>
-            <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-                <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-4">
-                    <i class="fas fa-wallet"></i>
-                </div>
-                <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Today's Revenue</p>
-                <h4 class="text-2xl font-black text-slate-900">$2,410</h4>
+            <div class="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-slate-100">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 border-b border-slate-100 text-[11px] uppercase tracking-widest font-black text-gray-400">
+                        <tr>
+                            <th class="p-5">Hub Name</th>
+                            <th class="p-5">Location</th>
+                            <th class="p-5">Slots</th>
+                            <th class="p-5">Price/hr</th>
+                            <th class="p-5 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hubs-table-body" class="divide-y divide-slate-100 text-sm font-bold text-slate-700">
+                        <!-- Dynamic -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Manage Bookings Section -->
+        <section id="section-bookings" class="admin-section hidden relative">
+            <div class="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-slate-100">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 border-b border-slate-100 text-[11px] uppercase tracking-widest font-black text-gray-400">
+                        <tr>
+                            <th class="p-5">User</th>
+                            <th class="p-5">Hub & Slot</th>
+                            <th class="p-5">Amount</th>
+                            <th class="p-5">Status</th>
+                            <th class="p-5 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookings-table-body" class="divide-y divide-slate-100 text-sm font-bold text-slate-700">
+                        <!-- Dynamic -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Add Hub Modal -->
+        <div id="add-hub-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+            <div class="bg-white rounded-[2rem] p-10 w-full max-w-lg shadow-2xl relative">
+                <h3 class="text-2xl font-black text-slate-900 mb-6">Add New Hub</h3>
+                <form id="add-hub-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-black text-gray-400 uppercase mb-2">Hub Name</label>
+                        <input type="text" id="hub-name" required class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-blue-500 font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-gray-400 uppercase mb-2">Location</label>
+                        <input type="text" id="hub-loc" required class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-blue-500 font-bold">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-black text-gray-400 uppercase mb-2">Total Slots</label>
+                            <input type="number" id="hub-slots" required class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-blue-500 font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-black text-gray-400 uppercase mb-2">Price/hr ($)</label>
+                            <input type="number" step="0.1" id="hub-price" required class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-blue-500 font-bold">
+                        </div>
+                    </div>
+                    <div class="flex gap-4 mt-8 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="toggleHubModal()" class="flex-1 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-xl transition">Cancel</button>
+                        <button type="submit" class="flex-1 py-3 bg-blue-600 text-white font-black rounded-xl hover:bg-blue-700 transition">Save Hub</button>
+                    </div>
+                </form>
             </div>
         </div>
 
-        <div class="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm">
-             <div class="flex items-center justify-between mb-8">
-                 <h3 class="text-xl font-black text-slate-900">Recent System Logs</h3>
-                 <button class="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold hover:bg-slate-50 transition-all">View All</button>
-             </div>
-             <div class="text-center py-20 text-gray-300 font-bold italic">
-                 Log synchronization in progress...
-             </div>
-        </div>
     </main>
 
     <script src="js/config.js"></script>
+    <script src="js/admin.js"></script>
     <script src="js/auth.js"></script>
     <script>
         const user = JSON.parse(localStorage.getItem('user'));

@@ -94,3 +94,31 @@ exports.updatePaymentStatus = async (req, res) => {
         res.status(500).json({ error: 'Update payment status failed' });
     }
 };
+
+// Admin Functions
+exports.getAllAdminBookings = async (req, res) => {
+    try {
+        const bookings = await Booking.find().populate('userId', 'name email').sort({ date: -1 });
+        res.json({ bookings });
+    } catch (err) {
+        res.status(500).json({ error: "Fetch admin bookings failed" });
+    }
+};
+
+exports.updateBookingAdmin = async (req, res) => {
+    try {
+        const { bookingId, action } = req.body; // action = 'accept' or 'decline'
+        const booking = await Booking.findById(bookingId);
+        if (!booking) return res.status(404).json({ error: 'Booking not found' });
+
+        if (action === 'accept') {
+            booking.paymentStatus = 'Confirmed';
+        } else if (action === 'decline') {
+            booking.paymentStatus = 'Rejected';
+        }
+        await booking.save();
+        res.json({ message: `Booking ${action}ed successfully`, booking });
+    } catch (err) {
+        res.status(500).json({ error: "Admin update failed" });
+    }
+};

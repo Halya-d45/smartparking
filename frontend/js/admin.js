@@ -23,7 +23,8 @@ function switchTab(tabName) {
     const titles = {
         'dashboard': { t: 'System Overview', d: 'Manage global parking infrastructure and user activity.' },
         'hubs': { t: 'Manage Hubs', d: 'Create, update, and monitor global parking locations.' },
-        'bookings': { t: 'Customer Bookings', d: 'Review, accept, or decline reservations instantly.' }
+        'bookings': { t: 'Customer Bookings', d: 'Review, accept, or decline reservations instantly.' },
+        'support': { t: 'User Support', d: 'View and respond to customer suggestions and complaints.' }
     };
     
     document.getElementById('section-title').innerText = titles[tabName].t;
@@ -32,6 +33,7 @@ function switchTab(tabName) {
     if (tabName === 'hubs') renderHubs();
     if (tabName === 'bookings') renderBookings();
     if (tabName === 'dashboard') loadStats();
+    if (tabName === 'support') fetchAdminMessages();
 }
 
 function loadStats() {
@@ -176,6 +178,76 @@ if (addHubForm) {
             alert("Failed to add hub");
         }
     });
+}
+
+function closeReplyModal() {
+    document.getElementById('reply-modal').classList.add('hidden');
+}
+
+let replyingTo = null;
+
+function openReplyModal(id, name) {
+    replyingTo = id;
+    document.getElementById('reply-to-name').innerText = name;
+    document.getElementById('reply-content').value = "";
+    document.getElementById('reply-modal').classList.remove('hidden');
+}
+
+document.getElementById('reply-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!replyingTo) return;
+    const token = localStorage.getItem('token');
+    const reply = document.getElementById('reply-content').value;
+    try {
+        await fetch(`${ADMIN_API}/messages/${replyingTo}/reply`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ reply })
+        });
+        closeReplyModal();
+        fetchAdminMessages();
+    } catch (err) {}
+});
+
+async function fetchAdminMessages() {
+    const list = document.getElementById('admin-messages-list');
+    if (!list) return;
+    list.innerHTML = '<div class="text-gray-400 font-bold">Loading...</div>';
+    try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${ADMIN_API}/messages/admin`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        
+        if (data.length === 0) {
+            list.innerHTML = '<div class="text-gray-400 font-bold">No messages found.</div>';
+            return;
+        }
+
+        list.innerHTML = data.map(msg => `
+            <div class="bg-slate-50 border border-slate-100 p-6 rounded-2xl flex justify-between items-start gap-4">
+                <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-1">
+                        <h4 class="font-bold text-slate-900">${msg.userName}</h4>
+                        <span class="text-[10px] font-black uppercase text-blue-500">${new Date(msg.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <p class="font-bold text-sm text-slate-700 mb-1">Sub: ${msg.subject}</p>
+                    <p class="text-gray-500 text-sm italic mb-4">${msg.content}</p>
+                    
+                    ${msg.status === 'replied' ? `<div class="bg-blue-100/50 p-4 rounded-xl border-l-4 border-blue-500">
+                        <p class="text-xs font-black uppercase text-blue-600 mb-1">Admin Reply</p>
+                        <p class="text-sm text-slate-800">${msg.reply}</p>
+                    </div>` : ''}
+                </div>
+                ${msg.status === 'pending' ? `
+                    <button onclick="openReplyModal('${msg._id}', '${msg.userName}')" class="px-5 py-2 bg-slate-900 text-white font-bold rounded-xl text-xs shadow-sm hover:bg-slate-800 transition">Reply</button>
+                ` : `
+                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black uppercase rounded">Replied</span>
+                `}
+            </div>
+        `).join('');
+    } catch (e) {
+        list.innerHTML = '<div class="text-red-400 font-bold">Error loading messages.</div>';
+    }
 }
 
 // Initial fetch

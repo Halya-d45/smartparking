@@ -66,6 +66,7 @@ function initTabs() {
             }
             if (target === 'my-bookings') fetchBookings();
             if (target === 'saved-slots') fetchSavedSlots();
+            if (target === 'support') fetchMessages();
             if (target === 'profile') {
                 fetchProfile();
                 fetchBookings(); // Ensure Recent Glance is updated
@@ -139,6 +140,38 @@ async function fetchProfile() {
         }
         renderVehicles(user.vehicles || []);
     } catch (e) { console.error(e); }
+}
+
+async function fetchMessages() {
+    const container = document.getElementById('support-messages');
+    container.innerHTML = '<div class="text-gray-400 font-bold">Loading messages...</div>';
+    try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_BASE}/messages/user`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if(!res.ok) throw new Error();
+        const data = await res.json();
+        
+        if (data.length === 0) {
+            container.innerHTML = '<div class="text-gray-400 font-bold">No messages found.</div>';
+            return;
+        }
+        
+        container.innerHTML = data.map(msg => `
+            <div class="bg-white/50 border border-gray-100 p-6 rounded-2xl shadow-sm">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-lg text-slate-800">${msg.subject}</h3>
+                    <span class="text-xs font-black uppercase px-2 py-1 rounded ${msg.status === 'replied' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}">${msg.status}</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">${msg.content}</p>
+                ${msg.reply ? `<div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                    <p class="text-xs font-bold text-blue-600 uppercase mb-1">Admin Reply</p>
+                    <p class="text-sm text-slate-700">${msg.reply}</p>
+                </div>` : ''}
+            </div>
+        `).join('');
+    } catch (e) {
+        container.innerHTML = '<div class="text-red-400 font-bold">Error loading messages.</div>';
+    }
 }
 
 function renderVehicles(vehicles) {
@@ -222,6 +255,26 @@ document.getElementById('edit-profile-form')?.addEventListener('submit', async (
             fetchProfile();
         }
     } catch (e) { showToast("Update failed", "error"); }
+});
+
+document.getElementById('support-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    const subject = document.getElementById('support-subject').value;
+    const content = document.getElementById('support-content').value;
+    try {
+        const res = await fetch(`${API_BASE}/messages`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ subject, content })
+        });
+        if (res.ok) {
+            showToast("Message sent to admin!", "success");
+            document.getElementById('support-subject').value = '';
+            document.getElementById('support-content').value = '';
+            fetchMessages();
+        }
+    } catch (e) { showToast("Failed to send message", "error"); }
 });
 
 async function fetchSavedSlots() {
@@ -746,6 +799,14 @@ function initProfile() {
     const navInitials = document.getElementById('nav-user-initials');
     if (navName) navName.innerText = user.name.split(' ')[0] || "User";
     if (navInitials) navInitials.innerText = (user.name.substring(0, 2) || "US").toUpperCase();
+    
+    // Check admin role
+    const adminPanelBtn = document.getElementById('admin-panel-btn');
+    const mobileAdminPanelBtn = document.getElementById('mobile-admin-panel-btn');
+    if (user.role === 'admin') {
+        if (adminPanelBtn) adminPanelBtn.classList.remove('hidden');
+        if (mobileAdminPanelBtn) mobileAdminPanelBtn.classList.remove('hidden');
+    }
     
     // Update Profile Page Text
     const profileNameSpan = document.getElementById('profile-name-span');

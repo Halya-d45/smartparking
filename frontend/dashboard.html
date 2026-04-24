@@ -110,8 +110,12 @@
                         data-tab="saved-slots">
                         <i class="fas fa-bookmark"></i> <span class="font-bold text-sm">Saved</span>
                     </button>
-                    <button onclick="location.href='wallet.html'" class="px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3">
-                        <i class="fas fa-wallet"></i> <span class="font-bold text-sm">Wallet</span>
+                    <button id="admin-panel-btn" onclick="location.href='admin.html'" class="hidden px-6 py-3 rounded-xl transition-all hover:bg-white dark:hover:bg-white/10 flex items-center gap-3 text-red-500">
+                        <i class="fas fa-shield-alt"></i> <span class="font-bold text-sm">Admin Panel</span>
+                    </button>
+                    <button class="px-6 py-3 rounded-xl transition-all nav-link flex items-center gap-3"
+                        data-tab="support">
+                        <i class="fas fa-headset"></i> <span class="font-bold text-sm">Support</span>
                     </button>
                     <button class="px-6 py-3 rounded-xl transition-all nav-link flex items-center gap-3"
                         data-tab="profile">
@@ -158,6 +162,14 @@
         <button class="flex flex-col items-center gap-1 nav-link" data-tab="saved-slots">
             <i class="fas fa-bookmark text-lg"></i>
             <span class="text-[10px] font-black uppercase">Saved</span>
+        </button>
+        <button id="mobile-admin-panel-btn" onclick="location.href='admin.html'" class="hidden flex flex-col items-center gap-1 text-red-500">
+            <i class="fas fa-shield-alt text-lg"></i>
+            <span class="text-[10px] font-black uppercase">Admin</span>
+        </button>
+        <button class="flex flex-col items-center gap-1 nav-link" data-tab="support">
+            <i class="fas fa-headset text-lg"></i>
+            <span class="text-[10px] font-black uppercase">Support</span>
         </button>
         <button class="flex flex-col items-center gap-1 nav-link" data-tab="profile">
             <i class="fas fa-user text-lg"></i>
@@ -393,6 +405,26 @@
                 <i class="fas fa-credit-card text-6xl text-gray-200 mb-6"></i>
                 <h2 class="text-xl font-bold text-gray-400 uppercase tracking-widest italic tracking-tight">Payments
                     Screen Coming Soon</h2>
+            </div>
+        </div>
+
+        <!-- Tab: Support -->
+        <div id="support" class="tab-content animate-fade-in max-w-5xl mx-auto">
+            <h1 class="text-4xl font-black text-slate-900 mb-2">Help & <span class="text-primary italic">Support</span></h1>
+            <p class="text-gray-500 font-medium mb-10">Send suggestions or complain directly to the admin.</p>
+            
+            <div class="glass-card mb-10 p-8 rounded-[2rem] bg-white/50">
+                <h2 class="text-xl font-bold mb-4">Send a Message</h2>
+                <form id="support-form" class="space-y-4">
+                    <input type="text" id="support-subject" placeholder="Subject" class="w-full bg-white border border-gray-100 p-4 rounded-xl outline-none focus:border-blue-500 font-bold" required>
+                    <textarea id="support-content" placeholder="Your message..." rows="4" class="w-full bg-white border border-gray-100 p-4 rounded-xl outline-none focus:border-blue-500 font-bold" required></textarea>
+                    <button type="submit" class="bg-blue-600 px-6 py-3 text-white font-black rounded-xl hover:bg-blue-700 transition">Send to Admin</button>
+                </form>
+            </div>
+            
+            <h2 class="text-xl font-bold mb-4">Your Messages</h2>
+            <div id="support-messages" class="space-y-4">
+                <div class="text-gray-400 font-bold">Loading messages...</div>
             </div>
         </div>
     </main>

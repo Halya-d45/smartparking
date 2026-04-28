@@ -46,3 +46,35 @@ exports.login = async (req, res) => {
         res.status(500).json({ error: "Login error" });
     }
 };
+
+exports.verifyEmail = async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ error: "User not found with this email" });
+        
+        res.json({ message: "Email verified successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Verification error" });
+    }
+};
+
+exports.resetPassword = async (req, res) => {
+    const { email, newPassword } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        user.password = hashedPassword;
+        await user.save();
+
+        res.json({ message: "Password reset successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Password reset error" });
+    }
+};

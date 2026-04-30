@@ -221,6 +221,8 @@
                                         <option value="car">Sedan/SUV</option>
                                         <option value="bike">Bike</option>
                                         <option value="truck">Truck</option>
+                                        <option value="ev">Electric Vehicle</option>
+                                        <option value="van">Van/Minivan</option>
                                     </select>
                                     <i
                                         class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none"></i>
@@ -239,27 +241,15 @@
                         </div>
                     </div>
 
-                    <div id="stats-panel" class="stats-card flex-1">
-                        <h3 class="stats-card-title !mb-4">Quick Stats</h3>
-                        <div class="space-y-8">
-                            <div>
-                                <div class="flex justify-between items-end mb-3">
-                                    <p class="text-4xl font-black text-slate-900" id="total-slots">500</p>
-                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em]">Total
-                                        Slots</p>
-                                </div>
-                                <div class="w-full bg-[#e8e2d6] h-2 rounded-full overflow-hidden">
-                                    <div class="bg-gradient-to-r from-blue-400 to-cyan-400 h-full w-[70%]"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between items-end mb-1">
-                                    <p class="text-4xl font-black text-blue-600" id="available-slots">124</p>
-                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em]">Available
-                                        Now</p>
-                                </div>
-                            </div>
+                    <div id="location-panel" class="stats-card flex-1 flex flex-col justify-center items-center p-8 text-center">
+                        <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-4">
+                            <i class="fas fa-location-crosshairs"></i>
                         </div>
+                        <h3 class="text-xl font-black text-slate-900 mb-2">Locate Me</h3>
+                        <p class="text-xs text-gray-400 font-bold mb-6">Find parking hubs near your current location automatically.</p>
+                        <button id="current-location-btn" class="w-full py-4 bg-blue-600 text-white rounded-xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30">
+                            Use Current Location
+                        </button>
                     </div>
 
                     <div id="results-panel" class="stats-card flex-1 hidden">

@@ -13,7 +13,7 @@ const mapSearch = document.getElementById('map-search');
 const searchBtn = document.getElementById('search-btn');
 const clearSearchBtn = document.getElementById('clear-search');
 const mapLoader = document.getElementById('map-loader');
-const statsPanel = document.getElementById('stats-panel');
+const locationPanel = document.getElementById('location-panel');
 const resultsPanel = document.getElementById('results-panel');
 const resultsList = document.getElementById('results-list');
 const resultsTitle = document.getElementById('results-title');
@@ -106,15 +106,28 @@ async function fetchBookings() {
         const res = await fetch(`${API_BASE}/booking`, { headers: { 'Authorization': `Bearer ${token}` } });
         const data = await res.json();
         
-        const bookingsFromDB = (data.bookings || []).map(b => ({
-            id: b._id || b.id || "N/A",
-            hub: b.parkingHubName || "Public Hub",
-            addr: b.location || "City Center",
-            price: `$${(b.totalAmount || 0).toFixed(2)}`,
-            slot: b.slot,
-            status: b.isPaid ? 'CONFIRMED' : (b.status || 'PENDING'),
-            date: new Date(b.createdAt).toLocaleDateString()
-        }));
+        const now = new Date();
+        const bookingsFromDB = (data.bookings || []).map(b => {
+            const bookingDate = new Date(b.date || Date.now());
+            const durationMs = (b.duration || 1) * 3600000;
+            const endTime = new Date(bookingDate.getTime() + durationMs);
+            const isHistorical = endTime < now;
+            let displayStatus = b.isPaid ? 'CONFIRMED' : (b.paymentStatus || 'PENDING');
+            if (isHistorical && displayStatus === 'CONFIRMED') {
+                displayStatus = 'COMPLETED';
+            }
+
+            return {
+                id: b._id || b.id || "N/A",
+                hub: b.parkingHubName || "Public Hub",
+                addr: b.location || "City Center",
+                price: `$${(b.totalAmount || 0).toFixed(2)}`,
+                slot: b.slot,
+                status: displayStatus,
+                date: bookingDate.toLocaleDateString(),
+                isHistorical: isHistorical
+            };
+        });
 
         userBookings = [...bookingsFromDB, ...localMockBookings];
         renderBookings(userBookings);
@@ -566,7 +579,7 @@ async function fetchRealParkingHubs(lat, lon, city) {
 }
 
 function showResults(city, hubs) {
-    statsPanel.classList.add('hidden');
+    if(locationPanel) locationPanel.classList.add('hidden');
     resultsPanel.classList.remove('hidden');
     resultsTitle.innerText = `Parking in ${city}`;
     renderHubList(hubs);
@@ -782,11 +795,65 @@ if (mapSearch) mapSearch.addEventListener('keypress', (e) => { if (e.key === 'En
 if (clearSearchBtn) {
     clearSearchBtn.addEventListener('click', () => {
         resultsPanel.classList.add('hidden');
-        statsPanel.classList.remove('hidden');
+        if(locationPanel) locationPanel.classList.remove('hidden');
         mapSearch.value = '';
         markers.forEach(m => map.removeLayer(m));
         map.setView([17.3850, 78.4867], 13);
     });
+}
+
+const currentLocationBtn = document.getElementById('current-location-btn');
+if (currentLocationBtn) {
+    currentLocationBtn.addEventListener('click', () => {
+        if ("geolocation" in navigator) {
+            currentLocationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Locating...';
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                map.flyTo([lat, lng], 14);
+                
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                    const data = await response.json();
+                    const city = data.address.city || data.address.town || data.address.village || "Current Location";
+                    
+                    mapSearch.value = city;
+                    currentHubs = await fetchRealParkingHubs(lat, lng, city);
+                    showResults(city, currentHubs);
+                    showToast(`Found parking near you!`, 'success');
+                } catch(e) {
+                    showToast("Could not determine city name.", "error");
+                }
+                currentLocationBtn.innerHTML = 'Use Current Location';
+            }, () => {
+                showToast("Location access denied.", "error");
+                currentLocationBtn.innerHTML = 'Use Current Location';
+            });
+        } else {
+            showToast("Geolocation not supported.", "error");
+        }
+    });
+}
+
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return alert(message);
+    
+    const toast = document.createElement('div');
+    const isErr = type === 'error';
+    toast.className = `p-4 rounded-xl shadow-lg flex items-center gap-3 transform transition-all duration-300 translate-x-full opacity-0 ${isErr ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`;
+    toast.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-circle' : 'fa-check-circle'} text-xl"></i><span class="font-bold text-sm">${message}</span>`;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full', 'opacity-0');
+    }, 10);
+    
+    setTimeout(() => {
+        toast.classList.add('translate-x-full', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
 // Profile Logic
@@ -881,9 +948,9 @@ function filterBookings(filterType) {
     if (filterType === 'ALL') {
         renderBookings(userBookings);
     } else if (filterType === 'UPCOMING') {
-        renderBookings(userBookings.filter(b => b.status === 'UPCOMING' || !b.status));
+        renderBookings(userBookings.filter(b => ['UPCOMING', 'CONFIRMED', 'PENDING'].includes(b.status) || !b.status));
     } else if (filterType === 'HISTORY') {
-        renderBookings(userBookings.filter(b => b.status === 'COMPLETED' || b.status === 'CANCELLED'));
+        renderBookings(userBookings.filter(b => ['COMPLETED', 'CANCELLED'].includes(b.status)));
     }
 }
 

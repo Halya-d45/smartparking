@@ -592,10 +592,15 @@ function updateMapMarkers(hubs) {
     hubs.forEach(hub => {
         const marker = L.circleMarker([hub.lat, hub.lng], { radius: 10, fillColor: "#3b82f6", color: "#fff", weight: 3, opacity: 1, fillOpacity: 0.9 }).addTo(map);
         marker.bindPopup(`
-            <div class="font-['Plus_Jakarta_Sans'] font-bold text-slate-800">
-                ${hub.name}<br>
-                <p class="text-[10px] text-gray-400 font-bold mb-2">FREE SLOTS: ${hub.slots || 0}</p>
-                <button onclick="bookSlot('${hub.id}')" class="text-xs text-blue-600 font-black cursor-pointer">BOOK NOW</button>
+            <div class="font-['Plus_Jakarta_Sans'] font-bold text-slate-800 pb-1">
+                <span class="text-sm font-black">${hub.name}</span><br>
+                <p class="text-[10px] text-gray-500 font-bold mb-2 border-b border-gray-100 pb-2">FREE SLOTS: ${hub.slots || 0}</p>
+                <div class="flex flex-col gap-1 mt-1">
+                    <button onclick="bookSlot('${hub.id}')" class="text-xs bg-blue-600 text-white py-1.5 px-3 rounded border-none cursor-pointer hover:bg-blue-700 transition w-full text-center font-black">BOOK NOW</button>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=${hub.lat},${hub.lng}" target="_blank" class="text-xs bg-emerald-500 text-white py-1.5 px-3 rounded border-none cursor-pointer hover:bg-emerald-600 transition w-full text-center font-black mt-1 no-underline block">
+                        <i class="fas fa-location-arrow"></i> Navigate
+                    </a>
+                </div>
             </div>
         `);
         markers.push(marker);
@@ -604,14 +609,17 @@ function updateMapMarkers(hubs) {
 
 function renderHubList(hubs) {
     resultsList.innerHTML = hubs.map(hub => `
-        <div onclick="bookSlot('${hub.id}')" class="p-5 rounded-2xl border bg-white border-blue-100 shadow-sm transition-all cursor-pointer hover:shadow-lg group">
-            <div class="flex justify-between items-start mb-2">
-                <h5 class="font-black text-slate-800 text-sm truncate pr-4">${hub.name}</h5>
+        <div class="p-5 rounded-2xl border bg-white border-blue-100 shadow-sm transition-all hover:shadow-lg group">
+            <div class="flex justify-between items-start mb-2 cursor-pointer" onclick="bookSlot('${hub.id}')">
+                <h5 class="font-black text-slate-800 text-sm truncate pr-4 hover:text-blue-600">${hub.name}</h5>
                 <span class="text-xs font-black text-blue-600 whitespace-nowrap">${hub.price}</span>
             </div>
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
+            <div class="flex items-center justify-between mt-3">
+                <div class="flex items-center gap-2">
                     <span class="text-[10px] font-black px-2 py-0.5 rounded-md bg-green-100 text-green-600">${hub.slots || 0} SLOTS</span>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=${hub.lat},${hub.lng}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] font-black px-2 py-0.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors">
+                        <i class="fas fa-location-arrow"></i> NAVIGATE
+                    </a>
                 </div>
                 <button onclick="saveSlot('${hub.id}', event)" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors">
                     <i class="fas fa-heart text-xs"></i>

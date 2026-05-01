@@ -11,12 +11,13 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
     try {
-        const { name, phone, vehicles } = req.body;
+        const { name, phone, vehicles, profileImage } = req.body;
         const user = await User.findById(req.user.id);
         
         if (name) user.name = name;
         if (phone) user.phone = phone;
         if (vehicles) user.vehicles = vehicles;
+        if (profileImage) user.profileImage = profileImage;
         
         await user.save();
         res.json(user);

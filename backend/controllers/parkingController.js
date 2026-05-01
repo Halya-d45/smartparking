@@ -85,7 +85,16 @@ exports.discoverNearby = async (req, res) => {
         // FALLBACK: Query Overpass and sync if DB is dry
         const query = `[out:json];node["amenity"="parking"](around:5000,${lat},${lon});out 20;`;
         const overpassRes = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
-        const overpassData = await overpassRes.json();
+        let overpassData = { elements: [] };
+        try {
+            if (overpassRes.ok) {
+                overpassData = await overpassRes.json();
+            } else {
+                console.warn(`Overpass API error: ${overpassRes.status} ${overpassRes.statusText}`);
+            }
+        } catch (e) {
+            console.error("Failed to parse Overpass API response as JSON:", e.message);
+        }
 
         if (!overpassData.elements || overpassData.elements.length === 0) {
             // Return existing DB results if Overpass is empty

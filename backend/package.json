@@ -12,6 +12,7 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.3.3",
+    "razorpay": "^2.9.6",
     "uuid": "^9.0.1"
   }
 }

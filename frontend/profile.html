@@ -155,6 +155,39 @@
             font-size: 34px;
             box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
             border: 3px solid #fff;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .profile-avatar-wrap:hover .edit-overlay {
+            opacity: 1;
+        }
+
+        .edit-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .edit-overlay i {
+            color: white;
+            font-size: 14px;
+        }
+
+        #profileImagePreview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
         }
 
         /* Content Grid (Overlapping) */
@@ -371,9 +404,15 @@
             <div class="welcome-text">
                 <h1 id="welcomeTitle">Welcome back, Mike.</h1>
                 <p>Manage your vehicles, track your bookings, and control your profile.</p>
+                <button onclick="document.getElementById('profileImageInput').click()" style="margin-top: 16px; background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.4); transition: transform 0.2s;">
+                    <i class="fas fa-pen"></i> Edit Profile Picture
+                </button>
             </div>
-            <div class="profile-avatar-wrap">
-                <i class="fas fa-user"></i>
+            <div class="profile-avatar-wrap" onclick="document.getElementById('profileImageInput').click()">
+                <img id="profileImagePreview" />
+                <i class="fas fa-user" id="profileImageDefault"></i>
+                <div class="edit-overlay"><i class="fas fa-camera"></i></div>
+                <input type="file" id="profileImageInput" style="display: none;" accept="image/*" onchange="uploadProfileImage(event)" />
             </div>
         </div>
 
@@ -478,11 +517,61 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const user = JSON.parse(localStorage.getItem("user"));
-        if(user && user.name) {
-            const firstName = user.name.split(" ")[0];
-            document.getElementById("welcomeTitle").innerText = `Welcome back, ${firstName}.`;
+        if(user) {
+            if(user.name) {
+                const firstName = user.name.split(" ")[0];
+                document.getElementById("welcomeTitle").innerText = `Welcome back, ${firstName}.`;
+            }
+            if(user.profileImage) {
+                document.getElementById("profileImagePreview").src = user.profileImage;
+                document.getElementById("profileImagePreview").style.display = 'block';
+                document.getElementById("profileImageDefault").style.display = 'none';
+            }
         }
     });
+
+    async function uploadProfileImage(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+
+        // Show uploading state (optional visual feedback)
+        const preview = document.getElementById("profileImagePreview");
+        const defaultIcon = document.getElementById("profileImageDefault");
+
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const base64Image = e.target.result;
+            
+            // Show preview immediately
+            preview.src = base64Image;
+            preview.style.display = 'block';
+            defaultIcon.style.display = 'none';
+
+            // Upload to backend
+            const token = localStorage.getItem("token");
+            try {
+                const res = await fetch(`${CONFIG.API_BASE}/users/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ profileImage: base64Image })
+                });
+
+                if(res.ok) {
+                    const updatedUser = await res.json();
+                    localStorage.setItem("user", JSON.stringify(updatedUser));
+                } else {
+                    alert("Failed to save profile image to server.");
+                }
+            } catch (err) {
+                console.error("Upload error", err);
+                alert("An error occurred during upload.");
+            }
+        };
+        reader.readAsDataURL(file);
+    }
 
     // Make sure logout exists in case it is absent in auth.js
     if (typeof logout !== "function") {
